@@ -1,39 +1,8 @@
-Prácticas de post-instalación de hosts GNU/Linux CentOS/RedHat ITS-XX
-
-Uso Confidencial
-
-Instructivo: Prácticas post-Instalación de Hosts GNU/Linux CentOS/RedHat   ITS-XX
-Modificado por: Manuel Campos T.
-Revisado por: Manuel Campos T.
-Aprobado por: xxxx
-Fecha Implantación: día/mes/año
-Revisión Nº: 00
-Fecha Creación: 16/02/2017
-
-
-
-Control de Cambios y Revisiones
-
-Revisión
-Fecha Modificación
-Aprobado por
-Comentarios / Observaciones
-00
-16/02/2017
-
-Creación del documento.
-
-
-
 Prácticas de post-instalación de hosts GNU/Linux
 
 1. Propósito:  
 
-Este documento define una serie de procedimientos para la instalación de paquetes software, configuración de los mismos y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en GNU/Linux CentOS/RedHat.
-
-2. Alcance: 
-
-Plataforma de servidores GNU/Linux para los servicios de Comercio Electrónico, Servicios Hosting y Transparencia Municipal.
+Este documento define una serie de procedimientos para la instalación de paquetes software, configuración de los mismos y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en GNU/Linux RedHat/CentOS
 
 3. Definiciones:
 
@@ -44,8 +13,6 @@ CentOS: Community ENTerprise Operating System, es una bifurcación a nivel binar
 EPEL: (EPEL significa Extra Packages for Enterprise Linux) es un grupo de interés especial de Fedora que crea, mantiene y administra un conjunto de paquetes adicionales de alta calidad para Enterprise Linux, incluyendo, pero no limitado a, Red Hat Enterprise Linux (RHEL), CentOS, Scientific Linux (SL) y Oracle Linux (OL).
 
 Fail2ban: Aplicación escrita en Python para la prevención de intrusos en un sistema (HIPS), que actúa bloqueando las conexiones remotas que intentan accesos por fuerza bruta. Se distribuye bajo licencia GNU y típicamente funciona en sistemas POSIX que tengan interfaz con un sistema de control de paquetes o un firewall local (como iptables o TCP Wrapper).
-
-Fwbuilder: Es un Interfaz gráfica de usuario (GUI) para crear, configurar y administrar unos cortafuegos, soporta: iptables, Cisco PIX, NAT, entre otros.
 
 MICROCODE: Es una capa de instrucciones de nivel de hardware que implementan instrucciones de código de máquina de alto nivel. El microcode separa las instrucciones de la CPU de la electrónica subyacentes por lo que las instrucciones se pueden diseñar y alternar con mayor libertad. También facilita la construcción de las instrucciones de multi-pasos complejas, al tiempo que reduce la complejidad de los circuitos del computador. Actualmente Intel y AMD ofrecen actualizaciones a sus microcodes con la finalidad de corregir errores o mejorar el comportamientos de sus productos, ya que no es posible escribir directamente el firmware del CPU la actualización del microcode debe aplicarse en cada inicio del sistema.
 
@@ -62,16 +29,6 @@ RPM Fusion: Es un repositorio de software, que proporciona paquetes complementar
 SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para acceder a máquinas remotas a través de una red. Permite manejar por completo la computadora mediante un intérprete de comandos, y también puede redirigir el tráfico de X para poder ejecutar programas gráficos si tenemos ejecutando un Servidor X (en sistemas Unix y Windows). Además de la conexión a otros dispositivos, SSH permite copiar datos de forma segura (tanto archivos o directorios completos como simular sesiones FTP cifradas) y pasar los datos de cualquier otra aplicación por un canal seguro tunelizado mediante SSH.
 
 TCP Wrapper: Es un sistema de red ACL y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
-
-
-4. Responsables: 
-
-Integrantes de Servicio Técnico y SGSI.
-
-
-5. Referencias: 
-
-N/A.
 
 
 6. Descripción del Proceso - Contenidos:
@@ -633,14 +590,9 @@ cat /var/log/ocsinventory-agent/ocsinventory-agent.log  | grep debug
 Listo el equipo ya está Inventariado.
 
 
-7 Registros de Calidad:
+5. Referencias: 
 
-N/A
+N/A.
 
-
-5 Anexos:
-
-- Buenas Prácticas a utilizar en Servidores DSI-07
-- Instalación y configuración de Bacula Client en Windows y Linux _VER_1.0
 
 
