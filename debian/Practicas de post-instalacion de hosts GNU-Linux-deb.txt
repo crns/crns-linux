@@ -1,0 +1,706 @@
+
+Prácticas de post-instalación de hosts GNU/Linux Debian
+
+1. Propósito:  
+
+Este documento define una serie de procedimientos para la instalación de paquetes software, configuración de los mismos y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en GNU/Linux Debian.
+
+
+2. Definiciones:
+
+Bonding: Linux permite enlazar múltiples interfaces de red en un solo canal utilizando el módulo de enlace del núcleo y una interfaz de red especial denominada interfaz de enlace de canal. La vinculación de canales permite que dos o más interfaces de red actúen como una, aumentando simultáneamente el ancho de banda para balanceo de carga y proporcionando redundancia para obtener tolerancia a fallos.
+
+Debian: Es una organización formada totalmente por voluntarios dedicada a desarrollar software libre y promocionar los ideales de la comunidad del software libre.
+
+Debian GNU/Linux: Es un sistema operativo y una distribución de software libre, desarrollado por miles de voluntarios alrededor del mundo, que colaboran a través de Internet. Los nombres clave de las distintas versiones de la distribución corresponden a personajes de la Película Toy Story de Pixar. La versión estable a la fecha es Debian 9 STRETCH, las anteriores versiones estables son Debian 8 JESSIE, Debian 7 WHEEZY y Debian 6 SQUEEZE.
+
+Fail2ban: Aplicación escrita en Python para la prevención de intrusos en un sistema (HIPS), que actúa bloqueando las conexiones remotas que intentan accesos por fuerza bruta. Se distribuye bajo licencia GNU y típicamente funciona en sistemas POSIX que tengan interfaz con un sistema de control de paquetes o un firewall local (como iptables o TCP Wrapper).
+
+MICROCODE: Es una capa de instrucciones a nivel de hardware que implementa instrucciones de código de máquina de alto nivel. El microcode separa las instrucciones de la CPU de la electrónica subyacentes por lo que las instrucciones se pueden diseñar y alternar con mayor libertad. También facilita la construcción de las instrucciones de multi-pasos complejas, al tiempo que reduce la complejidad de los circuitos del computador. Actualmente Intel y AMD ofrecen actualizaciones a sus microcodes con la finalidad de corregir errores o mejorar el comportamientos de sus productos, ya que no es posible escribir directamente el firmware del CPU la actualización del microcode debe aplicarse en cada inicio del sistema.
+
+NAGIOS: Es un sistema de monitorización de redes ampliamente utilizado, de código abierto, que vigila los equipos (hardware) y servicios (software) que se especifiquen, alertando cuando el comportamiento de los mismos no sea el deseado.
+
+RNG-Tools: Es un conjunto de herramientas relacionadas con la generación de números aleatorios en el kernel. 
+
+OCS Inventory: Es un software libre que permite a los Administradores de TI gestionar el inventario de sus activos de TI. OCS-NG recopila información sobre el hardware y software de equipos que hay en la red que ejecutan el programa de cliente OCS ("agente OCS de inventario"). OCS puede utilizarse para visualizar el inventario a través de una interfaz web. Además, OCS comprende la posibilidad de implementación de aplicaciones en los equipos de acuerdo a criterios de búsqueda.
+
+Repositorios: El repositorio es a todos los efectos un archivo ordenado donde son almacenados los paquetes Debian (sean estos paquetes binarios o fuentes) en modo bien organizado, con una estructura bien definida y constantemente actualizados y disponibles mediante servidores disponibles en todo el mundo
+
+SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para acceder a máquinas remotas a través de una red. Permite manejar por completo la computadora mediante un intérprete de comandos, y también puede redirigir el tráfico de X para poder ejecutar programas gráficos si tenemos ejecutando un Servidor X (en sistemas Unix y Windows). Además de la conexión a otros dispositivos, SSH permite copiar datos de forma segura (tanto archivos o directorios completos como simular sesiones FTP cifradas) y pasar los datos de cualquier otra aplicación por un canal seguro tunelizado mediante SSH.
+
+TCP Wrapper: Es un sistema de ACL en red y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
+
+
+3. Descripción del Proceso - Contenidos:
+
+3.1 Actualización y configuración de los sistemas:
+	3.1.1 Configuración de repositorios
+	3.1.2 Actualizar Sistema
+	3.1.3 Instalar Pqtes. básicos
+
+3.2 Configuración de los sistemas:
+	3.2.1 Sincronizar reloj de sistema mediante NTP
+
+3.3 Optimizaciones:
+	3.3.1 Disco y Filesystems
+	3.3.2 RNG-Tools
+	3.3.3 Actualización del firmware microcode de la CPU
+	3.3.4 Bonding
+	3.3.5 Deshabilitar IPv6
+
+3.4 Instalar y securizar servicios:
+	3.4.1 Servicio SSH
+	3.4.2 Tcp Wrappers
+	3.4.3 Portmap
+	3.4.4 Fail2ban
+	3.4.5 FwBuilder
+
+3.5 Monitoreo e inventario de sistemas:
+	3.5.1 SNMP
+	3.5.2 Instalar NRPE (Nagios)
+	3.5.3 Registrar en SIEM Prelude
+	3.5.4 OCS Inventory
+
+6.1 Actualización y configuración de los sistemas:
+
+6.1.1 Configuración de repositorios:
+
+
+El archivo /etc/apt/sources.list deberá contener los contenidos indicados según la distribución GNU/Debian y versión de S.O. utilizada:
+
+
+Para GNU/Debian 9.X (STRETCH):
+
+deb http://security.debian.org/ stretch/updates main contrib non-free
+deb-src http://security.debian.org/ stretch/updates main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ stretch main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ stretch main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ stretch-updates main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ stretch-updates main contrib non-free
+
+
+6.1.2 Actualizar Sistema:
+
+Ahora proceder con la actualización masiva del sistema:
+
+apt-get upgrade
+
+Si lo anterior da un problema del tipo:
+
+"W: No existe ninguna clave pública disponible para los siguientes identificadores de clave:
+7638D0442B90D010
+W: No existe ninguna clave pública disponible para los siguientes identificadores de clave:
+9D6D8F6BC857C906
+W: No existe ninguna clave pública disponible para los siguientes identificadores de clave:
+7638D0442B90D010
+" 
+
+Entonces ejecutar lo sgte:
+
+apt-get install debian-keyring debian-archive-keyring
+
+y ejecutar apt-get update nuevamente.
+
+
+6.1.3 Instalar paquetes básicos:
+
+Se recomienda instalar los siguientes paquetes para poder configurar adecuadamente el sistema instalado y poseer herramientas de diagnóstico:
+
+ethtool
+iptables
+iproute
+vlan
+ifenslave
+bsdutils
+fail2ban
+firmware-linux-free
+firmware-linux-nonfree
+bridge-utils
+
+
+apt-get -y install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils
+
+En XEN máquinas paravirtualizadas x86_64 (método netinstall) se deben instalar también los siguientes paquetes:
+
+linux-image-amd64
+firmware-linux-nonfree
+dnsutils
+dbus
+
+apt-get -y install linux-image-amd64 firmware-linux-nonfree vlan dnsutils dbus
+
+En máquinas Linux virtualizados en VMware se debe instalar el  paquete VMware tools, primero se debe tener actualizado el sistema para proceder con la instalación:
+
+En sistemas CLI:
+
+apt-get -y install open-vm-tools
+
+En sistemas GUI:
+
+apt-get -y install open-vm-tools-desktop
+
+
+6.1.4 Sincronizar reloj de sistema mediante NTP
+
+Sincronizar tiempo mediante systemd-timesyncd en Stretch:
+
+Instalación:
+
+systemd-timesyncd viene con systemd.
+
+Configuración:
+
+El archivo de configuración de systemd-timesyncd es /etc/systemd/timesyncd.conf.
+
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+#
+# See timesyncd.conf(5) for details
+
+[Time]
+#Servers=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+
+
+Para agregar servidores de tiempo se agrega al final la línea "Servers=192.168.7.115", ejemplo:
+
+[Time]
+#Servers=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+Servers=192.168.7.115
+
+Guardar y activar:
+
+systemctl enable systemd-timesyncd
+Created symlink from /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service to /lib/systemd/system/systemd-timesyncd.service.
+
+
+Iniciar:
+
+systemctl start systemd-timesyncd
+
+Reiniciar:
+
+systemctl restart systemd-timesyncd
+
+Revisar status:
+
+systemctl status systemd-timesyncd
+
+Ejemplo:
+
+systemctl status systemd-timesyncd.service
+● systemd-timesyncd.service - Network Time Synchronization
+   Loaded: loaded (/lib/systemd/system/systemd-timesyncd.service; enabled)
+   Active: active (running) since jue 2016-08-18 16:16:00 CLST; 4s ago
+     Docs: man:systemd-timesyncd.service(8)
+ Main PID: 25446 (systemd-timesyn)
+   Status: "Using Time Server 192.168.7.115:123 (192.168.7.115)."
+   CGroup: /system.slice/systemd-timesyncd.service
+           └─25446 /lib/systemd/systemd-timesyncd
+
+ago 18 16:16:00 lotho systemd-timesyncd[25446]: Using NTP server 192.168.7.115:123 (192.168.7.115).
+ago 18 16:16:00 lotho systemd-timesyncd[25446]: interval/delta/delay/jitter/drift 64s/-0.002s/0.003s/0.000s/-19ppm
+
+
+También se puede verificar el status con el sgte comando:
+
+timedatectl status
+
+Ejemplo:
+timedatectl status
+      Local time: jue 2016-08-18 16:16:46 CLST
+  Universal time: jue 2016-08-18 19:16:46 UTC
+        RTC time: jue 2016-08-18 19:16:46
+       Time zone: America/Santiago (CLST, -0300)
+     NTP enabled: yes
+NTP synchronized: yes
+ RTC in local TZ: no
+      DST active: yes
+ Last DST change: DST began at
+                  sab 2016-08-13 23:59:59 CLT
+                  dom 2016-08-14 01:00:00 CLST
+ Next DST change: DST ends (the clock jumps one hour backwards) at
+                  sáb 2017-05-13 23:59:59 CLST
+                  sáb 2017-05-13 23:00:00 CLT
+
+
+6.2 Optimizaciones:
+
+6.2.1 Discos y Filesystems
+
+Para el caso de los servidores con mucha carga de proceso y acceso a disco, en especial cuando son servidores virtualizados, se aconseja montar las particiones con las opciones noatime y nodiratime para aumentar el rendimiento en escritura, estas opciones evitan que el sistema actualice (escriba en disco) la hora del acceso en la meta información de los archivos, reduciendo la escritura y mejorando el performance.
+Editar el archivo /etc/fstab y modificar las opciones de montaje de las particiones con filesystems ext2, ext3 y ext4, no funciona en particiones swap, ejemplo:
+
+/dev/xvda2  /  ext3  errors=remount-ro  0 1
+
+Debe quedar así:
+
+/dev/xvda2  /  ext3 noatime,nodiratime,errors=remount-ro 0 1
+
+Luego es posible aplicar el cambio sin reiniciar el host:
+
+mount -o remount,noatime,nodiratime,errors=remount-ro /
+
+Nota: En el caso de hosts paravirtualizados este ajuste se hace automáticamente en la instalación.
+
+Verificar con cat /proc/mounts
+
+
+6.2.2 RNG
+
+Verificar el valor actual de Entropía.
+
+cat /proc/sys/kernel/random/entropy_avail
+
+El resultado debe estar en el rango 3000 - 3900.
+
+
+
+Verifcar que la CPU soporta la instruccion rdran:
+	
+cat /proc/cpuinfo | grep -i rdrand | echo $?
+ 
+El resultado debe ser 0 si la CPU soporta la instruccion rdran, entonces activar soporte rdran en kernel.
+
+nano /etc/sysctl.conf
+
+# Agrega soporte intel rdrand para suministrar entropía por hardware.
+kernel.random.read_wakeup_threshold = 2048
+kernel.random.write_wakeup_threshold = 3072
+
+
+Activar cambios:
+
+sysctl -p
+
+
+
+apt-get -y install rng-tools
+
+Editar /etc/default/rng-tools y agregar:
+
+HRNGDEVICE=/dev/urandom
+
+Activar en STRETCH:
+
+systemctl enable rng-tools
+Synchronizing state for rng-tools.service with sysvinit using update-rc.d...
+Executing /usr/sbin/update-rc.d rng-tools defaults
+Executing /usr/sbin/update-rc.d rng-tools enable
+
+Iniciar:
+
+systemctl restart rng-tools
+
+Verificar status:
+
+root@cirith-ungol:~# systemctl status rng-tools
+● rng-tools.service - (null)
+   Loaded: loaded (/etc/init.d/rng-tools)
+   Active: active (running) since mar 2016-09-06 12:22:02 CLST; 1s ago
+  Process: 24130 ExecStart=/etc/init.d/rng-tools start (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/rng-tools.service
+           └─24132 /usr/sbin/rngd -r /dev/urandom
+
+sep 06 12:22:02 cirith-ungol rng-tools[24130]: Starting Hardware RNG entropy gatherer daemon: rngd.
+sep 06 12:22:02 cirith-ungol rngd[24132]: rngd 2-unofficial-mt.14 starting up...
+sep 06 12:22:02 cirith-ungol rngd[24132]: entropy feed to the kernel ready
+
+
+6.2.3 Actualización del firmware microcode de la CPU:
+
+Lo siguiente solo en máquinas físicas.
+
+Para Procesadores Intel IA32/IA64 ejecutar:
+
+	apt-get -y install intel-microcode
+
+
+Para Procesadores AMD ejecutar:
+
+	apt-get -y install amd64-microcode
+
+Reiniciar la máquina para que se aplique la actualización.
+
+
+6.2.4 Bonding
+
+Instalar:
+
+apt-get -y install ifenslave
+
+
+Editar /etc/modules y agregar bonding
+
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+# Parameters can be specified after the module name.
+
+loop
+bonding
+
+
+Crear /etc/modprobe.d/bonding.conf con el sgte contenido:
+
+# Algoritmo RR - Round-Robin
+options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=1
+
+o
+
+# 802.3ad en switch que lo soporten
+options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1
+
+
+Crear archivo con configuración en un paso:
+
+echo "options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=1" > /etc/modprobe.d/bonding.conf
+
+
+Modificar /etc/network/interfaces
+
+comentar la configuración del la interfaz primaria en #allow-hotplug eth0 y reemplazar por (ejemplo para un bonding de tres Nic's):
+
+auto bond0
+iface bond0 inet static
+        ###hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.7.160
+        netmask 255.255.255.0
+        network 192.168.7.0
+        broadcast 192.168.7.255
+	gateway 192.168.7.131
+        up /sbin/ifenslave bond0 eth0 eth1 eth2
+        down /sbin/ifenslave -d bond0 eth0 eth1 eth2
+
+
+Presto!!
+Reboot an enjoy
+
+6.2.5 Deshabilitar IPv6
+
+Lo siguiente no es valido en sistemas Paravirtualizados y que no inician por gestor de arranque.
+
+Agregar IPV6_DISABLE=1 a la variable GRUB_CMDLINE_LINUX en /etc/default/grub y luego ejecutar:
+
+# update-grub 
+
+y reboot. 
+
+
+Luego para todos los sistema lo siguiente es valido:
+
+Editar /etc/sysctl.conf y agregar estos parámetros al kernel, se deberá asegurar de agregar otras interfaces de red existentes en las que busque deshabilitar IPv6.
+
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv6.conf.eth0.disable_ipv6 = 1
+
+Luego de editar sysctl.conf, se debe ejecutar "sysctl -p" para aplicar los cambios inmediatamente o reiniciar el sistema. 
+
+# sysctl -p
+
+root@elendil:~# sysctl -p
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv6.conf.eth0.disable_ipv6 = 1
+net.ipv6.conf.eth1.disable_ipv6 = 1
+net.ipv6.conf.vlan103.disable_ipv6 = 1
+
+
+6.3 Securizar servicios:
+
+6.3.1 Servicio SSH
+
+No permitir acceso a la cuenta “root”, solo acceso a cuentas no privilegiadas. Editar el archivo "/etc/ssh/sshd_config" y cambiar la opción “PermitRoolLogin yes” a “no”:
+
+PermitRootLogin no
+
+Ocultar Debian Banner (Versión de SO GNU/Debian):
+
+Editar "/etc/ssh/sshd_config" y agregar "DebianBanner no" después de la línea "#Banner /etc/issue.net"
+
+nano /etc/ssh/sshd_config
+
+#Banner /etc/issue.net
+DebianBanner no
+
+Reiniciar servicio:
+
+systemctl restart ssh.service
+
+
+6.3.2 Tcp Wrappers
+
+Se debe primero editar /etc/hosts.allow y como mínimo asegurar las conexiones por ssh desde hosts de servicio técnico y luego los accesos para cada servicio según lo requerido:
+
+nano /etc/hosts.allow
+
+sshd : 127. 192.168.7.1 192.168.7.104 192.168.7.55 190.98.195.11
+nrpe : 127. 192.168.7.104
+snmpd : 127. 192.168.7.1 192.168.7.104
+
+Lo anterior permite: 
+
+Conexiones por SSH desde hosts 192.168.7.1, monitoreo puerto SSH desde NAGIOS, ip de cliente VPN 192.168.7.55 y desde la ip de salida red CAS proveedor GTD.
+Conexiones monitor NAGIOS sólo desde localhost 127. Y monitor Nagios (Net-Monitor) ip 192.192.168.7.104 y 
+Monitoreo SNMP desde NAGIOS e ip 192.168.7.1
+
+Finalmente, editar /etc/hosts.deny y agregar:
+
+ALL : ALL
+
+Nota: No se requiere reiniciar los servicios, los cambios se aplican inmediatamente.
+
+
+6.3.3 Portmap
+
+Desabilitar portmap en JESSIE:
+
+systemctl stop rpcbind.service
+
+systemctl disable rpcbind.service
+Synchronizing state for rpcbind.service with sysvinit using update-rc.d...
+Executing /usr/sbin/update-rc.d rpcbind defaults
+Executing /usr/sbin/update-rc.d rpcbind disable
+insserv: warning: current start runlevel(s) (empty) of script `rpcbind' overrides LSB defaults (S).
+insserv: warning: current stop runlevel(s) (0 1 6 S) of script `rpcbind' overrides LSB defaults (0 1 6).
+
+
+6.3.4 Fail2ban
+
+Par los hosts expuestos a Internet editar /etc/fail2ban/jail.conf y en la sgte. sección definir según lo que corresponda:
+Un valor de bantime = 36000000 significa 416.66 días bloqueado, un bantime = 900 es 15 minutos y se usa cuando es acceso para una cuenta hosting administrado externo (por ejemplo). Ignoreip son las direcciones IP que se excluyen del control.
+
+El archivo debe quedar según lo mostrado (según el perfil del servicio) y determinar los valores por omisión:
+
+[DEFAULT]
+
+# "ignoreip" can be an IP address, a CIDR mask or a DNS host
+ignoreip = 127.0.0.1 192.XXX.XXX.1/32 192.XXX.YYY.0/24
+bantime  = 36000000
+maxretry = 3
+
+Para el servicio SSH se busca la sección SSH y se modifica ­ bajo se Sección "JAILS":
+Se habilita el servicio con "enable = true" y se sugiere un Findtime de 1 hora (findtime = 3600) que es el tiempo de la ventana en que busca los errores de conexión.
+
+[ssh]
+
+enabled = true
+port    = ssh
+filter  = sshd
+findtime = 3600
+logpath  = /var/log/auth.log
+maxretry = 3
+
+En JESSIE se reinicia con:
+
+ systemctl restart fail2ban
+
+
+
+6.4 Monitoreo e inventario de sistemas:
+
+
+6.4.1 SNMP
+
+Preeliminar: Agregar en /etc/hosts.allow
+
+snmpd : 127. 192.168.7.1 192.168.7.177
+
+Instalar:
+
+apt-get -y install snmpd
+
+Editar /etc/snmp/snmpd.conf
+
+Comentar la sgte línea;
+
+agentAddress  udp:127.0.0.1:161
+
+debe quedar así:
+
+#agentAddress  udp:127.0.0.1:161
+
+Descomentar la sgte línea:
+
+#agentAddress udp:161,udp6:[::1]:161
+
+
+Debe quedar así:
+
+agentAddress udp:161,udp6:[::1]:161
+
+
+Para el caso de sistemas con IPv6 deshabilitado deberá quedar así:
+
+agentAddress udp:161
+
+
+Incluir:
+
+rocommunity c4sch1l3 192.168.7.1/32
+rocommunity c4sch1l3 192.168.7.177/32
+
+
+Reiniciar:
+
+/etc/init.d/snmpd restart
+[ ok ] Restarting snmpd (via systemctl): snmpd.service.
+
+Abrir puertos:
+
+Probar desde otro hosts:
+
+snmpwalk -v1 -c <comunidad> <direccion_IP> 
+
+ejemplo:
+
+snmpwalk -v1 -c c4sch1l3 192.168.7.173
+
+y se deberá desplegar gran cantidad de información....
+
+
+6.4.2 NAGIOS
+
+Preliminar: Se debe agregar a /etc/hosts.allow la sgte línea:
+
+nrpe : 127. 192.168.7.104
+
+Instalar NRPE (Cliente Nagios):
+
+apt-get -y install nagios-nrpe-server nagios-plugins-contrib                
+
+Editar /etc/nagios/nrpe_local.cfg y agregar/ajustar según corresponda:
+
+allowed_hosts=127.0.0.1,192.168.7.104
+
+command[check_users]=/usr/lib/nagios/plugins/check_users -w 5 -c 10
+command[check_load]=/usr/lib/nagios/plugins/check_load -w 15,10,5 -c 30,25,20
+command[check_zombie_procs]=/usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z
+command[check_uptime]=/usr/lib/nagios/plugins/check_uptime
+command[check_total_procs]=/usr/lib/nagios/plugins/check_procs -w 150 -c 200
+command[check_disk]=/usr/lib/nagios/plugins/check_disk -w 5% -c 1%
+
+Guardar y salir, luego reiniciar nagios con:
+
+systemctl restart nagios-nrpe-server
+
+
+6.4.3 Registrar en SIEM Prelude
+
+Instalar y configurar sensor Prelude-lml
+
+apt-get -y install prelude-lml
+
+
+Cambiar la dirección IP de servidor, buscar en al archivo /etc/prelude/default/client.conf
+
+server-addr = 127.0.0.1
+
+Cambiar por:
+
+server-addr = 192.168.7.240
+
+
+Registrar Prelude-LML en Prelude-Manager
+
+Para este paso se requiere iniciar la sesion en el hosts a registrar (Host A) y en el SIEM (Host B):
+
+En terminal A (Agent):
+
+root@elendil:~# prelude-admin register prelude-lml "idmef:w admin:r" 192.168.7.240 --uid 0  --gid 0
+Generating 2048 bits RSA private key... This might take a very long time.
+[Increasing system activity will speed-up the process].
+Generation in progress... 
+
+
+You now need to start "prelude-admin" registration-server on 192.168.7.240:
+example: "prelude-admin registration-server prelude-manager"
+
+Enter the one-shot password provided on 192.168.7.240: 
+
+En Terminal B(Server):
+
+[root@elrond ~]# prelude-admin registration-server prelude-manager
+The "d09qi3k0" password will be requested by "prelude-admin register"
+in order to connect. Please remove the quotes before using it.
+
+Generating 1024 bits Diffie-Hellman key for anonymous authentication...
+Waiting for peers install request on 0.0.0.0:5553...
+Waiting for peers install request on :::5553...
+
+En terminal A (Agent) Con la password "d09qi3k0"
+
+Enter the one-shot password provided on 192.168.7.240: 
+Confirm the one-shot password provided on 192.168.7.240: 
+
+Connecting to registration server (192.168.7.240:5553)... Authentication succeeded.
+
+En terminal B se completa el registro:
+
+Connection from 192.168.7.164:39931...
+Registration request for analyzerID="509268644808355" permission="idmef:w admin:r".
+Approve registration? [y/n]: y
+192.168.7.164:39931 successfully registered.
+
+
+En terminal A se reinicia y comprueba arranque del servicio:
+ 
+root@elendil:~# systemctl restart prelude-lml
+
+root@elendil:~# systemctl status prelude-lml
+* prelude-lml.service - LSB: Start prelude-lml sensor
+   Loaded: loaded (/etc/init.d/prelude-lml)
+   Active: active (running) since Mon 2017-02-20 16:46:40 CLST; 8s ago
+  Process: 6143 ExecStop=/etc/init.d/prelude-lml stop (code=exited, status=0/SUCCESS)
+  Process: 6146 ExecStart=/etc/init.d/prelude-lml start (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/prelude-lml.service
+           `-6149 /usr/bin/prelude-lml -d -q -P /var/run/prelude-lml.pid
+
+...
+...
+Feb 20 16:46:40 elendil prelude-lml[6146]: Starting Prelude LML: prelude-lml.
+Feb 20 16:46:40 elendil prelude-lml[6146]: .
+Feb 20 16:46:40 elendil systemd[1]: Started LSB: Start prelude-lml sensor.
+
+Fin del proceso de registro.
+
+
+6.4.4 OCS Inventory
+
+Instalar mediante APT el agente ocsinventory:
+
+apt-get install ocsinventory-agent
+
+Luego Seleccione el método http si posee un servidor de inventario OCS ingresar la ruta del servidor: 
+
+https://epulpo.caschile.cl/ocsinventory
+
+Se crea la configuración en el archivo /etc/ocsinventory/ocsinventory-agent.cfg, modificar/agregar lo siguiente:
+
+server=https://epulpo.caschile.cl/ocsinventory
+logger=Stderr
+logfile=/var/log/ocsinventory-client/ocsinventory-agent.log
+
+Probar:
+
+/usr/bin/ocsinventory-agent -s https://epulpo.caschile.cl/ocsinventory --debug
+
+Y luego:
+
+cat /var/log/ocsinventory-client/ocsinventory-agent.log  | grep debug
+
+Listo el equipo ya está Inventariado.
+
+
+5. Referencias: 
+
+N/A.

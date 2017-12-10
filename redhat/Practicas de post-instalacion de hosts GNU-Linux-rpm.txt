@@ -1,0 +1,646 @@
+Prácticas de post-instalación de hosts GNU/Linux CentOS/RedHat ITS-XX
+
+Uso Confidencial
+
+Instructivo: Prácticas post-Instalación de Hosts GNU/Linux CentOS/RedHat   ITS-XX
+Modificado por: Manuel Campos T.
+Revisado por: Manuel Campos T.
+Aprobado por: xxxx
+Fecha Implantación: día/mes/año
+Revisión Nº: 00
+Fecha Creación: 16/02/2017
+
+
+
+Control de Cambios y Revisiones
+
+Revisión
+Fecha Modificación
+Aprobado por
+Comentarios / Observaciones
+00
+16/02/2017
+
+Creación del documento.
+
+
+
+Prácticas de post-instalación de hosts GNU/Linux
+
+1. Propósito:  
+
+Este documento define una serie de procedimientos para la instalación de paquetes software, configuración de los mismos y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en GNU/Linux CentOS/RedHat.
+
+2. Alcance: 
+
+Plataforma de servidores GNU/Linux para los servicios de Comercio Electrónico, Servicios Hosting y Transparencia Municipal.
+
+3. Definiciones:
+
+Bonding: Linux permite enlazar múltiples interfaces de red en un solo canal utilizando el módulo de enlace del núcleo y una interfaz de red especial denominada interfaz de enlace de canal. La vinculación de canales permite que dos o más interfaces de red actúen como una, aumentando simultáneamente el ancho de banda para balanceo de carga y proporcionando redundancia para obtener tolerancia a fallos.
+
+CentOS: Community ENTerprise Operating System, es una bifurcación a nivel binario de la distribución Linux Red Hat Enterprise Linux RHEL, compilado por voluntarios a partir del código fuente publicado por Red Hat, siendo la principal diferencia con este la remoción de todas las referencias a las marcas y logos propiedad de Red Hat.
+
+EPEL: (EPEL significa Extra Packages for Enterprise Linux) es un grupo de interés especial de Fedora que crea, mantiene y administra un conjunto de paquetes adicionales de alta calidad para Enterprise Linux, incluyendo, pero no limitado a, Red Hat Enterprise Linux (RHEL), CentOS, Scientific Linux (SL) y Oracle Linux (OL).
+
+Fail2ban: Aplicación escrita en Python para la prevención de intrusos en un sistema (HIPS), que actúa bloqueando las conexiones remotas que intentan accesos por fuerza bruta. Se distribuye bajo licencia GNU y típicamente funciona en sistemas POSIX que tengan interfaz con un sistema de control de paquetes o un firewall local (como iptables o TCP Wrapper).
+
+Fwbuilder: Es un Interfaz gráfica de usuario (GUI) para crear, configurar y administrar unos cortafuegos, soporta: iptables, Cisco PIX, NAT, entre otros.
+
+MICROCODE: Es una capa de instrucciones de nivel de hardware que implementan instrucciones de código de máquina de alto nivel. El microcode separa las instrucciones de la CPU de la electrónica subyacentes por lo que las instrucciones se pueden diseñar y alternar con mayor libertad. También facilita la construcción de las instrucciones de multi-pasos complejas, al tiempo que reduce la complejidad de los circuitos del computador. Actualmente Intel y AMD ofrecen actualizaciones a sus microcodes con la finalidad de corregir errores o mejorar el comportamientos de sus productos, ya que no es posible escribir directamente el firmware del CPU la actualización del microcode debe aplicarse en cada inicio del sistema.
+
+NAGIOS: Es un sistema de monitorización de redes ampliamente utilizado, de código abierto, que vigila los equipos (hardware) y servicios (software) que se especifiquen, alertando cuando el comportamiento de los mismos no sea el deseado.
+
+RNG-Tools: Es un conjunto de herramientas relacionadas con la generación de números aleatorios en el kernel. 
+
+OCS Inventory: Es un software libre que permite a los Administradores de TI gestionar el inventario de sus activos de TI. OCS-NG recopila información sobre el hardware y software de equipos que hay en la red que ejecutan el programa de cliente OCS ("agente OCS de inventario"). OCS puede utilizarse para visualizar el inventario a través de una interfaz web. Además, OCS comprende la posibilidad de implementación de aplicaciones en los equipos de acuerdo a criterios de búsqueda.
+
+Repositorios: Ver RPM Fusion.
+
+RPM Fusion: Es un repositorio de software, que proporciona paquetes complementarios para las distribución basadas en paquetes RPM principalmente para Fedora, CentOS y RedHat. RPM Fusion Nació como una fusión de los antiguos repositorios Livna, Dribble y Freshrpms. Distribuyeron el software que Fedora/RedHat no quiere, ya sea porque no cumple con la definición de software libre de Fedora, o porque la distribución de ese software puede violar la legislación estadounidense.
+
+SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para acceder a máquinas remotas a través de una red. Permite manejar por completo la computadora mediante un intérprete de comandos, y también puede redirigir el tráfico de X para poder ejecutar programas gráficos si tenemos ejecutando un Servidor X (en sistemas Unix y Windows). Además de la conexión a otros dispositivos, SSH permite copiar datos de forma segura (tanto archivos o directorios completos como simular sesiones FTP cifradas) y pasar los datos de cualquier otra aplicación por un canal seguro tunelizado mediante SSH.
+
+TCP Wrapper: Es un sistema de red ACL y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
+
+
+4. Responsables: 
+
+Integrantes de Servicio Técnico y SGSI.
+
+
+5. Referencias: 
+
+N/A.
+
+
+6. Descripción del Proceso - Contenidos:
+
+6.1 Actualización y configuración de los sistemas:
+	6.1.1 Configuración de repositorios
+		6.1.1.1 Sistemas Centos
+		6.1.1.2 Sistemas RedHat
+	6.1.2 Actualizar Sistema
+	6.1.3 Instalar Pqtes. básicos
+	6.1.4 Sincronizar reloj de sistema mediante NTP
+
+6.2 Optimizaciones:
+	6.2.1 Disco y Filesystems
+	6.2.2 RNG-Tools
+	6.2.3 Actualización del firmware microcode de la CPU
+	6.2.4 Bonding
+	6.2.5 Deshabilitar IPv6
+
+6.3 Instalar y securizar servicios:
+	6.3.1 Servicio SSH
+	6.3.2 Tcp Wrappers
+	6.3.3 Portmap
+	6.3.4 Fail2ban
+	6.3.5 FwBuilder
+
+6.4 Monitoreo e inventario de sistemas:
+	6.4.1 SNMP
+	6.4.2 Instalar NRPE (Nagios)
+	6.4.3 OCS Inventory
+
+
+6.1 Actualización y configuración de los sistemas:
+
+6.1.1 Configuración de repositorios:
+
+6.1.1.1 Sistemas Centos:
+
+Se recomienda no intentar agregar mas repositorios de los indicados aquí para evitar posibles conflictos de versiones de paquetes que impidan actualizar el sistema o instalar nuevos pqtes.
+
+Centos 6 Instalar Repositorios RPMFUSION y EPEL
+
+yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-6.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-6.noarch.rpm
+
+
+6.1.2 Actualizar Sistema:
+
+yum -y update
+
+
+6.1.3 Instalar paquetes básicos:
+
+Se recomienda instalar los siguientes paquetes para poder configurar adecuadamente el sistema instalado y poseer herramientas de diagnóstico:
+
+bind-utils
+iproute
+vconfig
+fail2ban
+bridge-utils
+nano
+man
+wget
+
+
+yum -y install bind-utils iproute vconfig fail2ban bridge-utils nano man wget
+
+
+
+6.1.4 Sincronizar reloj de sistema mediante NTP
+
+yum -y install ntp ntpdate
+
+Comentar en /etc/ntp.conf los servidores ntp y agregue/modifique:
+
+###server 0.centos.pool.ntp.org iburst
+###server 1.centos.pool.ntp.org iburst
+###server 2.centos.pool.ntp.org iburst
+###server 3.centos.pool.ntp.org iburst
+server 192.168.7.115 iburst
+...
+...
+
+Guardar y activar:
+
+# chkconfig ntpd on
+
+Reiniciar:
+
+# service ntpd restart
+Apagando ntpd:                                             [FALLÓ]
+Iniciando ntpd:                                            [  OK  ]
+
+
+Verificar:
+
+# ntpq -p
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+*192.168.7.115   LOCAL(0)        11 u   54   64    3    0.294   -5.398   0.157
+
+
+# ntpstat
+synchronised to NTP server (192.168.7.115) at stratum 12 
+   time correct to within 954 ms
+   polling server every 64 s
+
+# ntptime
+ntp_gettime() returns code 0 (OK)
+  time dcbd9f17.52aec054  Wed, May 10 2017 11:15:51.322, (.322979755),
+  maximum error 966057 us, estimated error 1911 us, TAI offset 0
+ntp_adjtime() returns code 0 (OK)
+  modes 0x0 (),
+  offset -4920.830 us, frequency -0.036 ppm, interval 1 s,
+  maximum error 966057 us, estimated error 1911 us,
+  status 0x2001 (PLL,NANO),
+  time constant 6, precision 0.001 us, tolerance 500 ppm,
+
+
+Actualización manual, ejecute:
+
+# ntpdate -u 192.168.7.115
+10 May 11:19:17 ntpdate[1640]: adjust time server 192.168.7.115 offset -0.005190 sec
+ 
+
+
+6.2 Optimizaciones:
+
+6.2.1 Discos y Filesystems
+
+Para el caso de los servidores con mucha carga de proceso y acceso a disco, en especial cuando son servidores virtualizados, se aconseja montar las particiones con las opciones noatime y nodiratime para aumentar el rendimiento en escritura, estas opciones evitan que el sistema actualice (escriba en disco) la hora del acceso en la meta información de archivos, reduciendo la escritura y mejorando el performance.
+Editar el archivo /etc/fstab y modificar las opciones de montaje de las particiones con filesystems ext2, ext3 y ext4, no funciona en particiones swap, ejemplo:
+
+/dev/mapper/VolGroup-lv_root /                       ext4    defaults        1 1
+UUID=a718963a-8e13-413f-815f-76e66b1658ec /boot      ext4    defaults        1 2
+/dev/mapper/VolGroup-lv_home /home                   ext4    defaults        1 2
+
+
+Debe quedar así:
+
+/dev/mapper/VolGroup-lv_root /                       ext4    noatime,nodiratime,defaults        1 1
+UUID=a718963a-8e13-413f-815f-76e66b1658ec /boot      ext4    defaults        1 2
+/dev/mapper/VolGroup-lv_home /home                   ext4    noatime,nodiratime,defaults        1 2
+
+
+Luego es posible aplicar el cambio sin reiniciar el host:
+
+mount -o remount,noatime,nodiratime,defaults /
+mount -o remount,noatime,nodiratime,defaults /home
+
+
+6.2.2 RNG
+
+Verifcar que la CPU soporta la instruccion rdran:
+	
+cat /proc/cpuinfo | grep -i rdrand | echo $?
+ 
+El resultado debe ser 0 si la CPU soporta la instruccion rdran.
+
+
+Verificar el valor actual de Entropía.
+
+cat /proc/sys/kernel/random/entropy_avail
+
+El resultado debe estar en el rango 3000 - 3900.
+
+
+
+nano /etc/sysctl.conf
+
+# Agrega soporte intel rdrand para suministrar entropía por hardware.
+kernel.random.read_wakeup_threshold = 2048
+kernel.random.write_wakeup_threshold = 3072
+
+
+Activar cambios:
+
+sysctl -p
+
+
+Instalar RNG-TOOLS
+
+yum -y install rng-tools
+
+Editar /etc/sysconfig/rngd y agregar/modificar:
+
+# Add extra options here
+EXTRAOPTIONS="--rng-device=drng --no-tpm=1"
+
+
+Verificar nivel de entropía:
+
+# cat /proc/sys/kernel/random/entropy_avail
+4021
+
+
+6.2.3 Actualización del firmware microcode de la CPU:
+
+Lo siguiente solo en máquinas físicas.
+
+Para Procesadores Intel IA32/IA64 ejecutar:
+
+	yum -y install microcode_ctl
+
+
+
+???6.2.4 Bonding
+
+Instalar:
+
+apt-get -y install ifenslave
+
+
+Editar /etc/modules y agregar bonding
+
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+# Parameters can be specified after the module name.
+
+loop
+bonding
+
+
+Crear /etc/modprobe.d/bonding.conf con el sgte contenido:
+
+# Algoritmo RR - Round-Robin
+options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=1
+
+o
+
+# 802.3ad en switch que lo soporten
+options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1
+
+
+Crear archivo con configuración en un paso:
+
+echo "options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=1" > /etc/modprobe.d/bonding.conf
+
+
+Modificar /etc/network/interfaces
+
+comentar la configuración del la interfaz primaria en #allow-hotplug eth0 y reemplazar por (ejemplo para un bonding de tres Nic's):
+
+auto bond0
+iface bond0 inet static
+        ###hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.7.160
+        netmask 255.255.255.0
+        network 192.168.7.0
+        broadcast 192.168.7.255
+	gateway 192.168.7.131
+        up /sbin/ifenslave bond0 eth0 eth1 eth2
+        down /sbin/ifenslave -d bond0 eth0 eth1 eth2
+
+
+Presto!!
+Reboot an enjoy
+
+???6.2.5 Deshabilitar IPv6
+
+
+Agregar IPV6_DISABLE=1 a la variable GRUB_CMDLINE_LINUX en /etc/default/grub y luego ejecutar:
+
+# update-grub 
+
+y reboot. 
+
+
+o como alternativa editar /etc/sysctl.conf y agregar estos parámetros al kernel, deberá asegurse de agregar otras interfaces de red existentes en la que busca deshabilitar IPv6.
+
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv6.conf.eth0.disable_ipv6 = 1
+
+Luego de editar sysctl.conf, se debe ejecutar "sysctl -p" para activar los cambios o reiniciar el sistema. 
+
+# sysctl -p
+
+root@elendil:~# sysctl -p
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv6.conf.eth0.disable_ipv6 = 1
+net.ipv6.conf.eth1.disable_ipv6 = 1
+net.ipv6.conf.vlan103.disable_ipv6 = 1
+
+
+???6.3 Securizar servicios:
+
+6.3.1 Servicio SSH
+
+No permitir acceso a la cuenta “root”, solo acceso a cuentas no privilegiadas. Editar el archivo "/etc/ssh/sshd_config" y cambiar la opción “PermitRoolLogin yes” a “no”:
+
+PermitRootLogin no
+
+Ocultar Debian Banner (Versión de SO GNU/Debian):
+
+Editar "/etc/ssh/sshd_config" y agregar "DebianBanner no" después de la línea "#Banner /etc/issue.net"
+
+nano /etc/ssh/sshd_config
+
+#Banner /etc/issue.net
+DebianBanner no
+
+Reiniciar servicio:
+
+systemctl restart ssh.service
+
+
+6.3.2 Tcp Wrappers
+
+Se debe primero editar /etc/hosts.allow y como mínimo asegurar las conexiones por ssh desde hosts de servicio técnico y luego los accesos para cada servicio según lo requerido:
+
+nano /etc/hosts.allow
+
+sshd : 127. 192.168.7.1 192.168.7.104 192.168.7.55 190.98.195.11
+nrpe : 127. 192.168.7.104
+snmpd : 127. 192.168.7.1 192.168.7.104
+
+Lo anterior permite: 
+
+Conexiones por SSH desde hosts 192.168.7.1, monitoreo puerto SSH desde NAGIOS, ip de cliente VPN 192.168.7.55 y desde la ip de salida red CAS proveedor GTD.
+Conexiones monitor NAGIOS sólo desde localhost 127. Y monitor Nagios (Net-Monitor) ip 192.192.168.7.104 y 
+Monitoreo SNMP desde NAGIOS e ip 192.168.7.1
+
+Finalmente, editar /etc/hosts.deny y agregar:
+
+ALL : ALL
+
+Nota: No se requiere reiniciar los servicios, los cambios se aplican inmediatamente.
+
+
+???6.3.3 Portmap
+
+Desactivar en SQUEEZE y WHEEZY:
+
+Desactivar portmap para que no “escuche” conexiones externas, editar /etc/default/portmap y editar la línea OPTIONS:
+
+OPTIONS="-i 127.0.0.1"
+
+Luego reiniciar portmap:
+
+/etc/init.d/portmap restart
+
+
+Desabilitar portmap en JESSIE:
+
+systemctl stop rpcbind.service
+
+systemctl disable rpcbind.service
+Synchronizing state for rpcbind.service with sysvinit using update-rc.d...
+Executing /usr/sbin/update-rc.d rpcbind defaults
+Executing /usr/sbin/update-rc.d rpcbind disable
+insserv: warning: current start runlevel(s) (empty) of script `rpcbind' overrides LSB defaults (S).
+insserv: warning: current stop runlevel(s) (0 1 6 S) of script `rpcbind' overrides LSB defaults (0 1 6).
+
+
+???6.3.4 Fail2ban
+
+Par los hosts expuestos a Internet editar /etc/fail2ban/jail.conf y en la sgte. sección definir según lo que corresponda:
+Un valor de bantime = 36000000 significa 416.66 días bloqueado, un bantime = 900 es 15 minutos y se usa cuando es acceso para una cuenta hosting administrado externo (por ejemplo). Ignoreip son las direcciones IP que se excluyen del control.
+
+El archivo debe quedar según lo mostrado (según el perfil del servicio) y determinar los valores por omisión:
+
+[DEFAULT]
+
+# "ignoreip" can be an IP address, a CIDR mask or a DNS host
+ignoreip = 127.0.0.1 192.XXX.XXX.1/32 192.XXX.YYY.0/24
+bantime  = 36000000
+maxretry = 3
+
+Para el servicio SSH se busca la sección SSH y se modifica ­ bajo se Sección "JAILS":
+Se habilita el servicio con "enable = true" y se sugiere un Findtime de 1 hora (findtime = 3600) que es el tiempo de la ventana en que busca los errores de conexión.
+
+[ssh]
+
+enabled = true
+port    = ssh
+filter  = sshd
+findtime = 3600
+logpath  = /var/log/auth.log
+maxretry = 3
+
+Se reinicia el servicio en SQUEEZY y WHEEZY con:
+
+ /etc/init.d/fail2ban restart
+
+En JESSIE se reinicia con:
+
+ systemctl restart fail2ban
+
+
+???6.3.5 FwBuilder:
+
+No se instala nada en los hosts a controlar por FwBuilder, solo se debe asegurar que estén instalados los Pqtes básicos.
+
+
+???6.4 Monitoreo e inventario de sistemas:
+
+
+6.4.1 SNMP
+
+Preeliminar: Agregar en /etc/hosts.allow
+
+snmpd : 127. 192.168.7.1 192.168.7.104
+
+Instalar:
+
+apt-get -y install snmpd
+
+Editar /etc/snmp/snmpd.conf
+
+agentAddress udp:161,udp6:[::1]:161
+
+# Listas de control de acceso (ACL)
+## sec.name source community (alias contraseña)
+com2sec local 127.0.0.1/32 c4sch1l3.0586
+com2sec MonitorRedLocal 192.168.7.0/24 c4sch1l3.0586
+
+#Se asigna ACL al grupo de lectura escritura
+group GrupoRW v1 local
+group GrupoRW v2c local
+group GrupoRW usm local
+
+#Se asigna ACL al grupo de solo lectura
+group GrupoRO v1 MonitorRedLocal
+group GrupoRO v2c MonitorRedLocal
+group GrupoRO usm MonitorRedLocal
+
+# Ramas MIB que se permiten ver
+## name   incl/excl subtree   mask(optional)
+view all  included  .1        80
+
+# Establece permisos de lectura y escritura
+## group         context  sec.model sec.level prefix read   write notif
+access GrupoRO ""	any	  noauth    exact  all    none  none
+access GrupoRW ""	any	  noauth    exact  all    all   all
+
+# Información de Contacto del Sistema
+syslocation Servidor Linux en elrond.caschile.local
+syscontact Administrador (infraestructura-ti@caschile.cl)
+
+dontLogTCPWrappersConnects yes
+
+
+
+Activar:
+
+Ejecute lo siguiente para activar el servicio en todos los niveles de ejecución:
+
+chkconfig snmpd on
+
+
+Reiniciar:
+
+service snmpd restart
+
+
+
+Probar desde otro hosts:
+
+snmpwalk -v1 -c <comunidad> <direccion_IP> 
+
+
+ejemplo:
+
+snmpwalk -v1 -c c4sch1l3.0586 192.168.7.173
+
+y se deberá desplegar gran cantidad de información....
+
+
+???6.4.2 NAGIOS
+
+Preliminar: Se debe agregar a /etc/hosts.allow la sgte línea:
+
+nrpe : 127. 192.168.7.104
+
+Instalar NRPE (Cliente Nagios):
+
+apt-get -y install nagios-nrpe-server
+
+
+yum install nagios-plugins-uptime
+
+                   
+
+Editar /etc/nagios/nrpe_local.cfg y agregar/ajustar según corresponda:
+
+allowed_hosts=127.0.0.1,192.168.7.104
+
+command[check_users]=/usr/lib/nagios/plugins/check_users -w 5 -c 10
+command[check_load]=/usr/lib/nagios/plugins/check_load -w 15,10,5 -c 30,25,20
+command[check_zombie_procs]=/usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z
+command[check_total_procs]=/usr/lib/nagios/plugins/check_procs -w 150 -c 200
+command[check_disk]=/usr/lib/nagios/plugins/check_disk -w 5% -c 1%
+command[check_uptime]=/usr/lib64/nagios/plugins/check_uptime
+
+
+Guardar y salir, luego reiniciar nagios con:
+
+/etc/init.d/nagios-nrpe-server restart
+
+En JESSIE reiniciar así
+
+systemctl restart nagios-nrpe-server
+
+
+6.4.3 OCS Inventory
+
+Instalar repositorios REMI Enterprise Linux (RHEL, CentOS) :
+
+cd /etc/yum.repos.d
+
+wget https://rpms.remirepo.net/enterprise/remi.repo
+
+
+Importar GPG-KEY:
+
+# rpm --import https://rpms.remirepo.net/RPM-GPG-KEY-remi
+# rpm --import https://rpms.remirepo.net/RPM-GPG-KEY-remi2017
+
+
+Instalar OCS Inventory Agent:
+
+yum --enablerepo=remi -y install ocsinventory-agent
+
+
+Modificar/agregar lo siguiente en el archivo /etc/ocsinventory/ocsinventory-agent.cfg:
+
+
+# server = your.ocsserver.name
+local = /var/lib/ocsinventory-agent
+
+Modificar a:
+
+server = https://epulpo.caschile.cl/ocsinventory
+# local = /var/lib/ocsinventory-agent
+
+Forzar el inventario:
+
+Predeterminadamente, el script "ocsinventory-agent" fué agregado a "cron.hourly’ y enviará el inventario al OCS server cada hora.
+
+Se recomienda mover el script a "cron.daily", para enviar el inventario cada día. En la mayoría de los casos basta.
+
+# mv /etc/cron.hourly/ocsinventory-agent /etc/cron.daily/
+
+Probar:
+
+/usr/sbin/ocsinventory-agent -s https://epulpo.caschile.cl/ocsinventory --debug
+
+
+Y luego:
+
+cat /var/log/ocsinventory-agent/ocsinventory-agent.log  | grep debug
+
+
+Listo el equipo ya está Inventariado.
+
+
+7 Registros de Calidad:
+
+N/A
+
+
+5 Anexos:
+
+- Buenas Prácticas a utilizar en Servidores DSI-07
+- Instalación y configuración de Bacula Client en Windows y Linux _VER_1.0
+
+
