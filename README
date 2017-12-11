@@ -1,8 +1,8 @@
-Procedimientos post-instalación para hosts/servidores con GNU/Linux basados en Debian y RedHat
+Post-instalación para hosts/servidores con GNU/Linux basados en Debian y RedHat
 
 1. Propósito:  
 
-Los documentos definen una serie de procedimientos para la configuración de repositorios, gestión de paquetes software, configuración de los sistemas y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en distibuciones GNU/Linux.
+Se definen una serie de procedimientos para la configuración de repositorios, gestión de paquetes software, configuración de los sistemas y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en distibuciones GNU/Linux.
 
 
 2. Definiciones:
@@ -37,6 +37,8 @@ SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para
 
 TCP Wrapper: Es un sistema de ACL en red y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
 
+
+3. Referencias
 
 
 
