@@ -4,31 +4,7 @@ Prácticas de post-instalación de hosts GNU/Linux
 
 Este documento define una serie de procedimientos para la instalación de paquetes software, configuración de los mismos y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en GNU/Linux RedHat/CentOS
 
-3. Definiciones:
-
-Bonding: Linux permite enlazar múltiples interfaces de red en un solo canal utilizando el módulo de enlace del núcleo y una interfaz de red especial denominada interfaz de enlace de canal. La vinculación de canales permite que dos o más interfaces de red actúen como una, aumentando simultáneamente el ancho de banda para balanceo de carga y proporcionando redundancia para obtener tolerancia a fallos.
-
-CentOS: Community ENTerprise Operating System, es una bifurcación a nivel binario de la distribución Linux Red Hat Enterprise Linux RHEL, compilado por voluntarios a partir del código fuente publicado por Red Hat, siendo la principal diferencia con este la remoción de todas las referencias a las marcas y logos propiedad de Red Hat.
-
-EPEL: (EPEL significa Extra Packages for Enterprise Linux) es un grupo de interés especial de Fedora que crea, mantiene y administra un conjunto de paquetes adicionales de alta calidad para Enterprise Linux, incluyendo, pero no limitado a, Red Hat Enterprise Linux (RHEL), CentOS, Scientific Linux (SL) y Oracle Linux (OL).
-
-Fail2ban: Aplicación escrita en Python para la prevención de intrusos en un sistema (HIPS), que actúa bloqueando las conexiones remotas que intentan accesos por fuerza bruta. Se distribuye bajo licencia GNU y típicamente funciona en sistemas POSIX que tengan interfaz con un sistema de control de paquetes o un firewall local (como iptables o TCP Wrapper).
-
-MICROCODE: Es una capa de instrucciones de nivel de hardware que implementan instrucciones de código de máquina de alto nivel. El microcode separa las instrucciones de la CPU de la electrónica subyacentes por lo que las instrucciones se pueden diseñar y alternar con mayor libertad. También facilita la construcción de las instrucciones de multi-pasos complejas, al tiempo que reduce la complejidad de los circuitos del computador. Actualmente Intel y AMD ofrecen actualizaciones a sus microcodes con la finalidad de corregir errores o mejorar el comportamientos de sus productos, ya que no es posible escribir directamente el firmware del CPU la actualización del microcode debe aplicarse en cada inicio del sistema.
-
-NAGIOS: Es un sistema de monitorización de redes ampliamente utilizado, de código abierto, que vigila los equipos (hardware) y servicios (software) que se especifiquen, alertando cuando el comportamiento de los mismos no sea el deseado.
-
-RNG-Tools: Es un conjunto de herramientas relacionadas con la generación de números aleatorios en el kernel. 
-
-OCS Inventory: Es un software libre que permite a los Administradores de TI gestionar el inventario de sus activos de TI. OCS-NG recopila información sobre el hardware y software de equipos que hay en la red que ejecutan el programa de cliente OCS ("agente OCS de inventario"). OCS puede utilizarse para visualizar el inventario a través de una interfaz web. Además, OCS comprende la posibilidad de implementación de aplicaciones en los equipos de acuerdo a criterios de búsqueda.
-
-Repositorios: Ver RPM Fusion.
-
-RPM Fusion: Es un repositorio de software, que proporciona paquetes complementarios para las distribución basadas en paquetes RPM principalmente para Fedora, CentOS y RedHat. RPM Fusion Nació como una fusión de los antiguos repositorios Livna, Dribble y Freshrpms. Distribuyeron el software que Fedora/RedHat no quiere, ya sea porque no cumple con la definición de software libre de Fedora, o porque la distribución de ese software puede violar la legislación estadounidense.
-
-SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para acceder a máquinas remotas a través de una red. Permite manejar por completo la computadora mediante un intérprete de comandos, y también puede redirigir el tráfico de X para poder ejecutar programas gráficos si tenemos ejecutando un Servidor X (en sistemas Unix y Windows). Además de la conexión a otros dispositivos, SSH permite copiar datos de forma segura (tanto archivos o directorios completos como simular sesiones FTP cifradas) y pasar los datos de cualquier otra aplicación por un canal seguro tunelizado mediante SSH.
-
-TCP Wrapper: Es un sistema de red ACL y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
+3. Definiciones: 
 
 
 6. Descripción del Proceso - Contenidos:

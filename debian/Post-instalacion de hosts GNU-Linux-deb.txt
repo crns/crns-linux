@@ -1,67 +1,39 @@
 
 Post-instalación de hosts GNU/Linux Debian
 
-1. Propósito:  
+Contenidos:
 
-Este documento define una serie de procedimientos para la instalación de paquetes software, configuración de los mismos y optimizaciones con el objetivo de obtener una base segura en la implementación de servidores basados en GNU/Linux Debian.
-
-
-2. Definiciones:
-
-Bonding: Linux permite enlazar múltiples interfaces de red en un solo canal utilizando el módulo de enlace del núcleo y una interfaz de red especial denominada interfaz de enlace de canal. La vinculación de canales permite que dos o más interfaces de red actúen como una, aumentando simultáneamente el ancho de banda para balanceo de carga y proporcionando redundancia para obtener tolerancia a fallos.
-
-Debian: Es una organización formada totalmente por voluntarios dedicada a desarrollar software libre y promocionar los ideales de la comunidad del software libre.
-
-Debian GNU/Linux: Es un sistema operativo y una distribución de software libre, desarrollado por miles de voluntarios alrededor del mundo, que colaboran a través de Internet. Los nombres clave de las distintas versiones de la distribución corresponden a personajes de la Película Toy Story de Pixar. La versión estable a la fecha es Debian 9 STRETCH, las anteriores versiones estables son Debian 8 JESSIE, Debian 7 WHEEZY y Debian 6 SQUEEZE.
-
-Fail2ban: Aplicación escrita en Python para la prevención de intrusos en un sistema (HIPS), que actúa bloqueando las conexiones remotas que intentan accesos por fuerza bruta. Se distribuye bajo licencia GNU y típicamente funciona en sistemas POSIX que tengan interfaz con un sistema de control de paquetes o un firewall local (como iptables o TCP Wrapper).
-
-MICROCODE: Es una capa de instrucciones a nivel de hardware que implementa instrucciones de código de máquina de alto nivel. El microcode separa las instrucciones de la CPU de la electrónica subyacentes por lo que las instrucciones se pueden diseñar y alternar con mayor libertad. También facilita la construcción de las instrucciones de multi-pasos complejas, al tiempo que reduce la complejidad de los circuitos del computador. Actualmente Intel y AMD ofrecen actualizaciones a sus microcodes con la finalidad de corregir errores o mejorar el comportamientos de sus productos, ya que no es posible escribir directamente el firmware del CPU la actualización del microcode debe aplicarse en cada inicio del sistema.
-
-NAGIOS: Es un sistema de monitorización de redes ampliamente utilizado, de código abierto, que vigila los equipos (hardware) y servicios (software) que se especifiquen, alertando cuando el comportamiento de los mismos no sea el deseado.
-
-RNG-Tools: Es un conjunto de herramientas relacionadas con la generación de números aleatorios en el kernel. 
-
-OCS Inventory: Es un software libre que permite a los Administradores de TI gestionar el inventario de sus activos de TI. OCS-NG recopila información sobre el hardware y software de equipos que hay en la red que ejecutan el programa de cliente OCS ("agente OCS de inventario"). OCS puede utilizarse para visualizar el inventario a través de una interfaz web. Además, OCS comprende la posibilidad de implementación de aplicaciones en los equipos de acuerdo a criterios de búsqueda.
-
-Repositorios: El repositorio es a todos los efectos un archivo ordenado donde son almacenados los paquetes Debian (sean estos paquetes binarios o fuentes) en modo bien organizado, con una estructura bien definida y constantemente actualizados y disponibles mediante servidores disponibles en todo el mundo
-
-SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para acceder a máquinas remotas a través de una red. Permite manejar por completo la computadora mediante un intérprete de comandos, y también puede redirigir el tráfico de X para poder ejecutar programas gráficos si tenemos ejecutando un Servidor X (en sistemas Unix y Windows). Además de la conexión a otros dispositivos, SSH permite copiar datos de forma segura (tanto archivos o directorios completos como simular sesiones FTP cifradas) y pasar los datos de cualquier otra aplicación por un canal seguro tunelizado mediante SSH.
-
-TCP Wrapper: Es un sistema de ACL en red y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
-
-
-3. Descripción del Proceso - Contenidos:
-
-3.1 Actualización y configuración de los sistemas:
+1 Repositorios software y actualización de sistemas:
 	3.1.1 Configuración de repositorios
 	3.1.2 Actualizar Sistema
 	3.1.3 Instalar Pqtes. básicos
 
-3.2 Configuración de los sistemas:
+2 Configuración de los sistemas:
+	3.1.3 Instalar Pqtes. básicos
+	3.1.3 Configurar Zona horaria
 	3.2.1 Sincronizar reloj de sistema mediante NTP
 
-3.3 Optimizaciones:
+3 Optimizaciones:
 	3.3.1 Disco y Filesystems
 	3.3.2 RNG-Tools
 	3.3.3 Actualización del firmware microcode de la CPU
 	3.3.4 Bonding
 	3.3.5 Deshabilitar IPv6
 
-3.4 Instalar y securizar servicios:
+4 Instalar y securizar servicios:
 	3.4.1 Servicio SSH
 	3.4.2 Tcp Wrappers
 	3.4.3 Portmap
 	3.4.4 Fail2ban
-	3.4.5 FwBuilder
 
-3.5 Monitoreo e inventario de sistemas:
+5 Monitoreo e inventario de sistemas:
 	3.5.1 SNMP
 	3.5.2 Instalar NRPE (Nagios)
 	3.5.3 Registrar en SIEM Prelude
 	3.5.4 OCS Inventory
 
-6.1 Actualización y configuración de los sistemas:
+1 Repositorios software y actualización de sistemas:
+
 
 6.1.1 Configuración de repositorios:
 
@@ -167,11 +139,11 @@ El archivo de configuración de systemd-timesyncd es /etc/systemd/timesyncd.conf
 #Servers=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
 
 
-Para agregar servidores de tiempo se agrega al final la línea "Servers=192.168.7.115", ejemplo:
+Para agregar servidores de tiempo se agrega al final la línea "Servers=ntp.shoa.cl", ejemplo:
 
 [Time]
 #Servers=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
-Servers=192.168.7.115
+Servers=ntp.shoa.cl
 
 Guardar y activar:
 
@@ -370,11 +342,11 @@ comentar la configuración del la interfaz primaria en #allow-hotplug eth0 y ree
 auto bond0
 iface bond0 inet static
         ###hwaddress ether 00:19:DB:C2:3D:3C
-        address 192.168.7.160
+        address 192.168.0.160
         netmask 255.255.255.0
-        network 192.168.7.0
-        broadcast 192.168.7.255
-	gateway 192.168.7.131
+        network 192.168.0.0
+        broadcast 192.168.0.255
+	gateway 192.168.0.1
         up /sbin/ifenslave bond0 eth0 eth1 eth2
         down /sbin/ifenslave -d bond0 eth0 eth1 eth2
 
@@ -443,15 +415,15 @@ Se debe primero editar /etc/hosts.allow y como mínimo asegurar las conexiones p
 
 nano /etc/hosts.allow
 
-sshd : 127. 192.168.7.1 192.168.7.104 192.168.7.55 190.98.195.11
-nrpe : 127. 192.168.7.104
-snmpd : 127. 192.168.7.1 192.168.7.104
+sshd : 127. 192.168.0.1 192.168.0.14 192.168.0.22
+nrpe : 127. 192.168.0.14
+snmpd : 127. 192.168.0.1 192.168.0.14
 
 Lo anterior permite: 
 
-Conexiones por SSH desde hosts 192.168.7.1, monitoreo puerto SSH desde NAGIOS, ip de cliente VPN 192.168.7.55 y desde la ip de salida red CAS proveedor GTD.
-Conexiones monitor NAGIOS sólo desde localhost 127. Y monitor Nagios (Net-Monitor) ip 192.192.168.7.104 y 
-Monitoreo SNMP desde NAGIOS e ip 192.168.7.1
+Conexiones por SSH desde hosts 192.168.0.1 y 192.168.0.22
+NRPE Conexiones sólo desde localhost 127. y servidor Nagios ip 192.192.168.0.14 
+Monitoreo SNMP desde ip 192.168.0.1
 
 Finalmente, editar /etc/hosts.deny y agregar:
 
@@ -462,7 +434,7 @@ Nota: No se requiere reiniciar los servicios, los cambios se aplican inmediatame
 
 6.3.3 Portmap
 
-Desabilitar portmap en JESSIE:
+Desabilitar portmap en STRETCH:
 
 systemctl stop rpcbind.service
 
@@ -546,8 +518,8 @@ agentAddress udp:161
 
 Incluir:
 
-rocommunity c4sch1l3 192.168.7.1/32
-rocommunity c4sch1l3 192.168.7.177/32
+rocommunity crns 192.168.0.1/32
+rocommunity crns 192.168.0.135/32
 
 
 Reiniciar:
@@ -682,17 +654,17 @@ apt-get install ocsinventory-agent
 
 Luego Seleccione el método http si posee un servidor de inventario OCS ingresar la ruta del servidor: 
 
-https://epulpo.caschile.cl/ocsinventory
+https://host.dominio.topdomain/ocsinventory
 
 Se crea la configuración en el archivo /etc/ocsinventory/ocsinventory-agent.cfg, modificar/agregar lo siguiente:
 
-server=https://epulpo.caschile.cl/ocsinventory
+server=https://host.dominio.topdomain/ocsinventory
 logger=Stderr
 logfile=/var/log/ocsinventory-client/ocsinventory-agent.log
 
 Probar:
 
-/usr/bin/ocsinventory-agent -s https://epulpo.caschile.cl/ocsinventory --debug
+/usr/bin/ocsinventory-agent -s https://host.dominio.topdomain/ocsinventory --debug
 
 Y luego:
 
