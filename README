@@ -38,20 +38,6 @@ SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para
 TCP Wrapper: Es un sistema de ACL en red y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD. 
 
 
------------------
-
-
-
-
-
-
-
-
-
-SSH: Es el nombre de un protocolo y del programa que lo implementa, y sirve para acceder a máquinas remotas a través de una red. Permite manejar por completo la computadora mediante un intérprete de comandos, y también puede redirigir el tráfico de X para poder ejecutar programas gráficos si tenemos ejecutando un Servidor X (en sistemas Unix y Windows). Además de la conexión a otros dispositivos, SSH permite copiar datos de forma segura (tanto archivos o directorios completos como simular sesiones FTP cifradas) y pasar los datos de cualquier otra aplicación por un canal seguro tunelizado mediante SSH.
-
-TCP Wrapper: Es un sistema de red ACL y que se usa para filtrar el acceso de red a servicios de protocolos de Internet que corren en sistemas operativos (tipo UNIX), como Linux o BSD.
-
 
 
 
