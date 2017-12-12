@@ -1,47 +1,45 @@
 
-Post-instalación de hosts GNU/Linux Debian
+Post-instalación de hosts GNU/Linux Debian 9 STRETCH
 
 Contenidos:
 
 1 Repositorios software y actualización de sistemas:
-	3.1.1 Configuración de repositorios
-	3.1.2 Actualizar Sistema
-	3.1.3 Instalar Pqtes. básicos
+	1.1 Configuración de repositorios
+	1.2 Actualizar Sistema
 
 2 Configuración de los sistemas:
-	3.1.3 Instalar Pqtes. básicos
-	3.1.3 Configurar Zona horaria
-	3.2.1 Sincronizar reloj de sistema mediante NTP
+	2.1 Instalar Pqtes. básicos
+	2.2 Configurar Zona horaria
+	2.3 Sincronizar reloj de sistema mediante NTP
 
 3 Optimizaciones:
-	3.3.1 Disco y Filesystems
-	3.3.2 RNG-Tools
-	3.3.3 Actualización del firmware microcode de la CPU
-	3.3.4 Bonding
-	3.3.5 Deshabilitar IPv6
+	3.1 Disco y Filesystems
+	3.2 RNG-Tools
+	3.3 Actualización del firmware microcode de la CPU
+	3.4 Bonding
+	3.5 Deshabilitar IPv6
 
 4 Instalar y securizar servicios:
-	3.4.1 Servicio SSH
-	3.4.2 Tcp Wrappers
-	3.4.3 Portmap
-	3.4.4 Fail2ban
+	4.1 Servicio SSH
+	4.2 Tcp Wrappers
+	4.3 Portmap
+	4.4 Fail2ban
 
 5 Monitoreo e inventario de sistemas:
-	3.5.1 SNMP
-	3.5.2 Instalar NRPE (Nagios)
-	3.5.3 Registrar en SIEM Prelude
-	3.5.4 OCS Inventory
+	5.1 SNMP
+	5.2 Instalar NRPE (Nagios)
+	5.3 Registrar en SIEM Prelude
+	5.4 OCS Inventory
+
 
 1 Repositorios software y actualización de sistemas:
 
 
-6.1.1 Configuración de repositorios:
+1.1 Configuración de repositorios:
 
 
-El archivo /etc/apt/sources.list deberá contener los contenidos indicados según la distribución GNU/Debian y versión de S.O. utilizada:
+Editar el archivo /etc/apt/sources.list, deberá contener sólo las siguientes lineas:
 
-
-Para GNU/Debian 9.X (STRETCH):
 
 deb http://security.debian.org/ stretch/updates main contrib non-free
 deb-src http://security.debian.org/ stretch/updates main contrib non-free
@@ -53,11 +51,14 @@ deb http://ftp.cl.debian.org/debian/ stretch-updates main contrib non-free
 deb-src http://ftp.cl.debian.org/debian/ stretch-updates main contrib non-free
 
 
-6.1.2 Actualizar Sistema:
+
+1.2 Actualizar Sistema:
 
 Ahora proceder con la actualización masiva del sistema:
 
-apt-get upgrade
+# apt-get update
+
+# apt-get upgrade
 
 Si lo anterior da un problema del tipo:
 
@@ -76,7 +77,9 @@ apt-get install debian-keyring debian-archive-keyring
 y ejecutar apt-get update nuevamente.
 
 
-6.1.3 Instalar paquetes básicos:
+2 Configuración de los sistemas:
+
+2.1 Instalar paquetes básicos:
 
 Se recomienda instalar los siguientes paquetes para poder configurar adecuadamente el sistema instalado y poseer herramientas de diagnóstico:
 
