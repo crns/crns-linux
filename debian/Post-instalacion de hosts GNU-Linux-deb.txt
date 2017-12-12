@@ -94,6 +94,7 @@ fail2ban
 firmware-linux-free
 firmware-linux-nonfree
 bridge-utils
+net-tools
 
 
 apt-get -y install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils
