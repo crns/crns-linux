@@ -11,6 +11,7 @@ Contenidos:
 	2.1 Instalar Pqtes. básicos
 	2.2 Configurar Zona horaria
 	2.3 Sincronizar reloj de sistema mediante NTP
+	2.4 Activar rc.local
 
 3 Optimizaciones:
 	3.1 Disco y Filesystems
@@ -117,7 +118,7 @@ En sistemas GUI:
 apt-get -y install open-vm-tools-desktop
 
 
-6.1.4 Sincronizar reloj de sistema mediante NTP
+2.4 Sincronizar reloj de sistema mediante NTP
 
 Sincronizar tiempo mediante systemd-timesyncd en Stretch:
 
@@ -202,6 +203,32 @@ NTP synchronized: yes
  Next DST change: DST ends (the clock jumps one hour backwards) at
                   sáb 2017-05-13 23:59:59 CLST
                   sáb 2017-05-13 23:00:00 CLT
+
+
+2.4 Activar rc.local
+
+Como root se copia el archivo ejemplo:
+
+# cp /lib/systemd/system/rc-local.service /etc/systemd/system/rc-local.service
+
+Crear un enlace simbólico:
+
+# cd /etc/systemd/system/multi-user.target.wants/
+# ln -s /etc/systemd/system/rc-local.service rc-local.service 
+
+Ahora crear el archivo /etc/rc.local con el siguiente contenido:
+
+#!/bin/bash 
+ 
+Ahora le damos permisos 755
+
+# chmod 755 /etc/rc.local 
+
+Habilitar, ejecutar y verificar el status:
+
+# systemctl enable rc-local.service 
+# systemctl start rc-local.service 
+# systemctl status rc-local.service 
 
 
 6.2 Optimizaciones:
