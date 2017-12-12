@@ -231,6 +231,7 @@ Habilitar, ejecutar y verificar el status:
 # systemctl status rc-local.service 
 
 
+
 6.2 Optimizaciones:
 
 6.2.1 Discos y Filesystems
