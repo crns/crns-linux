@@ -24,10 +24,12 @@ deb ftp://ftp.deb-multimedia.org stretch main non-free
 deb http://ftp.cl.debian.org/debian stretch-backports main contrib non-free
 deb-src http://ftp.cl.debian.org/debian stretch-backports main contrib non-free
 
+###
+
 # Chrome
 deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
 
-# Java desde Ubuntu
+# Oracle-Java desde Ubuntu
 deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main
 deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main
 
@@ -96,7 +98,7 @@ root@yugo:~#
 Key de Oracle VirtualBox:
 
 wget --no-check-certificate -q -O - https://www.virtualbox.org/download/oracle_vbox_2016.asc | apt-key add -
-wget --no-check-certificate -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+wget --no-check-certificate -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
 
 root@yugo:~# wget --no-check-certificate -q -O - https://www.virtualbox.org/download/oracle_vbox_2016.asc | apt-key add -
 OK
@@ -139,7 +141,7 @@ update-initramfs: Generating /boot/initrd.img-4.9.0-3-amd64
 root@yugo:~# 
 
 
-SUDO
+Instalar SUDO
 
 apt-get install sudo
 
@@ -173,7 +175,7 @@ OK primer reboot:
 -------------------------------
 
 
-Primer login y suso de sudo
+Primer login y uso de sudo
 
 mcampos@yugo:~$ sudo dmesg
 
@@ -188,8 +190,6 @@ Administrator. It usually boils down to these three things:
 
 
 sudo apt-get install bash-completion man
-
-    link/ether 70:1a:04:df:b4:b7 brd ff:ff:ff:ff:ff:ff
 
 
 mcampos@yugo:~$ sudo apt-get install bash-completion man
