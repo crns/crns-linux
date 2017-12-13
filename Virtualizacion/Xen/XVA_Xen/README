@@ -1,0 +1,120 @@
+This is a tool to aid the migration of xend based Xen virtual machines to XenServer and Xen Cloud Platform.
+
+The tool can take configurion options via to command line, or can parse a Xen guest configuration file.
+
+The tool can output an xva file, or can connect to a remote XenServer or XCP host and stream the VM directly.
+
+Paravirtualised and HVM machines are supported. Please pay attention to the guidelines below.
+
+
+
+Tested with Python 2.4, and 2.6. If you have 2.4 you need the `uuidgen` command.
+
+Version 1.2.0
+
+Changes since 1.1.0
+
+* Implemented the handling of guest kernels/initrds loaded from dom0. These can either be SFTP'd to the server automatically(the paramiko module is needed), otherwise the user can SFTP the kernel/initrd to the server manually if the module is missing. In the case you are saving to xva you will have to SFTP to the destination servers(s) manually. Take note. xapi does not manage guest kernels/initrds, i.e. you will need to clean up /boot/guest after you delete the VM that depends on those.
+   Example: xva.py -d centos.5-3.x86.img -k /boot/vmlinuz-domu -r /boot/initrd-domu -n new-vm --server XCP-host --username root --password f0rget --sftp
+
+* Fixed some bugs that made --no-apic and --no-acpi not be recognised.
+   
+
+Changes since 1.0.1
+
+* Implemented live streaming of images to XenServer/XCP
+   Example: xva.py --disk=/dev/system/windows --is-hvm --name=Windows --memory=256 --vcpus=4 --server=XCP-host --username=root --password=f0rget
+
+
+Changes since 1.0.0
+
+* Fix bug that stopped CDROM from showing up after migrate.
+* Implement --sparse option(use with caution)
+
+
+This tool has two modes of operation.
+
+1. Parsing an OSS Xen Guest configuration file
+
+    Example:
+
+    xva.py --config=/xen/domains/windows --filename=windows.xva
+
+2. Supplying required command line options
+    
+    Example:
+ 
+    xva.py --disk=/dev/system/windows --is-hvm --name=Windows --memory=256 --vcpus=4 --filename=windows.xva
+
+
+
+Guidelines for migrating Windows guests to XenServer/XCP.
+
+1. Without GPLPV installed
+If you dont have GPLPV installed on your windows VM it should be a simple export using this tool and an import. After the import you should be able to install the Citrix PV Drivers.
+
+
+2. With GPLPV drivers
+If your windows VM has GPLPV installed you have two options.
+The first is to run GPLPV on XenServer, you will be missing XenMotion. It should be a simple export/import.
+
+The second option is the uninstall GPLPV. This is a risky operation that will probably fail. Its advisable to have a backup.
+
+These are XP instructions.
+
+Do a normal export/import of the XVA. Then boot windows with /NOGPLPV. It should in theory then be safe to uninstall the GPLPV paravirtualised drivers. I hadnt any luck with the add/remove programs method so I used the script that is available here: http://meadowcourt.org/downloads/gplpv_uninstall_bat.zip. Reboot
+
+Now mount the xentools ISO and install.
+
+After a reboot you should be running the Citrix paravirtualised drivers, XenMotion should be possible.
+
+
+Linux paravirtualised guests
+
+
+Things to take into consideration when migrating PV Linux guests to XenServer.
+
+1. The most important thing to realise is that XenServer only supports xvda/b/c/d block device names in the guest. That means you cannot have a block device called sda or hda. It also means that block devices cannot be the names of partitions i.e. sda1 or xvda1 will not work. It shouldnt take much effort to make the required changes. An example is supplied further in this document.
+
+2. XenServer wont allow you to XenMotion your exported VM unless you install XenTools. If your VM has support for the /proc/xen filesystem it should be possible to get these to work on most distros. BEWARE. Live migration is broken in pv_ops kernels <2.6.31. Use 2.6.32.
+
+3. Grub2 config files arent supported(yet), Neither is ext4 (for /boot)
+
+
+
+
+
+CentOS Migration Example.(pygrub)
+
+In this example i'll migrate the CentOS 5.3 x86_64 VM from http://stacklet.com/sites/default/files/centos/centos.5-3.x86-64.20090606.img.tar.bz2
+
+In the stock configuration file you'll see that the first disk block device in set to /dev/sda1. This needs to change to /dev/xvda to work on XenServer.
+
+1. We need to mount the *.img file so we can make the required changes.
+    
+mount -o loop centos.5-3.x86-64.img /mnt/tmp
+
+2. Edit the /mnt/tmp/boot/grub/grub.conf (menu.lst) file to reference /dev/xvda, i.e. root=/dev/xvda instead of root=/dev/sda1.
+
+3. Edit /mnt/tmp/etc/fstab to reference /dev/xvda instead of /dev/sda1
+
+4. That should be it. Now umount the guest filesystem. umount /mnt/tmp
+
+5. Generate the XVA file. 
+
+xva.py -n Centos5.3 --is-pv --disk centos.5-3.x86-64.img --filename=centos-5.3.xva
+
+
+
+
+## BUGS ##
+
+Expect many bugs. If parsing the guest configuration doesnt work, then supply the parameters manually on the command line. Report bugs to xen-devel or david.markey@citrix.com
+
+
+
+## TODO ##
+
+Do more sophisticated checks to establish if the VM will run on XenServer/XCP(PV Guests especially), make required changes if possible.
+
+Author: David Markey <david.markey@citrix.com>

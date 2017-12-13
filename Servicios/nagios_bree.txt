@@ -1,0 +1,163 @@
+apt-get -y install apache2 mysql-server php5-mysql php5 libapache2-mod-php5 php5-mcrypt php5-cgi php5-gd php5-common php5-curl
+
+
+
+Creating sample config files in sample-config/ ...
+
+
+*** Configuration summary for nagios 4.2.4 12-07-2016 ***:
+
+ General Options:
+ -------------------------
+        Nagios executable:  nagios
+        Nagios user/group:  nagios,nagios
+       Command user/group:  nagios,nagcmd
+             Event Broker:  yes
+        Install ${prefix}:  /usr/local/nagios
+    Install ${includedir}:  /usr/local/nagios/include/nagios
+                Lock file:  ${prefix}/var/nagios.lock
+   Check result directory:  ${prefix}/var/spool/checkresults
+           Init directory:  /etc/init.d
+  Apache conf.d directory:  /etc/apache2/sites-available
+             Mail program:  /usr/bin/mail
+                  Host OS:  linux-gnu
+          IOBroker Method:  epoll
+
+ Web Interface Options:
+ ------------------------
+                 HTML URL:  http://localhost/nagios/
+                  CGI URL:  http://localhost/nagios/cgi-bin/
+ Traceroute (used by WAP):  /usr/sbin/traceroute
+
+
+Review the options above for accuracy.  If they look okay,
+type 'make all' to compile the main program and CGIs.
+
+root@bree:~/nagios-4.2.4# 
+
+
+
+
+plugins
+
+config.status: creating po/Makefile
+            --with-apt-get-command: /usr/bin/apt-get
+              --with-ping6-command: /bin/ping6 -n -U -w %d -c %d %s
+               --with-ping-command: /bin/ping -n -U -w %d -c %d %s
+                       --with-ipv6: yes
+                      --with-mysql: no
+                    --with-openssl: yes
+                     --with-gnutls: no
+               --enable-extra-opts: yes
+                       --with-perl: /usr/bin/perl
+             --enable-perl-modules: no
+                     --with-cgiurl: /nagios/cgi-bin
+               --with-trusted-path: /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+                   --enable-libtap: no
+root@bree:~/nagios-plugins-2.1.1# 
+
+
+
+install
+
+make[2]: Entering directory '/root/nagios-plugins-2.1.1/plugins-root'
+ /usr/bin/install -c -o nagios -g nagios check_dhcp /usr/local/nagios/libexec/check_dhcp
+ chown root /usr/local/nagios/libexec/check_dhcp
+ chmod ug=rx,u+s /usr/local/nagios/libexec/check_dhcp
+ /usr/bin/install -c -o nagios -g nagios check_icmp /usr/local/nagios/libexec/check_icmp
+ chown root /usr/local/nagios/libexec/check_icmp
+ chmod ug=rx,u+s /usr/local/nagios/libexec/check_icmp
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/root/nagios-plugins-2.1.1/plugins-root'
+make[1]: Leaving directory '/root/nagios-plugins-2.1.1/plugins-root'
+Making install in po
+make[1]: Entering directory '/root/nagios-plugins-2.1.1/po'
+/bin/mkdir -p /usr/local/nagios/share
+installing fr.gmo as /usr/local/nagios/share/locale/fr/LC_MESSAGES/nagios-plugins.mo
+installing de.gmo as /usr/local/nagios/share/locale/de/LC_MESSAGES/nagios-plugins.mo
+if test "nagios-plugins" = "gettext-tools"; then \
+  /bin/mkdir -p /usr/local/nagios/share/gettext/po; \
+  for file in Makefile.in.in remove-potcdate.sin    Makevars.template; do \
+    /usr/bin/install -c -o nagios -g nagios -m 644 ./$file \
+		    /usr/local/nagios/share/gettext/po/$file; \
+  done; \
+  for file in Makevars; do \
+    rm -f /usr/local/nagios/share/gettext/po/$file; \
+  done; \
+else \
+  : ; \
+fi
+make[1]: Leaving directory '/root/nagios-plugins-2.1.1/po'
+make[1]: Entering directory '/root/nagios-plugins-2.1.1'
+make[2]: Entering directory '/root/nagios-plugins-2.1.1'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/root/nagios-plugins-2.1.1'
+make[1]: Leaving directory '/root/nagios-plugins-2.1.1'
+root@bree:~/nagios-plugins-2.1.1# 
+
+
+./configure --enable-command-args --with-nagios-user=nagios --with-nagios-group=nagios --with-ssl=/usr/bin/openssl --with-ssl-lib=/usr/lib/x86_64-linux-gnu
+
+
+checking for Kerberos include files... could not find include files
+checking for perl... /usr/bin/perl
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating subst
+config.status: creating src/Makefile
+config.status: creating package/solaris/Makefile
+config.status: creating init-script
+config.status: creating init-script.debian
+config.status: creating init-script.suse
+config.status: creating nrpe.spec
+config.status: creating sample-config/nrpe.cfg
+config.status: creating sample-config/nrpe.xinetd
+config.status: creating include/config.h
+
+
+*** Configuration summary for nrpe 2.15 09-06-2013 ***:
+
+ General Options:
+ -------------------------
+ NRPE port:    5666
+ NRPE user:    nagios
+ NRPE group:   nagios
+ Nagios user:  nagios
+ Nagios group: nagios
+
+
+Review the options above for accuracy.  If they look okay,
+type 'make all' to compile the NRPE daemon and client.
+
+root@bree:~/nrpe-2.15# 
+
+root@bree:~/nrpe-2.15# make install
+cd ./src/ && make install
+make[1]: Entering directory '/root/nrpe-2.15/src'
+make install-plugin
+make[2]: Entering directory '/root/nrpe-2.15/src'
+/usr/bin/install -c -m 775 -o nagios -g nagios -d /usr/local/nagios/libexec
+/usr/bin/install -c -m 775 -o nagios -g nagios check_nrpe /usr/local/nagios/libexec
+make[2]: Leaving directory '/root/nrpe-2.15/src'
+make install-daemon
+make[2]: Entering directory '/root/nrpe-2.15/src'
+/usr/bin/install -c -m 775 -o nagios -g nagios -d /usr/local/nagios/bin
+/usr/bin/install -c -m 775 -o nagios -g nagios nrpe /usr/local/nagios/bin
+make[2]: Leaving directory '/root/nrpe-2.15/src'
+make[1]: Leaving directory '/root/nrpe-2.15/src'
+root@bree:~/nrpe-2.15# make install-xinetd
+/usr/bin/install -c -m 644 sample-config/nrpe.xinetd /etc/xinetd.d/nrpe 
+root@bree:~/nrpe-2.15# make install-daemon-config
+/usr/bin/install -c -m 775 -o nagios -g nagios -d /usr/local/nagios/etc
+/usr/bin/install -c -m 644 -o nagios -g nagios sample-config/nrpe.cfg /usr/local/nagios/etc
+root@bree:~/nrpe-2.15# 
+
+
+https://www.ochobitshacenunbyte.com/2015/10/29/instalar-configurar-nagios-debian-jessie/
+
+
+bree: 192.168.7.177
+
+
+

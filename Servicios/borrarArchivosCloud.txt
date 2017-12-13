@@ -1,0 +1,17 @@
+
+find /media/owncloud/data/539094AA-25B1-449A-8176-25A9028B06BC -wholename '*/files*/*/*' -ctime +30 -exec rm -rf {} \;
+
+sudo -u www-data php /var/www/occ files:scan --all
+sudo -u www-data php /var/www/occ files:cleanup
+
+
+
+find ./media/owncloud/data -wholename '*-*-*-*-*/files*/*/*' -ctime +30
+find /media/owncloud/data -wholename '*-*-*-*-*/files*/*/*' -ctime +30
+
+/media/owncloud/data/539094AA-25B1-449A-8176-25A9028B06BC
+
+
+
+-----------
+find /media/owncloud/data -wholename '*-*-*-*-*/files*/*/*' -ctime +30 -exec rm -rf {} \;

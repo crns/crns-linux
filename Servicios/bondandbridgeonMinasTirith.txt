@@ -1,0 +1,26 @@
+
+auto bond0
+iface bond0 inet manual
+	bond-mode 4
+	bond-primary eth0
+	bond-slaves eth0 eth1 eth2 eth3
+	bond-miimon 100
+	bond-downdelay 200
+	bond-updelay 200
+
+#
+# XEN/Minas-Tirith
+#
+auto br0
+iface br0 inet static
+        bridge_ports bond0        
+        bridge_stp off       # deshabilita Spanning Tree Protocol
+        bridge_waitport 0    # no delay before a port becomes available
+        bridge_fd 0          # no forwarding delay
+        #bridge_maxwait 0     # ??
+        address 192.168.10.185
+        netmask 255.255.255.0
+        network 192.168.10.0
+        broadcast 192.168.10.255
+        gateway 192.168.10.1
+

@@ -1,0 +1,81 @@
+cd
+
+Verificar certificados activos:
+
+cd easy-rsa/keys
+
+
+root@reverse:~/easy-rsa/keys# cat index.txt
+
+root@reverse:~/easy-rsa/keys# cat index.txt
+V	270920173639Z		01	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=mcampos/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270920174207Z		02	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=reverse/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270920200911Z		03	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=mcampos02/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270924192453Z		04	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user01/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270927225136Z		05	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user02/name=RUMBOX/emailAddress=max@rumbox.cl
+V	270927225751Z		06	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user03/name=RUMBOX/emailAddress=user03@rumbox.cl
+V	270930200558Z		07	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user05/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270930230836Z		08	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=fyevenes/name=RUMBOX/emailAddress=fdo.yevenes@gmail.com
+V	270930231849Z		09	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=fbravo/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	271108004606Z		0A	unknown	/C=cl/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=student01/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	271108012202Z		0B	unknown	/C=cl/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=student02/name=RUMBOX/emailAddress=mcampos@debian.cl
+
+OK, en la primer columna aparece V indiando que estan activos:
+
+Revocar un certificado:
+
+root@reverse:~/easy-rsa# source vars
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+
+
+root@reverse:~/easy-rsa# ./revoke-full fbravo
+Using configuration from /root/easy-rsa/openssl.cnf
+Revoking Certificate 09.
+Data Base Updated
+Using configuration from /root/easy-rsa/openssl.cnf
+C = CL, ST = SANTIAGO, L = Santiago, O = RumBox, OU = RUMBOX, CN = fbravo, name = RUMBOX, emailAddress = mcampos@debian.cl
+error 23 at 0 depth lookup: certificate revoked
+error fbravo.crt: verification failed
+
+Verificar que revocación se efectuo:
+
+root@reverse:~/easy-rsa# cat keys/index.txt
+V	270920173639Z		01	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=mcampos/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270920174207Z		02	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=reverse/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270920200911Z		03	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=mcampos02/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270924192453Z		04	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user01/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270927225136Z		05	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user02/name=RUMBOX/emailAddress=max@rumbox.cl
+V	270927225751Z		06	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user03/name=RUMBOX/emailAddress=user03@rumbox.cl
+V	270930200558Z		07	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=user05/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	270930230836Z		08	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=fyevenes/name=RUMBOX/emailAddress=fdo.yevenes@gmail.com
+R	270930231849Z	171113160606Z	09	unknown	/C=CL/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=fbravo/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	271108004606Z		0A	unknown	/C=cl/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=student01/name=RUMBOX/emailAddress=mcampos@debian.cl
+V	271108012202Z		0B	unknown	/C=cl/ST=SANTIAGO/L=Santiago/O=RumBox/OU=RUMBOX/CN=student02/name=RUMBOX/emailAddress=mcampos@debian.cl
+root@reverse:~/easy-rsa# 
+
+Ahora aparece para fbravo un R delante del certicado, ya esta revocado.
+
+
+Reiniciar Openvpn para aplicar cambios:
+
+root@reverse:/etc/openvpn# /etc/init.d/openvpn restart
+[ ok ] Restarting openvpn (via systemctl): openvpn.service.
+
+Monitorear conexiones:
+
+cd /etc/openvpn
+
+root@reverse:/etc/openvpn# tail -f openvpn.log 
+Mon Nov 13 13:10:25 2017 succeeded -> ifconfig_pool_set()
+Mon Nov 13 13:10:25 2017 IFCONFIG POOL LIST
+Mon Nov 13 13:10:25 2017 mcampos02,10.8.0.4
+Mon Nov 13 13:10:25 2017 mcampos02,10.8.0.8
+Mon Nov 13 13:10:25 2017 user01,10.8.0.12
+Mon Nov 13 13:10:25 2017 fbravo,10.8.0.16
+Mon Nov 13 13:10:25 2017 fbravo,10.8.0.20
+Mon Nov 13 13:10:25 2017 fyevenes,10.8.0.24
+Mon Nov 13 13:10:25 2017 student01,10.8.0.28
+Mon Nov 13 13:10:25 2017 Initialization Sequence Completed
+
+
+Listo ya no se deberia logear el usuario fbravo.

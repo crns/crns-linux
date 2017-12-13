@@ -1,0 +1,63 @@
+ 
+cd /etc/yum.repos.d
+
+wget https://rpms.remirepo.net/enterprise/remi.repo
+
+rpm --import https://rpms.remirepo.net/RPM-GPG-KEY-remi
+
+rpm --import https://rpms.remirepo.net/RPM-GPG-KEY-remi2017
+
+---------------------------------------------------
+
+yum --enablerepo=remi -y install ocsinventory-agent
+
+--------------------------------------------------
+
+nano /etc/sysconfig/ocsinventory-agent
+
+# Mode, change to "cron" to activate
+OCSMODE[0]=none
+
+# can be used to override the ocsinventory-agent.cfg setup.
+# OCSSERVER[0]=your.ocsserver.name
+
+
+a
+
+# Mode, change to "cron" to activate
+OCSMODE[0]=cron
+
+# can be used to override the ocsinventory-agent.cfg setup.
+OCSSERVER[0]=https://epulpo.caschile.cl/ocsinventory
+
+--------------------------------------------------------
+
+nano /etc/ocsinventory/ocsinventory-agent.cfg
+
+# Server URL, unconmment if needed                                              
+server = https://epulpo.caschile.cl/ocsinventory                                
+# local = /var/lib/ocsinventory-agent                                           
+                                                                                
+# Administrative TAG (optional, must be filed before first inventory)           
+# tag = your_tag                                                                
+                                                                                
+# How to log, can be File,Stderr,Syslog                                         
+logger = Stderr                                                                 
+logfile = /var/log/ocsinventory-agent/ocsinventory-agent.log
+
+------------------------------------------------
+
+mv /etc/cron.hourly/ocsinventory-agent /etc/cron.daily/
+
+---------------------------------------------------
+
+/usr/sbin/ocsinventory-agent -s https://epulpo.caschile.cl/ocsinventory --debug
+
+
+cat /var/log/ocsinventory-agent/ocsinventory-agent.log  | grep debug
+
+
+
+
+
+

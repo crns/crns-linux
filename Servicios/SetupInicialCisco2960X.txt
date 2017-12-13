@@ -1,0 +1,146 @@
+Conexión por cable consola serial
+Emulador de terminal gtkTerm
+
+CLI y SSH
+Modo Básico (Primera contraseña): c4sch1l3.0586 (usuario admin)
+Modo Privilegiado: c4sch1l3.0586
+
+-------------------------------------------------------------------
+
+Establecer hostname:
+
+Switch>enable
+Switch#configure terminal
+Switch(config)#hostname SW-120
+SW-120(config)#end
+
+Establecer configuración IP (Vlan 1 default):
+
+SW-120>enable
+SW-120(config)#interface vlan1
+SW-120(config-if)#ip address 192.168.20.120 255.255.255.0
+SW-120(config-if)#end
+
+Salvar configuracion:
+
+SW-120#wr
+Building configuration...
+[OK]
+SW-120#
+
+
+Crear usuario admin:
+
+SW-120#configure terminal
+SW-120(config)#username admin privilege 15 secret 0 c4sch1l3.0586
+SW-120(config)#end
+
+
+Crear usuario no privilegiado:
+
+SW-120#configure terminal
+SW-120(config)#username mcampos secret 0 xxxxxxxxxxxx
+SW-120(config)#end
+
+
+Generar llaves RSA:
+
+WS-120(config)#ip domain-name local
+WS-120(config)#crypto key generate rsa
+
+How many bits in the modulus [512]: 1024
+% Generating 512 bit RSA keys, keys will be non-exportable...
+[OK] (elapsed time was 0 seconds)
+
+WS-120(config)#ip ssh version 2
+WS-120(config)#
+
+Habilitar y configurar SSH a través de los siguientes comandos
+
+WS-120(config)#line vty 0 15
+WS-120(config-line)#login local
+WS-120(config-line)#transport input ssh
+WS-120(config-line)#exit
+WS-120(config)#
+
+Salvar configuracion:
+
+SW-120#wr
+Building configuration...
+[OK]
+SW-120#
+
+---------------------------------------------------------------------
+Configurar Vlan's:
+
+# configure terminal
+# vlan 118
+# name TESTING
+# vlan 140
+# name CLARO-INTERNET
+# vlan 141
+# name DMZ
+# vlan 142
+# name VTR-INTERNET
+# vlan 143
+# name GTD-INTERNET
+# exit
+
+---------------------------
+Crear agregaciones de enlace
+
+Resetear puertos que seran parte de la agregacion:
+
+
+WS-120#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+WS-120(config)#default interface GigabitEthernet 0/45
+Interface GigabitEthernet0/45 set to default configuration
+
+WS-120(config)#default interface GigabitEthernet 0/46
+Interface GigabitEthernet0/46 set to default configuration
+
+WS-120(config)#default interface GigabitEthernet 0/47
+Interface GigabitEthernet0/47 set to default configuration
+
+WS-120(config)#default interface GigabitEthernet 0/48
+Interface GigabitEthernet0/48 set to default configuration
+
+WS-120(config)#
+
+
+Crear agregacion (Port-channel1):
+
+# interface GigabitEthernet 0/45
+# channel-group 1 mode active
+
+# interface GigabitEthernet 0/46
+# channel-group 1 mode active
+
+# interface GigabitEthernet 0/47
+# channel-group 1 mode active
+
+# interface GigabitEthernet 0/48
+# channel-group 1 mode active
+
+
+--------------------
+
+Establecer modo Trunk para permitir Vlan's en la Agregacion:
+
+# interface Port-channel1
+# switchport mode trunk
+
+
+
+---------
+Configurar Vlan por Port:
+
+interface GigabitEthernet 0/1
+ switchport access vlan 140
+ switchport mode access
+
+
+
+
