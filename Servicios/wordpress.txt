@@ -74,5 +74,5 @@ cd ..
 
 # usermod -a -G www-data tyd
 
-
+REF: https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-on-debian-7
 

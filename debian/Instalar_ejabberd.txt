@@ -1,0 +1,104 @@
+Ref: https://geekytheory.com/crea-tu-propio-servidor-xmpp-ejabberd
+ref ?: http://www.almost-working.com/how-to-setup-a-jabber-xmpp-server-on-debian-8-7-jessie/
+
+
+mcampos@jabber:~$ sudo apt-get update && sudo apt-get upgrade
+Ign:1 http://ftp.cl.debian.org/debian stretch InRelease
+Obj:2 http://ftp.cl.debian.org/debian stretch-updates InRelease
+Obj:3 http://ftp.cl.debian.org/debian stretch Release                            
+Obj:4 http://security.debian.org stretch/updates InRelease                       
+0% [4 InRelease gpgv 63,0 kB]                         
+Leyendo lista de paquetes... 2%
+
+Leyendo lista de paquetes... Hecho
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Calculando la actualización... Hecho
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+mcampos@jabber:~$ 
+
+
+
+mcampos@jabber:~$ sudo apt-get install ejabberd ejabberd-contrib
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  ejabberd-mod-cron ejabberd-mod-log-chat ejabberd-mod-logsession ejabberd-mod-logxml ejabberd-mod-message-log ejabberd-mod-muc-log-http
+  ejabberd-mod-post-log ejabberd-mod-pottymouth ejabberd-mod-rest ejabberd-mod-s2s-log ejabberd-mod-shcommands ejabberd-mod-statsdx
+  ejabberd-mod-webpresence erlang-asn1 erlang-base erlang-crypto erlang-edoc erlang-goldrush erlang-inets erlang-jiffy erlang-lager erlang-mnesia
+  erlang-odbc erlang-os-mon erlang-p1-cache-tab erlang-p1-iconv erlang-p1-stringprep erlang-p1-tls erlang-p1-utils erlang-p1-xml erlang-p1-yaml
+  erlang-p1-zlib erlang-proper erlang-public-key erlang-runtime-tools erlang-snmp erlang-ssl erlang-syntax-tools erlang-xmerl libltdl7 libodbc1
+  libsctp1 libyaml-0-2 openssl
+Paquetes sugeridos:
+  apparmor apparmor-utils libunix-syslog-perl imagemagick yamllint erlang-luerl erlang-p1-oauth2 erlang-p1-mysql erlang-p1-pam erlang-p1-pgsql
+  erlang-p1-sip erlang-p1-stun erlang-p1-sqlite3 erlang-redis-client erlang erlang-manpages erlang-doc erlang-tools libmyodbc odbc-postgresql
+  tdsodbc unixodbc-bin lksctp-tools ca-certificates
+Se instalarán los siguientes paquetes NUEVOS:
+  ejabberd ejabberd-contrib ejabberd-mod-cron ejabberd-mod-log-chat ejabberd-mod-logsession ejabberd-mod-logxml ejabberd-mod-message-log
+  ejabberd-mod-muc-log-http ejabberd-mod-post-log ejabberd-mod-pottymouth ejabberd-mod-rest ejabberd-mod-s2s-log ejabberd-mod-shcommands
+  ejabberd-mod-statsdx ejabberd-mod-webpresence erlang-asn1 erlang-base erlang-crypto erlang-edoc erlang-goldrush erlang-inets erlang-jiffy
+  erlang-lager erlang-mnesia erlang-odbc erlang-os-mon erlang-p1-cache-tab erlang-p1-iconv erlang-p1-stringprep erlang-p1-tls erlang-p1-utils
+  erlang-p1-xml erlang-p1-yaml erlang-p1-zlib erlang-proper erlang-public-key erlang-runtime-tools erlang-snmp erlang-ssl erlang-syntax-tools
+  erlang-xmerl libltdl7 libodbc1 libsctp1 libyaml-0-2 openssl
+0 actualizados, 46 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 0 B/21,1 MB de archivos.
+Se utilizarán 38,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+cp /etc/ejabberd/ejabberd.yml /etc/ejabberd/ejabberd.yml.orig
+
+--------------
+
+
+--------------
+
+apt install imagemagick ghostscript --no-install-recommends
+
+root@jabber:/etc/ejabberd# apt install imagemagick ghostscript --no-install-recommends
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  fontconfig-config fonts-dejavu-core hicolor-icon-theme imagemagick-6-common imagemagick-6.q16 libavahi-client3 libavahi-common-data
+  libavahi-common3 libcups2 libcupsimage2 libfftw3-double3 libfontconfig1 libglib2.0-0 libgomp1 libgs9 libgs9-common libicu57 libijs-0.35 libjbig0
+  libjbig2dec0 libjpeg62-turbo liblcms2-2 liblqr-1-0 libmagickcore-6.q16-3 libmagickwand-6.q16-3 libopenjp2-7 libpaper1 libtiff5 libxml2
+  poppler-data
+Paquetes sugeridos:
+  ghostscript-x imagemagick-doc autotrace cups-bsd | lpr | lprng curl enscript ffmpeg gimp gnuplot grads graphviz groff-base hp2xx html2ps
+  libwmf-bin mplayer povray radiance sane-utils texlive-base-bin transfig ufraw-batch xdg-utils cups-common libfftw3-bin libfftw3-dev liblcms2-utils
+  libmagickcore-6.q16-3-extra poppler-utils fonts-japanese-mincho | fonts-ipafont-mincho fonts-japanese-gothic | fonts-ipafont-gothic
+  fonts-arphic-ukai fonts-arphic-uming fonts-nanum
+Paquetes recomendados:
+  gsfonts libmagickcore-6.q16-3-extra netpbm libcupsfilters1 libglib2.0-data shared-mime-info xdg-user-dirs fonts-droid-fallback libpaper-utils
+  xml-core
+Se instalarán los siguientes paquetes NUEVOS:
+  fontconfig-config fonts-dejavu-core ghostscript hicolor-icon-theme imagemagick imagemagick-6-common imagemagick-6.q16 libavahi-client3
+  libavahi-common-data libavahi-common3 libcups2 libcupsimage2 libfftw3-double3 libfontconfig1 libglib2.0-0 libgomp1 libgs9 libgs9-common libicu57
+  libijs-0.35 libjbig0 libjbig2dec0 libjpeg62-turbo liblcms2-2 liblqr-1-0 libmagickcore-6.q16-3 libmagickwand-6.q16-3 libopenjp2-7 libpaper1
+  libtiff5 libxml2 poppler-data
+0 actualizados, 32 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 27,1 MB de archivos.
+Se utilizarán 95,1 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+
+Uncomment and change the following in ejabberd.yml:
+
+captcha_cmd: "/usr/share/ejabberd/captcha.sh"
+captcha_host: "http://jabber.caschile.cl:5280"
+captcha_limit: 5
+
+mod_register:
+       captcha_protected: true
+
+
+
+root@jabber:/etc/ejabberd# ejabberdctl register admin caschile.cl caschile
+User admin@caschile.cl successfully registered
+root@jabber:/etc/ejabberd# 
+
+
