@@ -61,7 +61,13 @@ Ahora proceder con la actualización masiva del sistema:
 
 # apt-get upgrade
 
-Si lo anterior da un problema del tipo:
+o todo en una linea:
+
+# apt-get update ; apt-get -y upgrade
+
+
+
+Nota: Si lo anterior da un problema del tipo:
 
 "W: No existe ninguna clave pública disponible para los siguientes identificadores de clave:
 7638D0442B90D010
@@ -94,12 +100,13 @@ fail2ban
 firmware-linux-free
 firmware-linux-nonfree
 bridge-utils
+dnsutils
 net-tools
 
 
 apt-get -y install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils
 
-En XEN máquinas paravirtualizadas x86_64 (método netinstall) se deben instalar también los siguientes paquetes:
+En XEN máquinas paravirtualizadas x86_64 e instalación por método netinstall se deben instalar también los siguientes paquetes:
 
 linux-image-amd64
 firmware-linux-nonfree
@@ -138,17 +145,25 @@ El archivo de configuración de systemd-timesyncd es /etc/systemd/timesyncd.conf
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
 #
-# See timesyncd.conf(5) for details
+# Entries in this file show the compile time defaults.
+# You can change settings by editing this file.
+# Defaults can be restored by simply deleting this file.
+#
+# See timesyncd.conf(5) for details.
 
 [Time]
-#Servers=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+#NTP=
+#FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+
+
 
 
 Para agregar servidores de tiempo se agrega al final la línea "Servers=ntp.shoa.cl", ejemplo:
 
 [Time]
-#Servers=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
-Servers=ntp.shoa.cl
+NTP=ntp.shoa.cl
+#FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+
 
 Guardar y activar:
 
@@ -170,18 +185,23 @@ systemctl status systemd-timesyncd
 
 Ejemplo:
 
-systemctl status systemd-timesyncd.service
+~# systemctl status systemd-timesyncd
 ● systemd-timesyncd.service - Network Time Synchronization
-   Loaded: loaded (/lib/systemd/system/systemd-timesyncd.service; enabled)
-   Active: active (running) since jue 2016-08-18 16:16:00 CLST; 4s ago
+   Loaded: loaded (/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: enabled)
+  Drop-In: /lib/systemd/system/systemd-timesyncd.service.d
+           └─disable-with-time-daemon.conf
+   Active: active (running) since Tue 2017-12-19 16:27:17 -03; 1min 4s ago
      Docs: man:systemd-timesyncd.service(8)
- Main PID: 25446 (systemd-timesyn)
-   Status: "Using Time Server 192.168.7.115:123 (192.168.7.115)."
+ Main PID: 4458 (systemd-timesyn)
+   Status: "Synchronized to time server 200.54.149.24:123 (ntp.shoa.cl)."
+    Tasks: 2 (limit: 4915)
    CGroup: /system.slice/systemd-timesyncd.service
-           └─25446 /lib/systemd/systemd-timesyncd
+           └─4458 /lib/systemd/systemd-timesyncd
 
-ago 18 16:16:00 lotho systemd-timesyncd[25446]: Using NTP server 192.168.7.115:123 (192.168.7.115).
-ago 18 16:16:00 lotho systemd-timesyncd[25446]: interval/delta/delay/jitter/drift 64s/-0.002s/0.003s/0.000s/-19ppm
+dic 19 16:27:17 fimbrethil systemd[1]: Starting Network Time Synchronization...
+dic 19 16:27:17 fimbrethil systemd[1]: Started Network Time Synchronization.
+dic 19 16:27:17 fimbrethil systemd-timesyncd[4458]: Synchronized to time server 200.54.149.24:123 (ntp.shoa.cl).
+~#
 
 
 También se puede verificar el status con el sgte comando:
@@ -189,21 +209,16 @@ También se puede verificar el status con el sgte comando:
 timedatectl status
 
 Ejemplo:
-timedatectl status
-      Local time: jue 2016-08-18 16:16:46 CLST
-  Universal time: jue 2016-08-18 19:16:46 UTC
-        RTC time: jue 2016-08-18 19:16:46
-       Time zone: America/Santiago (CLST, -0300)
-     NTP enabled: yes
+~# timedatectl status
+      Local time: mar 2017-12-19 16:29:23 -03
+  Universal time: mar 2017-12-19 19:29:23 UTC
+        RTC time: mar 2017-12-19 19:29:23
+       Time zone: America/Santiago (-03, -0300)
+ Network time on: yes
 NTP synchronized: yes
  RTC in local TZ: no
-      DST active: yes
- Last DST change: DST began at
-                  sab 2016-08-13 23:59:59 CLT
-                  dom 2016-08-14 01:00:00 CLST
- Next DST change: DST ends (the clock jumps one hour backwards) at
-                  sáb 2017-05-13 23:59:59 CLST
-                  sáb 2017-05-13 23:00:00 CLT
+~# 
+
 
 
 2.4 Activar rc.local
@@ -252,7 +267,17 @@ mount -o remount,noatime,nodiratime,errors=remount-ro /
 
 Nota: En el caso de hosts paravirtualizados este ajuste se hace automáticamente en la instalación.
 
-Verificar con cat /proc/mounts
+Verificar con cat /proc/mounts, ejemplo:
+
+~# cat /proc/mounts | grep ext4
+/dev/cciss/c0d0p1 / ext4 rw,relatime,errors=remount-ro,data=ordered 0 0
+
+~# mount -o remount,noatime,nodiratime,errors=remount-ro /
+
+~# cat /proc/mounts | grep ext4
+/dev/cciss/c0d0p1 / ext4 rw,noatime,nodiratime,errors=remount-ro,data=ordered 0 0
+ 
+
 
 
 6.2.2 RNG
@@ -286,6 +311,26 @@ sysctl -p
 
 apt-get -y install rng-tools
 
+...
+Configurando rng-tools (2-unofficial-mt.14-1+b2) ...
+Job for rng-tools.service failed because the control process exited with error code.
+See "systemctl status rng-tools.service" and "journalctl -xe" for details.
+invoke-rc.d: initscript rng-tools, action "start" failed.
+● rng-tools.service
+   Loaded: loaded (/etc/init.d/rng-tools; generated; vendor preset: enabled)
+   Active: failed (Result: exit-code) since Tue 2017-12-19 16:41:47 -03; 20ms ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 4587 ExecStart=/etc/init.d/rng-tools start (code=exited, status=1/FAILURE)
+
+dic 19 16:41:47 fimbrethil systemd[1]: Starting rng-tools.service...
+dic 19 16:41:47 fimbrethil rng-tools[4587]: Starting Hardware RNG entropy gatherer daemon: (failed).
+dic 19 16:41:47 fimbrethil systemd[1]: rng-tools.service: Control process exited, code=exited status=1
+dic 19 16:41:47 fimbrethil systemd[1]: Failed to start rng-tools.service.
+dic 19 16:41:47 fimbrethil systemd[1]: rng-tools.service: Unit entered failed state.
+dic 19 16:41:47 fimbrethil systemd[1]: rng-tools.service: Failed with result 'exit-code'.
+Procesando disparadores para systemd (232-25+deb9u1) ...
+~# 
+
 Editar /etc/default/rng-tools y agregar:
 
 HRNGDEVICE=/dev/urandom
@@ -303,20 +348,34 @@ systemctl restart rng-tools
 
 Verificar status:
 
-root@cirith-ungol:~# systemctl status rng-tools
-● rng-tools.service - (null)
-   Loaded: loaded (/etc/init.d/rng-tools)
-   Active: active (running) since mar 2016-09-06 12:22:02 CLST; 1s ago
-  Process: 24130 ExecStart=/etc/init.d/rng-tools start (code=exited, status=0/SUCCESS)
+~# systemctl status rng-tools
+● rng-tools.service
+   Loaded: loaded (/etc/init.d/rng-tools; generated; vendor preset: enabled)
+   Active: active (running) since Tue 2017-12-19 16:43:30 -03; 5s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 4653 ExecStart=/etc/init.d/rng-tools start (code=exited, status=0/SUCCESS)
+    Tasks: 4 (limit: 4915)
    CGroup: /system.slice/rng-tools.service
-           └─24132 /usr/sbin/rngd -r /dev/urandom
+           └─4655 /usr/sbin/rngd -r /dev/urandom
 
-sep 06 12:22:02 cirith-ungol rng-tools[24130]: Starting Hardware RNG entropy gatherer daemon: rngd.
-sep 06 12:22:02 cirith-ungol rngd[24132]: rngd 2-unofficial-mt.14 starting up...
-sep 06 12:22:02 cirith-ungol rngd[24132]: entropy feed to the kernel ready
+dic 19 16:43:30 fimbrethil systemd[1]: Starting rng-tools.service...
+dic 19 16:43:30 fimbrethil rng-tools[4653]: Starting Hardware RNG entropy gatherer daemon: rngd.
+dic 19 16:43:30 fimbrethil rngd[4655]: rngd 2-unofficial-mt.14 starting up...
+dic 19 16:43:30 fimbrethil rngd[4655]: entropy feed to the kernel ready
+dic 19 16:43:30 fimbrethil systemd[1]: Started rng-tools.service.
+~# 
 
 
-6.2.3 Actualización del firmware microcode de la CPU:
+6.2.3 Actualización del firmware microcode de la CPU: - Revisar -
+
+~# apt-get -y install intel-microcode
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+intel-microcode ya está en su versión más reciente (3.20170707.1~deb9u1).
+fijado intel-microcode como instalado manualmente.
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+~#
 
 Lo siguiente solo en máquinas físicas.
 
@@ -364,7 +423,7 @@ options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1
 
 Crear archivo con configuración en un paso:
 
-echo "options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=1" > /etc/modprobe.d/bonding.conf
+echo "options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1" > /etc/modprobe.d/bonding.conf
 
 
 Modificar /etc/network/interfaces
@@ -383,8 +442,91 @@ iface bond0 inet static
         down /sbin/ifenslave -d bond0 eth0 eth1 eth2
 
 
+
+
 Presto!!
 Reboot an enjoy
+
+Verificar con ip l e ip l y con cat /proc/net/bonding/bond0:
+
+~# cat /proc/net/bonding/bond0 
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+
+Bonding Mode: IEEE 802.3ad Dynamic link aggregation
+Transmit Hash Policy: layer2 (0)
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 200
+Down Delay (ms): 200
+
+802.3ad info
+LACP rate: slow
+Min links: 0
+Aggregator selection policy (ad_select): stable
+System priority: 65535
+System MAC address: 00:1c:c4:ed:3d:0c
+Active Aggregator Info:
+	Aggregator ID: 1
+	Number of ports: 2
+	Actor Key: 9
+	Partner Key: 5
+	Partner Mac Address: d0:7e:28:4c:bf:4a
+
+Slave Interface: enp3s0
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 00:1c:c4:ed:3d:0c
+Slave queue ID: 0
+Aggregator ID: 1
+Actor Churn State: none
+Partner Churn State: none
+Actor Churned Count: 0
+Partner Churned Count: 0
+details actor lacp pdu:
+    system priority: 65535
+    system mac address: 00:1c:c4:ed:3d:0c
+    port key: 9
+    port priority: 255
+    port number: 1
+    port state: 61
+details partner lacp pdu:
+    system priority: 32768
+    system mac address: d0:7e:28:4c:bf:4a
+    oper key: 5
+    port priority: 32768
+    port number: 17
+    port state: 61
+
+Slave Interface: enp5s0
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 00:1c:c4:ed:3d:0a
+Slave queue ID: 0
+Aggregator ID: 1
+Actor Churn State: none
+Partner Churn State: none
+Actor Churned Count: 0
+Partner Churned Count: 0
+details actor lacp pdu:
+    system priority: 65535
+    system mac address: 00:1c:c4:ed:3d:0c
+    port key: 9
+    port priority: 255
+    port number: 2
+    port state: 61
+details partner lacp pdu:
+    system priority: 32768
+    system mac address: d0:7e:28:4c:bf:4a
+    oper key: 5
+    port priority: 32768
+    port number: 18
+    port state: 61
+~#
+
 
 6.2.5 Deshabilitar IPv6
 
