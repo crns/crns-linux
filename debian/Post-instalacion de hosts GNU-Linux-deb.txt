@@ -67,7 +67,7 @@ o todo en una linea:
 
 
 
-Nota: Si lo anterior da un problema del tipo:
+Nota es solo para Desktop con repositorios agregados: Si lo anterior da un problema del tipo:
 
 "W: No existe ninguna clave pública disponible para los siguientes identificadores de clave:
 7638D0442B90D010

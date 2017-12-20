@@ -2,7 +2,242 @@ https://wiki.skytech.dk/index.php/Iscsi_-_target_and_initiator_setup_debian
 
 https://www.server-world.info/en/note?os=Debian_9&p=iscsi&f=2
 
+Debian 9
 
+apt -y install tgt dkms 
+
+mkdir /var/lib/iscsi_disks 
+
+~# dd if=/dev/zero of=/var/lib/iscsi_disks/disk01.img count=0 bs=1 seek=1G
+0+0 registros leídos
+0+0 registros escritos
+0 bytes copied, 0,00191369 s, 0,0 kB/s
+~# 
+
+nano /etc/tgt/conf.d/target01.conf 
+
+# create new
+# naming rule : [ iqn.yaer-month.domain:any name ]
+
+<target iqn.2017-12.caschile.cl.irulan:target01>
+    # provided devicce as a iSCSI target
+    backing-store /var/lib/iscsi_disks/disk01.img
+    # iSCSI Initiator's IP address you allow to connect
+    initiator-address 192.168.10.55
+    # authentication info ( incominguser <username> <password> )
+    incominguser mcampos cronos
+</target>
+
+
+~# tgtadm --mode target --op show 
+
+~# systemctl restart tgt 
+
+~# tgtadm --mode target --op show 
+Target 1: iqn.2017-12.caschile.cl.irulan:target01
+    System information:
+        Driver: iscsi
+        State: ready
+    I_T nexus information:
+    LUN information:
+        LUN: 0
+            Type: controller
+            SCSI ID: IET     00010000
+            SCSI SN: beaf10
+            Size: 0 MB, Block size: 1
+            Online: Yes
+            Removable media: No
+            Prevent removal: No
+            Readonly: No
+            SWP: No
+            Thin-provisioning: No
+            Backing store type: null
+            Backing store path: None
+            Backing store flags: 
+        LUN: 1
+            Type: disk
+            SCSI ID: IET     00010001
+            SCSI SN: beaf11
+            Size: 1074 MB, Block size: 512
+            Online: Yes
+            Removable media: No
+            Prevent removal: No
+            Readonly: No
+            SWP: No
+            Thin-provisioning: No
+            Backing store type: rdwr
+            Backing store path: /var/lib/iscsi_disks/disk01.img
+            Backing store flags: 
+    Account information:
+        mcampos
+    ACL information:
+        192.168.10.55
+~#
+--------------------
+Ahora instalar lVM:
+
+apt-get install lvm2
+
+
+~# cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0    8388608 sda
+   8        1    6290432 sda1
+   8        2          1 sda2
+   8        5    2095104 sda5
+   8       16    8388608 sdb
+  11        0    1048575 sr0
+~#
+
+Crear un Physical Volume en /dev/sdb:
+
+pvcreate /dev/sdb
+
+~# pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+~# 
+
+
+Crear Volumen:
+
+vgcreate fobos_vg /dev/sdb
+
+~# vgcreate fobos_vg /dev/sdb
+  Volume group "fobos_vg" successfully created
+~# 
+
+OK
+
+Crear lun:
+
+1G
+
+lvcreate -L1G -n lun01 fobos_vg
+
+~# lvcreate -L1G -n lun01 fobos_vg
+  Logical volume "lun01" created.
+~# 
+
+/dev/fobos_vg/trgt02
+
+~# lvcreate -L1G -n trgt02 fobos_vg
+  Logical volume "trgt02" created.
+~#
+
+Ver volumen creado:
+
+lvscan
+
+~# lvscan
+  ACTIVE            '/dev/fobos_vg/lun01' [1,00 GiB] inherit
+  ACTIVE            '/dev/fobos_vg/trgt02' [1,00 GiB] inherit
+~# 
+
+
+Se debera crear el LUN con '/dev/fobos_vg/lun1':
+
+
+Lo sgte permite que iSCSI Server no vea los lvm-disco creados por el pool en los lv de fobos_vg:
+
+editar /etc/lvm/lvm.conf linea 142
+
+    # By default we accept every block device:
+    filter = [ "a/.*/" ]
+
+Modificar a:
+
+    # By default we accept every block device:
+    # filter = [ "a/.*/" ]
+    filter = [ "r|/dev/fobos_vg|" ]
+
+
+-----------------------------------
+ref: https://access.redhat.com/documentation/es-es/red_hat_enterprise_linux/6/html/logical_volume_manager_administration/dmsetup
+
+Crear target02
+
+~# dmsetup ls
+fobos_vg-lun01	(254:0)
+fobos_vg-trgt02	(254:1)
+~# 
+
+logical volume /dev/fobos_vg/trgt02 -> /dev/mapper/fobos_vg-trgt02
+
+
+
+nano /etc/tgt/conf.d/target02.conf 
+
+# create new
+# naming rule : [ iqn.yaer-month.domain:any name ]
+
+<target iqn.2017-12.caschile.cl.irulan:target02>
+    # provided devicce as a iSCSI target
+    backing-store /dev/mapper/fobos_vg-trgt02
+    # iSCSI Initiator's IP address you allow to connect
+    initiator-address 192.168.10.0/24
+    # authentication info ( incominguser <username> <password> )
+    incominguser mcampos cronos
+</target>
+
+
+
+
+~# systemctl restart tgt 
+
+~# tgtadm --mode target --op show
+Target 1: iqn.2017-12.caschile.cl.irulan:target02
+    System information:
+        Driver: iscsi
+        State: ready
+    I_T nexus information:
+        I_T nexus: 1
+            Initiator: iqn.2017-03.com.example:edf6a8ac alias: rivendel
+            Connection: 0
+                IP Address: 192.168.10.167
+        I_T nexus: 2
+            Initiator: iqn.2017-12.com.example:a8696fd8 alias: doriath
+            Connection: 0
+                IP Address: 192.168.10.164
+    LUN information:
+        LUN: 0
+            Type: controller
+            SCSI ID: IET     00010000
+            SCSI SN: beaf10
+            Size: 0 MB, Block size: 1
+            Online: Yes
+            Removable media: No
+            Prevent removal: No
+            Readonly: No
+            SWP: No
+            Thin-provisioning: No
+            Backing store type: null
+            Backing store path: None
+            Backing store flags: 
+        LUN: 1
+            Type: disk
+            SCSI ID: IET     00010001
+            SCSI SN: beaf11
+            Size: 1074 MB, Block size: 512
+            Online: Yes
+            Removable media: No
+            Prevent removal: No
+            Readonly: No
+            SWP: No
+            Thin-provisioning: No
+            Backing store type: rdwr
+            Backing store path: /dev/mapper/fobos_vg-trgt02
+            Backing store flags: 
+    Account information:
+        mcampos
+    ACL information:
+        192.168.10.0/24
+~# 
+
+
+
+-------------------
+###################
 -------------------
 Debian 8
 
