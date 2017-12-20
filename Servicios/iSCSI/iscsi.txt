@@ -1,0 +1,201 @@
+https://wiki.skytech.dk/index.php/Iscsi_-_target_and_initiator_setup_debian
+
+https://www.server-world.info/en/note?os=Debian_9&p=iscsi&f=2
+
+
+-------------------
+Debian 8
+
+12.4
+
+Target Server Fobos:
+
+apt-get install iscsitarget iscsitarget-dkms
+
+
+
+nano /etc/default/iscsitarget
+
+ISCSITARGET_ENABLE=false
+
+dejar:
+
+ISCSITARGET_ENABLE=true
+
+
+Ahora instalar lVM:
+
+apt-get install lvm2
+
+root@fobos:~# apt-get install lvm2
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dmeventd libdevmapper-event1.02.1 liblvm2cmd2.02 libreadline5
+Paquetes sugeridos:
+  thin-provisioning-tools
+Se instalarán los siguientes paquetes NUEVOS:
+  dmeventd libdevmapper-event1.02.1 liblvm2cmd2.02 libreadline5 lvm2
+0 actualizados, 5 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.471 kB de archivos.
+Se utilizarán 3.537 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Crear un Physical Volume:
+
+root@fobos:~# pvcreate /dev/md3p1
+  Physical volume "/dev/md3p1" successfully created
+
+Crear Volumen:
+
+vgcreate fobos_vg /dev/md3p1
+
+root@fobos:~# vgcreate fobos_vg /dev/md3p1
+  /proc/devices: No entry for device-mapper found
+  Volume group "fobos_vg" successfully created
+root@fobos:~# 
+
+OK
+
+Crear lun:
+
+100G
+
+lvcreate -L100G -n lun1 fobos_vg
+
+
+Ver volumen creado:
+
+root@fobos:~# lvscan
+  ACTIVE            '/dev/fobos_vg/lun1' [100,00 GiB] inherit
+root@fobos:~#
+
+Se debera crear el LUN con '/dev/fobos_vg/lun1':
+
+
+nano /etc/iet/ietd.conf
+
+Target iqn.2015-10.cl.caschile:fobos_vg.lun1
+        #IncomingUser someuser secret
+        #OutgoingUser
+        Lun 0 Path=/dev/fobos_vg/lun1,Type=fileio
+        Alias LUN1
+        MaxConnections  1
+
+
+--------------
+
+IETADM
+
+Configurando Targets en Linea con ietadm
+
+Cuando es necesario realizar cambios a la configuración de los target iSCSI, siempre es necesario reiniciar el target para activar los cambios hechos al archivo de configuración. Desafortunadamente, todas las sesiones activas son interrumpidas en este proceso. Para mantener una operación sin incidentes, bloqueos o desconexiones, los cambios deberian ser echos en el archivo de configuración principal /etc/ietd.conf, pero también aplicarla manualmente a la configuración actual con la utilidad de administración ietadm.
+
+Para crear un nuevo target iSCSI con una LUN, primero actualice el archivo de configuración principal /etc/ietd.conf. Una entrada en el archivo de configuracion puede ser:
+
+Target iqn.2015-10.cl.caschile:fobos_vg.lun3
+        #IncomingUser joe secret
+        #OutgoingUser
+        Lun 3 Path=/dev/fobos_vg/lun3,Type=fileio
+        Alias LUN3
+        MaxConnections  1
+
+Para establecer esta configuración manualmente, proceda del siguiente modo:
+
+    Crear un nuevo target con el comando: 
+
+	ietadm --op new --tid=3 --params Name=iqn.2015-10.cl.caschile:fobos_vg.lun3
+
+    Crear una unidad logica con la sgte secuencia:
+
+	Crear lun de 100G
+
+	lvcreate -L100G -n lun3 fobos_vg
+
+
+	Ver volumen creado:
+
+	lvscan
+
+  	ACTIVE            '/dev/fobos_vg/lun3' [100,00 GiB] inherit
+
+
+    Agregar una unidad logica con la sgte secuencia:
+
+	ietadm --op new --tid=3 --lun=3 --params Path=/dev/fobos_vg/lun3
+
+    Si es necesario establecer la combinacion de username y password en este target con
+
+	ietadm --op new --tid=3 --user --params=IncomingUser=joe,Password=secret.
+
+    Verificar la configuración con
+
+	/proc/net/iet/volume. 
+
+Borrar conexiones activas
+
+Primero, verificar todas las conexiones activas con el comando
+
+	cat /proc/net/iet/session. 
+
+	Esto podria lucir de este modo:
+
+	tid:1 name:iqn.2006-03.com.example.iserv:system
+        	sid:281474980708864 initiator:iqn.1996-04.com.example:01.82725735af5
+                cid:0 ip:192.168.178.72 state:active hd:none dd:none
+
+Para borrar la sesión con ID de sesión 281474980708864, use el comando
+
+	ietadm --op delete --tid=1 --sid=281474980708864 --cid=0
+
+Tenga en cuenta que esto hace que el dispositivo quede inaccesible en el sistema cliente y los procesos que acceden a este dispositivo es probable que cuelguen.
+
+ietadm puede ser usado para cambiar varios parametros de configuración. Obtenga una lista de las variables globales con
+
+	ietadm --op show --tid=1 --sid=0. La salida se ve como:
+
+InitialR2T=Yes
+ImmediateData=Yes
+MaxConnections=1
+MaxRecvDataSegmentLength=8192
+MaxXmitDataSegmentLength=8192
+MaxBurstLength=262144
+FirstBurstLength=65536
+DefaultTime2Wait=2
+DefaultTime2Retain=20
+MaxOutstandingR2T=1
+DataPDUInOrder=Yes
+DataSequenceInOrder=Yes
+ErrorRecoveryLevel=0
+HeaderDigest=None
+DataDigest=None
+OFMarker=No
+IFMarker=No
+OFMarkInt=Reject
+IFMarkInt=Reject
+
+Todos estos parámetros pueden ser cambiados facilmente. Por ejemplo, si busca cambiar el numero máximo ce conecciones a dos, use
+
+	ietadm --op update --tid=1 --params=MaxConnections=2
+
+En el archivo /etc/ietd.conf, la linea asociada debería ver como MaxConnections 2.
+
+Precaución: Siempre actualize /etc/ietd.conf segun los cambios realizados con ietadm.
+
+Los cambios realizados con el comando ietadm no son permanentes en el sistema. Los cambios se pierden en el proximo reinicio si ellos no son agregados/actualizados en el archivo de configuración /etc/ietd.conf. Dependiendo del uso de iSCSI en su red, esto podría conducir a serios problemas.
+
+
+Hay muchas otras opciones disponibles para el comando ietadm. Encuentre un resumen con ietadm -h. Las abreviaciones usadas son:
+
+	target ID (tid),
+	session ID (sid),
+	y connection ID (cid).
+
+Estas pueden ser encontradas en /proc/net/iet/session.
+
+
+
+
+
