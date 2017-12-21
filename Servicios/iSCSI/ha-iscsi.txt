@@ -1,3 +1,338 @@
 ref: https://0wned.it/geek-bits/guides/high-availability-iscsi-target-using-linux/
 
 
+Chani:
+
+# The primary network interface
+allow-hotplug enp0s3
+iface enp0s3 inet static
+        address 192.168.10.57/24
+        gateway 192.168.10.1
+
+auto enp0s8
+iface enp0s8 inet static
+        address 10.10.1.57/24
+
+root@chani:~# ifup enp0s8
+
+/etc/hosts
+
+127.0.0.1       localhost.localdomain   localhost
+
+192.168.10.57   chani.xen.local         chani
+192.168.10.58   irulan.xen.local        irulan
+10.10.1.57      nodo1
+10.10.1.58      nodo2 
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+Crear volumenes LVM:
+
+pvcreate /dev/sdb
+
+vgcreate vg0 /dev/sdb
+
+
+
+lvcreate -L1G -n drbd-md vg0
+
+lvcreate -l 100%FREE -n data vg0
+
+
+root@chani:~# dmsetup ls
+vg0-drbd--md	(254:0)
+vg0-data	(254:1)
+root@chani:~# 
+
+
+
+/dev/mapper/vg0-drbd--md
+/dev/mapper/vg0-data
+
+
+
+Irulan:
+
+# The primary network interface
+allow-hotplug enp0s3
+iface enp0s3 inet static
+        address 192.168.10.58/24
+        gateway 192.168.10.1
+
+auto enp0s8
+iface enp0s8 inet static
+        address 10.10.1.58/24
+
+
+root@irulan:~# ifup enp0s8
+
+/etc/hosts
+
+127.0.0.1       localhost.localdomain   localhost
+
+192.168.10.57   chani.xen.local         chani
+192.168.10.58   irulan.xen.local        irulan
+10.10.1.57      nodo1
+10.10.1.58      nodo2 
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+
+Instalar en ambos hosts los paquetes drbd8-utils y heartbeat.
+
+apt-get -y install drbd8-utils heartbeat
+
+
+Change permissions and group ownership on some DRBD binaries for use with heartbeat:
+
+~# chgrp haclient /sbin/drbdsetup
+~# chmod o-x /sbin/drbdsetup
+~# chmod u+s /sbin/drbdsetup
+
+~# chgrp haclient /sbin/drbdmeta
+~# chmod o-x /sbin/drbdmeta
+~# chmod u+s /sbin/drbdmeta
+
+
+Edit /etc/drbd.conf and define two resources:
+
+    The DRBD device that will contain "drbd-md" iscsitarget configuration files.
+    The DRBD device that will become the "data" LUN.
+
+----------------------
+global {
+        usage-count no;
+}
+ 
+resource iscsi.config {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on nodo1 {
+        device  /dev/drbd0;
+        disk    /dev/mapper/vg0-drbd--md;
+        address 10.10.1.57:7788; # Use DRBD dedicated network
+        meta-disk internal;
+        }
+ 
+        on nodo2 {
+        device  /dev/drbd0;
+        disk    /dev/mapper/vg0-drbd--md;
+        address 10.10.1.58:7788; # Use DRBD dedicated network
+        meta-disk internal;
+        }
+}
+ 
+resource iscsi.data {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on nodo1 {
+        device  /dev/drbd1;
+        disk    /dev/mapper/vg0-data;
+        address 10.10.1.57:7789; # Use private inter-node address
+        meta-disk internal;
+        }
+ 
+        on nodo2 {
+        device  /dev/drbd1;
+        disk    /dev/mapper/vg0-data;
+        address 10.10.1.58:7789; # Use private inter-node address
+        meta-disk internal;
+        }
+}
+
+-----------------------
+Configuracin funcional
+
+
+# You can find an example in  /usr/share/doc/drbd.../drbd.conf.example
+
+global {
+        usage-count no;
+}
+
+resource iscsi.config {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+#        rate 100M;
+        rate 400M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on fobos {
+        device  /dev/drbd0;
+        disk    /dev/md3p1;
+        address 192.168.50.180:7788; # Use DRBD dedicated network
+        meta-disk internal;
+        }
+
+        on deimos {
+        device  /dev/drbd0;
+        disk    /dev/md2p1;
+        address 192.168.50.181:7788; # Use DRBD dedicated network
+        meta-disk internal;
+        }
+}
+
+resource iscsi.lun {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+#        rate 100M;
+        rate 400M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on fobos {
+        device  /dev/drbd1;
+        disk    /dev/md3p2;
+        address 192.168.50.180:7789; # Use private inter-node address
+        meta-disk internal;
+        }
+
+        on deimos {
+        device  /dev/drbd1;
+        disk    /dev/md2p2;
+        address 192.168.50.181:7789; # Use private inter-node address
+        meta-disk internal;
+        }
+}
+
+#include "drbd.d/global_common.conf";
+#include "drbd.d/*.res";
+
+
+
+
+
+
+--------------------------
+
+Reboot nodes. Test connectivity (both networks) between nodes.
+
+Initialise DRBD meta data discs for the DRBD resources. This needs to be done on both nodes:
+
+# drbdadm create-md iscsi.config
+# drbdadm create-md iscsi.data
+
+
+
+
