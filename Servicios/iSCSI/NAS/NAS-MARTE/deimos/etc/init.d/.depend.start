@@ -1,0 +1,19 @@
+TARGETS = rsyslog motd killprocs atd ssh openhpid exim4 logd fail2ban mdadm sendmail cron acpid dbus nagios-nrpe-server drbd heartbeat bootlogs single rmnologin rc.local
+INTERACTIVE = drbd
+atd: rsyslog
+ssh: rsyslog
+openhpid: rsyslog
+exim4: rsyslog
+logd: rsyslog
+fail2ban: rsyslog
+mdadm: rsyslog
+sendmail: rsyslog
+cron: rsyslog
+acpid: rsyslog
+dbus: rsyslog
+nagios-nrpe-server: rsyslog
+drbd: rsyslog ssh
+heartbeat: drbd rsyslog openhpid logd
+single: killprocs motd bootlogs
+rmnologin: atd rsyslog drbd ssh heartbeat openhpid exim4 logd fail2ban mdadm sendmail motd bootlogs cron acpid dbus nagios-nrpe-server
+rc.local: atd rsyslog drbd ssh heartbeat openhpid exim4 logd fail2ban mdadm sendmail motd bootlogs cron acpid dbus nagios-nrpe-server

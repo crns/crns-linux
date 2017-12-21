@@ -1,0 +1,124 @@
+global {
+        usage-count no;
+}
+ 
+resource iscsi.config {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on castor {
+        device  /dev/drbd0;
+#        disk    /dev/vg0/iscsi-config;
+        disk    /dev/xvda4p1;
+        address 192.168.50.66:7788; # Use DRBD dedicated network
+#        meta-disk /dev/vg0/drbd-metadata[0];
+        meta-disk internal;
+        }
+ 
+        on pollux {
+        device  /dev/drbd0;
+#        disk    /dev/vg0/iscsi-config;
+        disk    /dev/xvda4p1;
+        address 192.168.50.67:7788; # Use DRBD dedicated network
+#        meta-disk /dev/vg0/drbd-metadata[0];
+        meta-disk internal;
+        }
+}
+ 
+resource iscsi.lun {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on castor {
+        device  /dev/drbd1;
+#        disk    /dev/vg0/lun.test;
+        disk    /dev/xvda3p1;
+        address 192.168.50.66:7789; # Use private inter-node address
+#        meta-disk /dev/vg0/drbd-metadata[1];
+        meta-disk internal;
+        }
+ 
+        on pollux {
+        device  /dev/drbd1;
+#        disk    /dev/vg0/lun.test;
+        disk    /dev/xvda3p1;
+        address 192.168.50.67:7789; # Use private inter-node address
+#        meta-disk /dev/vg0/drbd-metadata[1];
+        meta-disk internal;
+        }
+}
+
+
+
+
+SSH Shared keys:
+
+ssh-keygen -t dsa
+
+En castor
+
+scp .ssh/id_dsa.pub root@pollux:~/.ssh/autorized_keys2
+
+En pollux
+
+scp .ssh/id_dsa.pub root@castor:~/.ssh/autorized_keys2
+
+

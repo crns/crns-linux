@@ -1,0 +1,347 @@
+Cluster HA/iSCSI
+
+Instalar Debian 8 (Jessie)
+
+Aplicar "Practicas de post-nstalacion de hosts GNU/Linux..."
+
+Edit /etc/hosts
+
+
+127.0.0.1          localhost.localdomain    localhost
+
+192.168.7.180      fobos.local    fobos
+192.168.7.181      deimos.local   deimos
+
+192.168.39.180     vfobos
+192.168.39.181     vdeimos
+
+192.168.50.180     nodo1
+192.168.50.181     nodo2
+
+
+Instalar DRBD y Heartbeat:
+
+root@deimos:~# apt-get install drbd8-utils heartbeat
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  cluster-glue drbd-utils gawk libcurl3 libdbus-glib-1-2 libheartbeat2 liblrm2 libltdl7 libmpfr4 libnet1 libopenhpi2 libopenipmi0 libperl5.20
+  libpils2 libplumb2 libplumbgpl2 libsensors4 libsnmp-base libsnmp30 libstonith1 libxml2-utils openhpid resource-agents
+Paquetes sugeridos:
+  gawk-doc lm-sensors snmp-mibs-downloader
+Paquetes recomendados:
+  pacemaker
+Se instalarán los siguientes paquetes NUEVOS:
+  cluster-glue drbd-utils drbd8-utils gawk heartbeat libcurl3 libdbus-glib-1-2 libheartbeat2 liblrm2 libltdl7 libmpfr4 libnet1 libopenhpi2
+  libopenipmi0 libperl5.20 libpils2 libplumb2 libplumbgpl2 libsensors4 libsnmp-base libsnmp30 libstonith1 libxml2-utils openhpid resource-agents
+0 actualizados, 25 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 7.950 kB de archivos.
+Se utilizarán 20,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Instalar iSCSI Target:
+
+apt-get install iscsitarget
+
+root@deimos:~# apt-get install iscsitarget
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  binutils cpp cpp-4.8 cpp-4.9 dkms fakeroot gcc gcc-4.8 gcc-4.9 iscsitarget-dkms libasan0 libasan1 libatomic1 libc-dev-bin libc6-dev libcilkrts5
+  libcloog-isl4 libfakeroot libgcc-4.8-dev libgcc-4.9-dev libgomp1 libisl10 libitm1 liblsan0 libmpc3 libquadmath0 libtsan0 libubsan0
+  linux-compiler-gcc-4.8-x86 linux-headers-3.16.0-4-amd64 linux-headers-3.16.0-4-common linux-headers-amd64 linux-kbuild-3.16 linux-libc-dev make
+  manpages-dev menu
+Paquetes sugeridos:
+  binutils-doc cpp-doc gcc-4.8-locales gcc-4.9-locales gcc-multilib autoconf automake libtool flex bison gdb gcc-doc gcc-4.8-multilib gcc-4.8-doc
+  libgcc1-dbg libgomp1-dbg libitm1-dbg libatomic1-dbg libasan0-dbg libtsan0-dbg libquadmath0-dbg gcc-4.9-multilib gcc-4.9-doc libasan1-dbg
+  liblsan0-dbg libubsan0-dbg libcilkrts5-dbg glibc-doc make-doc menu-l10n gksu kde-runtime ktsuss
+Paquetes recomendados:
+  linux-image linux-headers
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils cpp cpp-4.8 cpp-4.9 dkms fakeroot gcc gcc-4.8 gcc-4.9 iscsitarget iscsitarget-dkms libasan0 libasan1 libatomic1 libc-dev-bin libc6-dev
+  libcilkrts5 libcloog-isl4 libfakeroot libgcc-4.8-dev libgcc-4.9-dev libgomp1 libisl10 libitm1 liblsan0 libmpc3 libquadmath0 libtsan0 libubsan0
+  linux-compiler-gcc-4.8-x86 linux-headers-3.16.0-4-amd64 linux-headers-3.16.0-4-common linux-headers-amd64 linux-kbuild-3.16 linux-libc-dev make
+  manpages-dev menu
+0 actualizados, 38 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 40,2 MB de archivos.
+Se utilizarán 155 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Instalar Sendmail:
+
+root@deimos:~# apt-get install sendmail-bin sendmail
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  sendmail-base sendmail-cf sensible-mda
+Paquetes sugeridos:
+  sendmail-doc rmail logcheck resolvconf sasl2-bin
+Los siguientes paquetes se ELIMINARÁN:
+  exim4 exim4-base exim4-config exim4-daemon-light
+Se instalarán los siguientes paquetes NUEVOS:
+  sendmail sendmail-base sendmail-bin sendmail-cf sensible-mda
+0 actualizados, 5 nuevos se instalarán, 4 para eliminar y 0 no actualizados.
+Se necesita descargar 1.730 kB de archivos.
+Se liberarán 2.525 kB después de esta operación.
+¿Desea continuar? [S/n] 
+
+apt-get install lvm2
+
+root@deimos:~# apt-get install lvm2
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dmeventd libdevmapper-event1.02.1 liblvm2cmd2.02 libreadline5
+Paquetes sugeridos:
+  thin-provisioning-tools
+Se instalarán los siguientes paquetes NUEVOS:
+  dmeventd libdevmapper-event1.02.1 liblvm2cmd2.02 libreadline5 lvm2
+0 actualizados, 5 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.471 kB de archivos.
+Se utilizarán 3.537 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n]
+
+Bajar patch Portblock:
+
+cd /
+
+wget https://launchpadlibrarian.net/36208202/portblock.patch
+
+
+patch --dry-run -p1 < portblock.patch
+patch -p1 < portblock.patch
+
+
+Configuración:
+
+Change permissions and group ownership on some DRBD binaries for use with heartbeat:
+
+    # chgrp haclient /sbin/drbdsetup
+    # chmod o-x /sbin/drbdsetup
+    # chmod u+s /sbin/drbdsetup
+    # chgrp haclient /sbin/drbdmeta
+    # chmod o-x /sbin/drbdmeta
+    # chmod u+s /sbin/drbdmeta
+
+Edit /etc/drbd.conf and define two resources:
+
+    The DRBD device that will contain iscsitarget configuration files.
+    The DRBD device that will become the LUN.
+
+
+-----------------------
+fobos  /dev/md3p1
+       /dev/md3p2
+
+deimos /dev/md2p1
+       /dev/md2p2
+-----------------------
+
+
+global {
+        usage-count no;
+}
+ 
+resource iscsi.config {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on fobos {
+        device  /dev/drbd0;
+        disk    /dev/md3p1;
+        address 192.168.50.180:7788; # Use DRBD dedicated network
+        meta-disk internal;
+        }
+ 
+        on deimos {
+        device  /dev/drbd0;
+        disk    /dev/md2p1;
+        address 192.168.50.181:7788; # Use DRBD dedicated network
+        meta-disk internal;
+        }
+}
+ 
+resource iscsi.lun {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on fobos {
+        device  /dev/drbd1;
+        disk    /dev/md3p2;
+        address 192.168.50.180:7789; # Use private inter-node address
+        meta-disk internal;
+        }
+ 
+        on deimos {
+        device  /dev/drbd1;
+        disk    /dev/md2p1;
+        address 192.168.50.181:7789; # Use private inter-node address
+        meta-disk internal;
+        }
+}
+
+#include "drbd.d/global_common.conf";
+#include "drbd.d/*.res";
+
+
+Ahora en ambos nodos:
+
+dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+
+Reboot nodes. Test connectivity (both networks) between nodes.
+
+Initialise DRBD meta data discs for the DRBD resources. This needs to be done on both nodes:
+
+drbdadm create-md iscsi.config
+drbdadm create-md iscsi.lun
+  
+drbdadm up iscsi.config
+drbdadm up iscsi.lun
+
+
+Activar en el primario:
+
+Decide which node will act as the primary for the DRBD device that will contain the iSCSI configuration files (/dev/drbd0) and initiate the first full sync between the nodes. Run the following on the primary:
+
+drbdadm -- --overwrite-data-of-peer primary iscsi.config
+drbdadm -- --overwrite-data-of-peer primary iscsi.lun
+
+
+
+En el secundario o primario (ejemplo) chequear la sincronización inicial:
+
+root@deimos:~# cat /proc/drbd
+version: 8.4.3 (api:1/proto:86-101)
+srcversion: 1A9F77B1CA5FF92235C2213 
+ 0: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r---b-
+    ns:0 nr:1048508 dw:1048508 dr:0 al:0 bm:64 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+ 1: cs:SyncTarget ro:Secondary/Primary ds:Inconsistent/UpToDate C r---b-
+    ns:0 nr:381196 dw:378912 dr:0 al:0 bm:23 lo:8 pe:1 ua:7 ap:0 ep:1 wo:f oos:4881569704
+	[>....................] sync'ed:  0.1% (4767156/4767524)Mfinish: 53:38:19 speed: 25,260 (25,260) want: 33,200 K/sec
+root@deimos:~# 
+
+
+
+You can wait until the initial sync completes but it's not a requirement. Create a filesystem on /dev/drbd0 (iSCSI configs) and mount it:
+
+    [node1] # mkfs.ext4 /dev/drbd0
+    [node1] # mkdir -p /srv/iscsi-config
+    [node1] # mount /dev/drbd0 /srv/iscsi-config
+
+pruebas:
+
+-------------------------------------------
+
+Configurar particiones LVM:
+
+root@castor:~# cat /proc/partitions 
+major minor  #blocks  name
+
+ 202        4    2097152 xvda4
+ 202        3  104857600 xvda3
+ 202        2  104857600 xvda2
+ 202        1    1048576 xvda1
+ 147        0    2097052 drbd0
+ 147        1  104854364 drbd1
+root@castor:~#
+
+editar el archivo /etc/lvm/lvm.conf y sustituir la linea:
+
+
+    # filter = [ "a/.*/" ]
+Fobos
+    filter = [ "r|/dev/md3p2|" ]
+Deimos
+    filter = [ "r|/dev/md2p2|" ]
+
+
+
+En el nodo principal:
+
+pvcreate /dev/drbd1
+
+vgcreate vg0drbd /dev/drbd1
+
+lvcreate -L 100G -n lun1 vg0drbd
+
+
+
+------------------
+Configure el paquete iscsitarget. By default, iscsitarget (ietd) will not start. Edit /etc/default/iscsitarget: 
+
+nano /etc/default/iscsitarget
+
+and set ISCSITARGET_ENABLE to true.
+
+Heartbeat will be used to control the iscsitarget service so remove it from init:
+
+    # update-rc.d -f iscsitarget remove
+
+
+
+
+
