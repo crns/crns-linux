@@ -4,7 +4,7 @@ https://www.server-world.info/en/note?os=Debian_9&p=iscsi&f=2
 
 Debian 9
 
-apt -y install tgt dkms 
+apt-get -y install tgt dkms 
 
 mkdir /var/lib/iscsi_disks 
 
@@ -125,6 +125,11 @@ lvcreate -L1G -n lun01 fobos_vg
   Logical volume "trgt02" created.
 ~#
 
+ejemplo 100% del volume group vg0:
+
+lvcreate -l 100%FREE -n lv0 vg0
+
+
 Ver volumen creado:
 
 lvscan
@@ -179,7 +184,7 @@ nano /etc/tgt/conf.d/target02.conf
     # authentication info ( incominguser <username> <password> )
     incominguser mcampos cronos
 </target>
-
+vg0-lv0
 
 
 
