@@ -1,0 +1,91 @@
+Virtualización o emulación
+
+Un emulador es un programa de software que simula la funcionalidad de otro programa o un componente de hardware. Dado que implementa funcionalidad por software, proporciona una gran flexibilidad y la capacidad de recopilar información muy detallada acerca de la ejecución.
+
+El programa incluso podría ser escrito para una arquitectura diferente a aquella sobre la cual el emulador se ejecuta –como ser, ejecutar un programa de Android escrito para ARM en un emulador sobre un host x86. El inconveniente de la emulación es que la capa de software incurre en una penalización en el rendimiento, que debe ser cuidadosamente administrada a fin de crear un sistema escalable.
+
+Con la virtualización, el programa huésped se ejecuta realmente en el hardware subyacente, es decir, ocupa los recursos físicos reales. El software de virtualización (VMM, Virtual Machine Monitor) sólo media en los accesos de las diferentes máquinas virtuales al hardware real. Así, éstas son independientes, y pueden ejecutar programas a velocidad casi nativa.
+
+-----------------------------
+
+Durante años la emulación de otras plataformas supuso una potente opción de poder acceder a software que de otro modo era imposible ejecutar, pero las modernas aplicaciones de virtualización han hecho olvidar esos orígenes. De hecho, muchos usuarios se dan cuenta de que para la mayoría de las situaciones la virtualización es una solución más eficiente y potente, además de ser más versátil a la hora de ejecutar distintos sistemas operativos en el mismo PC o portátil. ¿Adiós a la emulación?
+
+Los emuladores han sido una valiosa herramienta para miles de usuarios durante muchos años: la posibilidad de emular otras arquitecturas en un sistema operativo como MS-DOS o Windows ofrecía la capacidad de poder ejecutar aplicaciones antiguas o software para otra clase de hardware que también se emulaba vía esos emuladores.
+
+Sin embargo, la aparición de los primeros desarrollos de virtualización cambió el panorama, y hoy en día el papel de los emuladores es mucho más reducido. Siguen usándose en ámbitos académicos, de investigación e incluso en el apartado lúdico (MAME es una referencia clásica), pero la mayoría de usuarios han sabido sacarle partido a las máquinas virtuales, mucho más versátiles y potentes.
+
+Entre otras cosas, los propios fabricantes de procesadores han tenido muy en cuenta a las aplicaciones de virtualización, y tanto Intel como AMD han integrado sus propias extensiones hardware para acelerar esos procesos. Hoy en día existen varios desarrollos (VMware, Parallels, por citar dos ejemplos claros para el usuario final) que permiten mezclar el sistema operativo anfitrión (host) con el invitado (guest) de forma que las aplicaciones de uno y otro se ejecutan como si ambos corrieran de forma nativa.
+
+Y esa versatilidad y potencia -en muchos casos las diferencias de rendimiento entre una aplicación nativa y una virtualizada son casi inapreciables– han hecho de la virtualización un claro dominador en este tipo de escenarios.
+
+En TechRepublic han realizado una encuesta al respecto y parece claro que la virtualización es la filosofía preferida para la mayoría de los usuarios, con un 75% de los votos, mientras que el 16% respondía que la respuesta depende de las necesidades. Eso parece confirmar que la emulación es cada vez más un nicho de mercado muy especializado y que aunque sigue siendo útil para ciertas tareas es claramente inferior a la virtualización en la mayoría de los casos.
+
+
+
+--------------------------------
+
+
+Diferencias entre un Emulador, Virtualizador y Simulador, de Sistema Operativo
+rod septiembre 19, 2015 Consejos de Seguridad, Uncategorized No hay comentarios
+
+Muchos ya conocen los emuladores que son para correr ROMs de consolas de videojuegos en la PC, ya sea en Windows, Linux, Android, iOS o en Mac OS (Plataformas: x86, ARM, Java, PowerPC), pero sucede que también hay quienes quieren correr otros sistemas operativos, dentro de su sistema de uso, por ejemplo, correr Linux, dentro de una ventana de Windows, teniendo la posibilidad de instalar programas para Linux, y todo lo compatible como si fuese un sistema real montado en su equipo.
+
+ 
+
+BlueStacks emulador de Android
+
+Es necesario que sepan la diferencia entre Emulación, Virtualización y Simulación, para que sepan lo que se puede y lo que no se puede hacer.
+
+ 
+
+Emulador
+
+Los emuladores son aquellos programas que emulan de cierta manera el funcionamiento de una plataforma diseñada para otro procesador y otro chipset, es decir por ejemplo el emular juegos diseñados para SNES en una PC, y esta emulación se logra completamente a base de software y driver de tarjeta de vídeo, es por eso que algunos emuladores que parecieran no correr juegos pesados para PC, a la hora de correrlos en una PC que se pudiera creer que no tuviera problemas para correr dichos juegos, se ven en cámara lenta o con problemas de audio, como caso de ejemplo esta el emulador de NDS y el de PSP, los cuales algunos de sus juegos son imposibles de correr en PCs con menos de 4Gb de RAM, procesador de menos de 3Ghz y que no tengan una buena tarjeta de vídeo, y esto es debido a que la emulación, como ya explique antes es por software, y es que en la PC o el dispositivo que este corriendo el emulador, se logra gracias a tareas procesadas por el software del emulador, el cual descifra la arquitectura original del software emulado, y lo traduce para que sea entendible en el dispositivo donde se intenta lograr la emulación, y como la emulación, se logra en tiempo real, es por eso que el procesador, la RAM y el vídeo consumen muchas veces más recursos de lo que consume el dispositivo o plataforma original que corre el software que tratamos de emular.
+También hay algunos emuladores de otros sistemas operativos, como por ejemplo el BlueStacks, el cual corre una emulación del OS Android, y tiene la capacidad de poder instalar y correr todas las apps que sean compatibles para la versión de Android emulada en el BlueStacks, este programa es similar a los virtualizadores, debido a que crea un espacio de disco duro, reservado especialmente para ser usado como disco duro virtual para el Android emulado, al igual que toma una parte de procesos en tiempo real del Microprocesador, la RAM y el vídeo, sin que deje de funcionar el OS donde se corre el BlueStacks.
+
+
+Virtualizador
+
+Los virtualizadores son aquellos que pueden montar más de un tipo de sistema operativo, dentro de otro, en una simple ventana, con la capacidad de instalar programas compatibles con el OS virtualizado, al igual de que se le concede acceso al internet compartido. Estos programas ofrecen la posibilidad de seleccionar exactamente qué recursos queremos tomar del sistema base, es decir por ejemplo, cantidad exacta de RAM y velocidad de procesador, aunque nunca se nos permite tomar toda la capacidad original, ya que se requiere que el OS donde el virtualizador monta el OS virtualizado, siga en funcionamiento.
+Los virtualizadores más conocidos son el VMWare y el VirtualBox. Estos programas de virtualizacion se suelen limitar a montar OS que sean compatibles con la misma arquitectura de procesador, del equipo donde se corre la virtualizacion. También está el DOSBox, el cual es un virtualizador de MS-DOS, para correr antiguos juegos y programas similares, que de otra manera seria imposible de correrlos.
+
+ 
+
+Simulador
+
+Un simulador es aquel software que ofrece la capacidad de experimentar la experiencia de una actividad, como por ejemplo el volar o el correr autos de carreras, en un ambiente totalmente falso, pero que simula las condiciones originales, para quien utilice el simulador, aprenda como seria en la vida real. También hay simuladores de Software, los cuales solo se limitan a correr un programa de aspecto similar, al original, pero sin la capacidad de correr programas compatibles en el caso de una simulación de OS, como por ejemplo el iPadian, el cual es un Simulador, que imita el aspecto del iOS de iPhone y iPad, incluso teniendo acceso a internet y pudiendo correr las apps en el escritorio virtual del iPadian, pero sin la capacidad de instalar nuevas Apps compatibles con iOS.
+
+El principal problema de no poder hacer una emulación de un OS como el iOS de Apple, y que solo se limiten a Simuladores, es que las plataformas cerradas, que no permiten de forma alguna aprovechar su código de forma abierta, para desarrollar o modificar el OS, demandan legalmente a cualquiera que intente desarrollar un emulador de su sistema, como por ejemplo el fracasado iEmu, el cual prometía emular el iOS en multiplataforma, como en Windows, Linux y Android, pero este supuesto emulador jamás paso de ser solo un prototipo, ya que al parecer Apple les puso un ultimátum para que el desarrollador abandonara el proyecto, ya que este violaría los términos o condiciones de uso del iOS, es decir que no es que no se puedan crear emuladores, sino que es “ilegal” el hacerlos, cuando el software a emular es como los de Apple, ya que solo les interesa el dinero.
+
+    Aclaraciones:
+    *OS significa Operating System = Sistema Operativo en español, pero como el termino SO, no se suele asociar comúnmente a eso, es por eso que se utiliza de forma universal el termino OS.
+    *El OS Android si ofrece versión para plataforma x86 y si es de código abierto, razón por la que existe el emulador BlueStacks.
+    *x86 es la plataforma de procesador utilizada por Microsoft Windows para PC, y es de la familia del 286, 386, 486, 586 (equivalente a Pentium I), 686 (equivalente a Pentium II) y después de eso ya se le conoció como x86 desde entonces, porque de otra manera ya iríamos como por el 2586 o mayor, si se le siguiera nombrando al procesador por numero consiguiente.
+    *ARM es una plataforma de procesador, utilizada por Apple para correr su iOS, al igual que algunas otras tablets y smartphones con OS Android utilizan el mismo tipo de procesador.
+    *PowerPC es una plataforma creada en conjunto por IBM, Motorola y Apple, y es utilizada por Linux, y antes era utilizada por Apple. Para su eBook y otras PCs de su fabricación, igualmente el procesador de la consola de juegos Xbox 360 es del mismo tipo.
+    *Java es un virtualizador de aplicaciones, utilizado por muchos sitios web y programas, el cual suele ser incluso utilizado como OS en algunos Smartphones.
+
+
+
+
+---------------------------------
+vmware-player-vs-virtualbox-quien-ofrece-mejor-rendimento
+
+Para los tests se ha utilizado la herramienta de benchmark de Phoronix.
+
+Conclusión
+
+Según los tests de rendimiento se ha podido ver cómo VMware Player obtiene mejor rendimiento en el uso de la memoria y de la CPU. En cuanto al rendimiento del disco duro ambas aplicaciones obtienes resultados casi idénticos. Si tuviéramos que elegir una aplicación para virtualizar sería complicado. Ambas ofrecen resultados muy similares (incluso VirtualBox ha mejorado en rendimiento con la versión 5.0), por lo que desde nuestro punto de vista personal nos quedaríamos con la versión 5.0 de VirtualBox ya que, entre otras cosas, se trata de software libre.
+
+
+------------------------------
+
+Ref:
+
+https://www.welivesecurity.com/la-es/2014/07/28/virtualizacion-o-emulacion-esa-es-la-cuestion/
+
+https://www.muycomputer.com/2009/08/17/actualidadnoticiasvirtualizacion-o-emulacion_we9erk2xxda3ssd4b2mieg7kr30zroh9iotlju2seqz6gcbwmllea8ivwhsy8oyo/
+
+https://antispyware.gratis/diferencias-entre-un-emulador-virtualizador-y-simulador-de-sistema-operativo/
+
+https://www.redeszone.net/2015/08/22/vmware-player-vs-virtualbox-quien-ofrece-mejor-rendimento/
