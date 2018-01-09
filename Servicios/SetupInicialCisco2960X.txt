@@ -86,6 +86,23 @@ Configurar Vlan's:
 # name GTD-INTERNET
 # exit
 
+------------------
+SW-102#configure term
+Enter configuration commands, one per line.  End with CNTL/Z.
+SW-102(config)#vlan 205
+VTP VLAN configuration not allowed when device is in CLIENT mode.
+
+SW-102#conf term
+Enter configuration commands, one per line.  End with CNTL/Z.
+SW-102(config)#vtp mode server
+Setting device to VTP Server mode for VLANS.
+SW-102(config)#vlan 205
+SW-102(config-vlan)#name Gestion-Openshift
+SW-102(config-vlan)#exit
+SW-102(config)#vlan 206              
+SW-102(config-vlan)#name Produccion-Openshift
+SW-102(config-vlan)#exit
+
 ---------------------------
 Crear agregaciones de enlace
 
