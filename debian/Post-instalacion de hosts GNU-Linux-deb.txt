@@ -93,18 +93,20 @@ Se recomienda instalar los siguientes paquetes para poder configurar adecuadamen
 ethtool
 iptables
 iproute
-vlan
-ifenslave
 bsdutils
+dnsutils
 fail2ban
 firmware-linux-free
 firmware-linux-nonfree
+
+vlan
+ifenslave
 bridge-utils
-dnsutils
 net-tools
 
 
-apt-get -y install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils
+apt-get -y install ethtool iptables iproute bsdutils dnsutils fail2ban firmware-linux-free firmware-linux-nonfree
+
 
 En XEN máquinas paravirtualizadas x86_64 e instalación por método netinstall se deben instalar también los siguientes paquetes:
 
@@ -235,6 +237,10 @@ Crear un enlace simbólico:
 Ahora crear el archivo /etc/rc.local con el siguiente contenido:
 
 #!/bin/bash 
+
+exit 0
+
+
  
 Ahora le damos permisos 755
 
@@ -242,10 +248,37 @@ Ahora le damos permisos 755
 
 Habilitar, ejecutar y verificar el status:
 
-# systemctl enable rc-local.service 
+# systemctl enable rc-local.service
+
+~# systemctl enable rc-local.service
+The unit files have no installation config (WantedBy, RequiredBy, Also, Alias
+settings in the [Install] section, and DefaultInstance for template units).
+This means they are not meant to be enabled using systemctl.
+Possible reasons for having this kind of units are:
+1) A unit may be statically enabled by being symlinked from another unit's
+   .wants/ or .requires/ directory.
+2) A unit's purpose may be to act as a helper for some other unit which has
+   a requirement dependency on it.
+3) A unit may be started when needed via activation (socket, path, timer,
+   D-Bus, udev, scripted systemctl call, ...).
+4) In case of template units, the unit is meant to be enabled with some
+   instance name specified.
+~#
+ 
 # systemctl start rc-local.service 
 # systemctl status rc-local.service 
 
+~# systemctl status rc-local.service
+● rc-local.service - /etc/rc.local Compatibility
+   Loaded: loaded (/etc/systemd/system/rc-local.service; enabled; vendor preset: enabled)
+  Drop-In: /lib/systemd/system/rc-local.service.d
+           └─debian.conf
+   Active: active (exited) since Thu 2018-01-11 12:55:24 -03; 13s ago
+  Process: 1107 ExecStart=/etc/rc.local start (code=exited, status=0/SUCCESS)
+
+ene 11 12:55:24 reverse systemd[1]: Starting /etc/rc.local Compatibility...
+ene 11 12:55:24 reverse systemd[1]: Started /etc/rc.local Compatibility.
+~# 
 
 
 6.2 Optimizaciones:
@@ -270,12 +303,12 @@ Nota: En el caso de hosts paravirtualizados este ajuste se hace automáticamente
 Verificar con cat /proc/mounts, ejemplo:
 
 ~# cat /proc/mounts | grep ext4
-/dev/cciss/c0d0p1 / ext4 rw,relatime,errors=remount-ro,data=ordered 0 0
+/dev/xvda1 / ext4 rw,relatime,errors=remount-ro,data=ordered 0 0
 
 ~# mount -o remount,noatime,nodiratime,errors=remount-ro /
 
 ~# cat /proc/mounts | grep ext4
-/dev/cciss/c0d0p1 / ext4 rw,noatime,nodiratime,errors=remount-ro,data=ordered 0 0
+/dev/xvda1 / ext4 rw,noatime,nodiratime,errors=remount-ro,data=ordered 0 0
  
 
 
@@ -286,7 +319,11 @@ Verificar el valor actual de Entropía.
 
 cat /proc/sys/kernel/random/entropy_avail
 
-El resultado debe estar en el rango 3000 - 3900.
+El resultado debe estar en el rango 3000 - 3900 para máquinas físicas.
+Resultado en máquina virtual:
+
+cat /proc/sys/kernel/random/entropy_avail
+761
 
 
 
@@ -307,6 +344,10 @@ Activar cambios:
 
 sysctl -p
 
+
+Verificar (Máquina virtual):
+~# cat /proc/sys/kernel/random/entropy_avail
+886
 
 
 apt-get -y install rng-tools
@@ -337,33 +378,41 @@ HRNGDEVICE=/dev/urandom
 
 Activar:
 
-systemctl enable rng-tools
-Synchronizing state for rng-tools.service with sysvinit using update-rc.d...
-Executing /usr/sbin/update-rc.d rng-tools defaults
-Executing /usr/sbin/update-rc.d rng-tools enable
+~# systemctl enable rng-tools.service
+rng-tools.service is not a native service, redirecting to systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable rng-tools
+
 
 Iniciar:
 
-systemctl restart rng-tools
+~# systemctl start rng-tools.service
+
 
 Verificar status:
 
-~# systemctl status rng-tools
+~# systemctl status rng-tools.service
 ● rng-tools.service
    Loaded: loaded (/etc/init.d/rng-tools; generated; vendor preset: enabled)
-   Active: active (running) since Tue 2017-12-19 16:43:30 -03; 5s ago
+   Active: active (running) since Thu 2018-01-11 13:09:15 -03; 5s ago
      Docs: man:systemd-sysv-generator(8)
-  Process: 4653 ExecStart=/etc/init.d/rng-tools start (code=exited, status=0/SUCCESS)
+  Process: 1377 ExecStart=/etc/init.d/rng-tools start (code=exited, status=0/SUCCESS)
     Tasks: 4 (limit: 4915)
    CGroup: /system.slice/rng-tools.service
-           └─4655 /usr/sbin/rngd -r /dev/urandom
+           └─1379 /usr/sbin/rngd -r /dev/urandom
 
-dic 19 16:43:30 fimbrethil systemd[1]: Starting rng-tools.service...
-dic 19 16:43:30 fimbrethil rng-tools[4653]: Starting Hardware RNG entropy gatherer daemon: rngd.
-dic 19 16:43:30 fimbrethil rngd[4655]: rngd 2-unofficial-mt.14 starting up...
-dic 19 16:43:30 fimbrethil rngd[4655]: entropy feed to the kernel ready
-dic 19 16:43:30 fimbrethil systemd[1]: Started rng-tools.service.
+ene 11 13:09:15 reverse systemd[1]: Starting rng-tools.service...
+ene 11 13:09:15 reverse rng-tools[1377]: Starting Hardware RNG entropy gatherer daemon: rngd.
+ene 11 13:09:15 reverse rngd[1379]: rngd 2-unofficial-mt.14 starting up...
+ene 11 13:09:15 reverse systemd[1]: Started rng-tools.service.
+ene 11 13:09:15 reverse rngd[1379]: entropy feed to the kernel ready
 ~# 
+
+
+Y verificar por última vez:
+
+~# cat /proc/sys/kernel/random/entropy_avail
+3104
+
 
 
 6.2.3 Actualización del firmware microcode de la CPU: - Revisar -
@@ -553,7 +602,7 @@ Luego de editar sysctl.conf, se debe ejecutar "sysctl -p" para aplicar los cambi
 
 # sysctl -p
 
-root@elendil:~# sysctl -p
+~# sysctl -p
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
@@ -566,17 +615,19 @@ net.ipv6.conf.vlan103.disable_ipv6 = 1
 
 6.3.1 Servicio SSH
 
+-----------------------
 No permitir acceso a la cuenta “root”, solo acceso a cuentas no privilegiadas. Editar el archivo "/etc/ssh/sshd_config" y cambiar la opción “PermitRoolLogin yes” a “no”:
 
 PermitRootLogin no
+-------------------------
 
 Ocultar Debian Banner (Versión de SO GNU/Debian):
 
-Editar "/etc/ssh/sshd_config" y agregar "DebianBanner no" después de la línea "#Banner /etc/issue.net"
+Editar "/etc/ssh/sshd_config" y agregar en la linea 111 "DebianBanner no" después de la línea "#Banner none"
 
 nano /etc/ssh/sshd_config
 
-#Banner /etc/issue.net
+#Banner none
 DebianBanner no
 
 Reiniciar servicio:
@@ -638,16 +689,25 @@ maxretry = 3
 Para el servicio SSH se busca la sección SSH y se modifica ­ bajo se Sección "JAILS":
 Se habilita el servicio con "enable = true" y se sugiere un Findtime de 1 hora (findtime = 3600) que es el tiempo de la ventana en que busca los errores de conexión.
 
-[ssh]
+[sshd]
+
+port    = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s
+
+Debe quedar así:
+
+[sshd]
 
 enabled = true
-port    = ssh
-filter  = sshd
 findtime = 3600
-logpath  = /var/log/auth.log
 maxretry = 3
+port    = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s
 
-En JESSIE se reinicia con:
+
+Reinicia con:
 
  systemctl restart fail2ban
 
