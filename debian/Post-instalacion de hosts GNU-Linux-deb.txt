@@ -128,6 +128,38 @@ En sistemas GUI:
 apt-get -y install open-vm-tools-desktop
 
 
+2.3 Huso horario
+
+Verificar zona horaria u huso horario:
+
+~# cat /etc/timezone
+America/Santiago
+
+Verificar fecha:
+
+~# date
+Fri Jan 12 15:50:12 UTC 2018
+~#
+
+Notar que se entrega la hora en UTC, para cambiar a huso local ejecutar lo sgte:
+
+dpkg-reconfigure tzdata
+
+Se inicia un dialogo, seleccionar región, luego pais o ciudad y finalizar.
+
+~# dpkg-reconfigure tzdata
+
+Current default time zone: 'America/Santiago'
+Local time is now:      Fri Jan 12 12:52:20 -03 2018.
+Universal Time is now:  Fri Jan 12 15:52:20 UTC 2018.
+
+
+Ahora el comando "date" desliega la hora local:
+
+~# date
+Fri Jan 12 12:52:39 -03 2018
+
+
 2.4 Sincronizar reloj de sistema mediante NTP
 
 Sincronizar tiempo mediante systemd-timesyncd en Stretch:
@@ -890,4 +922,5 @@ Listo el equipo ya está Inventariado.
 
 5. Referencias: 
 
-N/A.
+https://servidordebian.org/
+
