@@ -1,0 +1,127 @@
+Logearse como root:
+
+root@reverse:~# cd easy-rsa/
+root@reverse:~/easy-rsa# 
+
+root@reverse:~/easy-rsa# source ./vars
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+root@reverse:~/easy-rsa# 
+
+root@reverse:~/easy-rsa# echo $KEY_NAME
+RUMBOX
+root@reverse:~/easy-rsa# 
+
+OK
+
+
+Ahora crear certificado cliente:
+
+root@reverse:~/easy-rsa# ./build-key mcampos02
+Generating a 4096 bit RSA private key
+..........++
+...................................................++
+writing new private key to 'mcampos02.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [CL]:
+State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [Santiago]:
+Organization Name (eg, company) [RumBox]:
+Organizational Unit Name (eg, section) [RUMBOX]:
+Common Name (eg, your name or your server's hostname) [mcampos02]:
+Name [RUMBOX]:
+Email Address [mcampos@debian.cl]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:mcampos02
+An optional company name []:RUMBOX
+Using configuration from /root/easy-rsa/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CL'
+stateOrProvinceName   :PRINTABLE:'SANTIAGO'
+localityName          :PRINTABLE:'Santiago'
+organizationName      :PRINTABLE:'RumBox'
+organizationalUnitName:PRINTABLE:'RUMBOX'
+commonName            :PRINTABLE:'mcampos02'
+name                  :PRINTABLE:'RUMBOX'
+emailAddress          :IA5STRING:'mcampos@debian.cl'
+Certificate is to be certified until Sep 20 20:09:11 2027 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+root@reverse:~/easy-rsa#
+
+root@reverse:~/easy-rsa# cd
+root@reverse:~# ls -l
+total 8
+drwxr-xr-x 3 root root 4096 sep 22 14:23 easy-rsa
+drwxr-xr-x 2 root root 4096 sep 22 16:52 openvpn.client
+
+
+
+root@reverse:~# cp -rf openvpn.client/ mcampos02
+root@reverse:~# ls -l
+total 12
+drwxr-xr-x 3 root root 4096 sep 22 14:23 easy-rsa
+drwxr-xr-x 2 root root 4096 sep 22 17:11 mcampos02
+drwxr-xr-x 2 root root 4096 sep 22 16:52 openvpn.client
+root@reverse:~/mcampos02#
+
+root@reverse:~# cp ~/easy-rsa/keys/mcampos02.{crt,key} mcampos02/
+
+root@reverse:~# cp ~/easy-rsa/keys/mcampos02.{crt,key} mcampos02/
+root@reverse:~# cd mcampos02/
+root@reverse:~/mcampos02# ls -l
+total 28
+-rw-r--r-- 1 root root 2407 sep 26 13:24 ca.crt
+-rw-r--r-- 1 root root  275 sep 26 13:24 client.ovpn
+-rw-r--r-- 1 root root 8179 sep 26 13:24 mcampos02.crt
+-rw------- 1 root root 3272 sep 26 13:24 mcampos02.key
+drwxr-xr-x 2 root root 4096 sep 26 13:24 OpenVPN-2.3.17
+-rw------- 1 root root  636 sep 26 13:24 ta.key
+root@reverse:~/mcampos02# 
+
+
+cd..
+
+
+root@reverse:~# zip -r mcampos02.zip mcampos02/
+  adding: mcampos02/ (stored 0%)
+  adding: mcampos02/client.ovpn (deflated 27%)
+  adding: mcampos02/mcampos02.key (deflated 24%)
+  adding: mcampos02/ta.key (deflated 40%)
+  adding: mcampos02/ca.crt (deflated 32%)
+  adding: mcampos02/OpenVPN-2.3.17/ (stored 0%)
+  adding: mcampos02/OpenVPN-2.3.17/InstalarOpenVPNenWindows.avi (deflated 19%)
+  adding: mcampos02/OpenVPN-2.3.17/openvpn-install-2.3.17-I601-x86_64.exe (deflated 3%)
+  adding: mcampos02/OpenVPN-2.3.17/openvpn-install-2.3.17-I601-i686.exe (deflated 3%)
+  adding: mcampos02/mcampos02.crt (deflated 46%)
+root@reverse:~#
+
+root@reverse:~# ls -l
+total 24
+drwxr-xr-x 3 root root  4096 sep 22 14:23 easy-rsa
+drwxr-xr-x 2 root root  4096 sep 22 17:17 mcampos02
+-rw-r--r-- 1 root root 10132 sep 22 17:19 mcampos02.zip
+drwxr-xr-x 2 root root  4096 sep 22 16:52 openvpn.client
+root@reverse:~# 
+
+
+
+
+
+
+
+

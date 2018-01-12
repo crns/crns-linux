@@ -1,0 +1,111 @@
+root@thorin:/etc/network/if-pre-up.d# cat iptables 
+#!/bin/bash
+/sbin/iptables-restore < /etc/iptables.rules/iptables.up.rules
+root@thorin:/etc/network/if-pre-up.d# 
+
+
+root@thorin:/etc/iptables.rules# cat iptables.crn.rules 
+*nat
+#
+#  CLientes Gerencia Tecnica   #
+#
+### MTT ###
+-A POSTROUTING -d 172.25.1.0/24 -j SNAT --to-source 192.168.7.192
+-A POSTROUTING -o tun0 -d 10.8.0.0/24 -j MASQUERADE
+#
+## Mesa Ayuda /Operaciones ##
+#
+-A POSTROUTING -s 192.168.19.0/24 -o eth0 -j MASQUERADE 
+#
+# Cautiva
+#
+-A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+-A POSTROUTING -s 10.8.0.0/24 -o eth1 -j MASQUERADE
+#
+COMMIT
+*filter
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -s 127.0.0.0/8 -j ACCEPT
+-A INPUT -s 192.168.7.192 -j ACCEPT
+## MTT
+-A INPUT -s 163.247.52.14/32 -j ACCEPT
+##
+-A INPUT -p 47 -j ACCEPT
+-A INPUT -p 51 -j ACCEPT
+-A INPUT -p 52 -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i eth0 -p tcp -m multiport --dports 22,80,139,443,445,500,1723,3306,4500,5666 -j ACCEPT
+-A INPUT -i eth1 -p tcp -m multiport --dports 80,443,500,1723,4500 -j ACCEPT
+-A INPUT -p udp -m multiport --dports 123,500,1194,4500 -j ACCEPT
+#
+-A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -p 47 -j ACCEPT
+-A FORWARD -p 51 -j ACCEPT
+-A FORWARD -p 52 -j ACCEPT
+-A FORWARD -p icmp -j ACCEPT
+-A FORWARD -p tcp -m multiport --dports 22,80,443,500,1433,1723,3306,4500,8080 -j ACCEPT
+-A FORWARD -p tcp -m multiport --dports 139,445,3389 -j ACCEPT
+-A FORWARD -p udp -m multiport --dports 123,500,1194,4500 -j ACCEPT
+#
+# DBNET
+#
+-A FORWARD -s 192.168.7.78/32 -d 192.168.7.53/32 -o eth0 -j ACCEPT
+-A FORWARD -s 192.168.7.78/32 -d 192.168.7.174/32 -o eth0 -j ACCEPT
+#
+#
+# BackupExec               #
+#
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.99/32 -i tun0 -j ACCEPT
+#-A FORWARD -s 192.168.7.99/32 -d 10.8.0.0/16 -i eth0 -j ACCEPT
+#
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.41/32 -i tun0 -j ACCEPT
+#-A FORWARD -s 192.168.7.41/32 -d 10.8.0.0/16 -i eth0 -j ACCEPT
+### NTP-Server ###
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.115/32 -i tun0 -j ACCEPT
+#-A FORWARD -s 192.168.7.115/32 -d 10.8.0.0/16 -i eth0 -j ACCEPT
+### E-COM ###
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.153/32 -i tun0 -j ACCEPT
+#-A FORWARD -s 192.168.7.153/32 -d 10.8.0.0/16 -i eth0 -j ACCEPT
+#
+# Acceso Cautiva
+#
+-A FORWARD -s 10.8.0.0/16 -d 192.168.5.0/24 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.220/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.221/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.222/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.223/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.224/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.225/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.226/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.227/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.228/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.229/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.230/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.231/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.232/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.233/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.234/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.235/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -d 192.168.7.236/32 -i tun0 -j ACCEPT
+-A FORWARD -s 10.8.0.0/16 -i tun0 -j ACCEPT
+#
+-A FORWARD -s 192.168.7.0/24 -d 10.8.0.0/16 -i eth0 -j ACCEPT
+#
+# Mesa Ayuda / Operaciones #
+#
+-A FORWARD -s 192.168.19.0/24 -d 192.168.7.6/32 -o eth0 -j ACCEPT
+-A FORWARD -s 192.168.19.0/24 -d 192.168.7.160/32 -o eth0 -j ACCEPT
+-A FORWARD -s 192.168.19.0/24 -d 192.168.7.147/32 -o eth0 -j ACCEPT
+-A FORWARD -s 192.168.19.0/24 -d 192.168.7.190/32 -o eth0 -j ACCEPT
+-A FORWARD -s 192.168.19.0/24 -d 192.168.7.191/32 -o eth0 -j ACCEPT
+#Soporte Sn Joaquin permite acceso al SRV-SJDATA
+#####-A FORWARD -s 192.168.19.52/32 -d 192.168.7.235/32 -o eth0 -j ACCEPT
+#####-A FORWARD -s 192.168.19.52/32 -d 192.168.2.12/32 -o eth0 -j ACCEPT
+-A FORWARD -s 192.168.19.0/24 -o eth0 -j DROP
+#Se bloquea cualquier otro trafico
+-A FORWARD -p tcp -m multiport --dports 22,80,443,500,1723,3306,4500,8080 -j ACCEPT
+-A FORWARD -p tcp -m multiport --dports 139,445,3389 -j ACCEPT
+-A FORWARD -p udp -m multiport --dports 123,500,1194,4500 -j ACCEPT
+-A FORWARD -m state --state NEW -j DROP
+COMMIT
+

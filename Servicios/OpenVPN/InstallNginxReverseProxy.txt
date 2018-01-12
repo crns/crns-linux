@@ -1,0 +1,36 @@
+root@reverse:~# apt-get update
+Ign:1 http://ftp.cl.debian.org/debian stretch InRelease
+Obj:2 http://ftp.cl.debian.org/debian stretch-updates InRelease
+Obj:3 http://ftp.cl.debian.org/debian stretch Release  
+Des:5 http://security.debian.org stretch/updates InRelease [62,9 kB]
+Descargados 62,9 kB en 1s (34,7 kB/s)                 
+Leyendo lista de paquetes... Hecho
+root@reverse:~# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Calculando la actualización... Hecho
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+root@reverse:~#
+
+
+root@reverse:~# apt-get install nginx
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  fontconfig-config fonts-dejavu-core libfontconfig1 libgd3 libjbig0 libjpeg62-turbo libnginx-mod-http-auth-pam libnginx-mod-http-dav-ext
+  libnginx-mod-http-echo libnginx-mod-http-geoip libnginx-mod-http-image-filter libnginx-mod-http-subs-filter libnginx-mod-http-upstream-fair
+  libnginx-mod-http-xslt-filter libnginx-mod-mail libnginx-mod-stream libtiff5 libwebp6 libxpm4 libxslt1.1 nginx-common nginx-full
+Paquetes sugeridos:
+  libgd-tools fcgiwrap nginx-doc ssl-cert
+Se instalarán los siguientes paquetes NUEVOS:
+  fontconfig-config fonts-dejavu-core libfontconfig1 libgd3 libjbig0 libjpeg62-turbo libnginx-mod-http-auth-pam libnginx-mod-http-dav-ext
+  libnginx-mod-http-echo libnginx-mod-http-geoip libnginx-mod-http-image-filter libnginx-mod-http-subs-filter libnginx-mod-http-upstream-fair
+  libnginx-mod-http-xslt-filter libnginx-mod-mail libnginx-mod-stream libtiff5 libwebp6 libxpm4 libxslt1.1 nginx nginx-common nginx-full
+0 actualizados, 23 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 4.305 kB de archivos.
+Se utilizarán 9.517 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+

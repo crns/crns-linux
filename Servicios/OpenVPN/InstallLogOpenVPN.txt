@@ -1,0 +1,377 @@
+apt-get install openvpn
+
+root@reverse:~# apt-get install openvpn
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  easy-rsa libccid liblzo2-2 libpcsclite1 libpkcs11-helper1 opensc opensc-pkcs11 pcscd
+Paquetes sugeridos:
+  pcmciautils resolvconf
+Se instalarán los siguientes paquetes NUEVOS:
+  easy-rsa libccid liblzo2-2 libpcsclite1 libpkcs11-helper1 opensc opensc-pkcs11 openvpn pcscd
+0 actualizados, 9 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 2.083 kB de archivos.
+Se utilizarán 5.826 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+...
+Configurando openvpn (2.4.0-6+deb9u1) ...
+[ ok ] Restarting virtual private network daemon.:.
+Created symlink /etc/systemd/system/multi-user.target.wants/openvpn.service → /lib/systemd/system/openvpn.service.
+Procesando disparadores para libc-bin (2.24-11+deb9u1) ...
+Procesando disparadores para systemd (232-25+deb9u1) ...
+root@reverse:~# 
+
+
+root@reverse:~# cp -rfa /usr/share/easy-rsa ./
+root@reverse:~# ls -l
+total 4
+drwxr-xr-x 2 root root 4096 sep 22 14:15 easy-rsa
+root@reverse:~# 
+
+
+root@reverse:~# cd easy-rsa/
+root@reverse:~/easy-rsa#
+
+cp vars{,.orig}
+
+root@reverse:~/easy-rsa# cp vars{,.orig}
+root@reverse:~/easy-rsa#
+
+
+
+Establecer los valores por default para easy-rsa. Por ejemplo.
+KEY_SIZE=4096
+KEY_COUNTRY="CL"
+KEY_PROVINCE="SANTIAGO"
+KEY_CITY="Santiago"
+KEY_ORG="RUMBOX"
+KEY_EMAIL="mcampos@debian.cl"
+
+nano vars
+
+root@reverse:~/easy-rsa# nano vars
+root@reverse:~/easy-rsa# 
+
+
+# source ./vars
+
+root@reverse:~/easy-rsa# source ./vars
+**************************************************************
+  No /root/easy-rsa/openssl.cnf file could be found
+  Further invocations will fail
+**************************************************************
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+root@reverse:~/easy-rsa# 
+
+root@reverse:~/easy-rsa# cp openssl-1.0.0.cnf openssl.cnf
+root@reverse:~/easy-rsa#
+
+root@reverse:~/easy-rsa# source ./vars
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+root@reverse:~/easy-rsa# 
+
+root@yugo-clon02:~/easy-rsa# ./clean-all
+
+
+# ./build-ca
+
+./build-key-server [server-name]
+
+./build-key-server reverse
+
+root@reverse:~/easy-rsa# ./build-key-server reverse
+Generating a 4096 bit RSA private key
+.............................................................................++
+...........................................................++
+writing new private key to 'reverse.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [CL]:
+State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [Santiago]:
+Organization Name (eg, company) [RumBox]:
+Organizational Unit Name (eg, section) [RUMBOX]:
+Common Name (eg, your name or your server's hostname) [reverse]:
+Name [RUMBOX]:
+Email Address [mcampos@debian.cl]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:RUMBOX
+Using configuration from /root/easy-rsa/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CL'
+stateOrProvinceName   :PRINTABLE:'SANTIAGO'
+localityName          :PRINTABLE:'Santiago'
+organizationName      :PRINTABLE:'RumBox'
+organizationalUnitName:PRINTABLE:'RUMBOX'
+commonName            :PRINTABLE:'reverse'
+name                  :PRINTABLE:'RUMBOX'
+emailAddress          :IA5STRING:'mcampos@debian.cl'
+Certificate is to be certified until Sep 20 17:42:07 2027 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+root@reverse:~/easy-rsa# 
+
+
+
+root@reverse:~/easy-rsa# ./build-ca
+Generating a 4096 bit RSA private key
+...........................................................++
+.....................................................................................................................................................................................................++
+writing new private key to 'ca.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [CL]:
+State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [Santiago]:
+Organization Name (eg, company) [RumBox]:
+Organizational Unit Name (eg, section) [RUMBOX]:
+Common Name (eg, your name or your server's hostname) [RumBox CA]:
+Name [RUMBOX]:
+Email Address [mcampos@debian.cl]:
+root@reverse:~/easy-rsa# 
+
+
+# ./build-dh
+
+root@reverse:~/easy-rsa# ./build-dh
+Generating DH parameters, 4096 bit long safe prime, generator 2
+This is going to take a long time
+......................................................................................................................+.............................................................................+.+.............................................................................................................................................................................+..........................................................................................................................................................................................................................................................................................................................................................................................................................................................+...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................+..................................................................................................................................................+...................................+............+..........................+....+......................+............................................................................+.....................................................................................................................................................+................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................+................................................................+............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................+......................................................................................................................+...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................+.................................................................................................................................................................................................................................................................................................................................................................................................................+....................+........+...................+...................................................................................................................................................................................................................................................................................................................................................................................+..........................................................................................................................................................................................+...............................................................................................................................................................................................................................................+..............................................................................................................................................................................................................................................................................................................................................................+........+................................................................+..................................................................................+.......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................+..................................................................................................................................................................................................................................................................+................................................................................................................+..............................+...................................................................................................................................................................................................................................................+...............................+.......................................................................................................................................................................................................................................................................................................................+........................................................................................+...............................................+....................................................................................................................................................+............................................................................................................................................................................................................................................+.......................................+........................................................+...............................................................+.............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................+.................+..........................................................................................................+............................................................................................................................................................................................................................................................................+............................................................................................................................................................+....................................................................................................................................................................................................................................................................................................................................................................+..........................................................................................................................................................................................................................................................................................................................+.........................................................++*++*
+
+---------------
+
+Generate the client certificate. Substitute the ‘client name’ with your client-name.
+
+# ./build-key mcampos
+
+root@reverse:~/easy-rsa# ./build-key mcampos
+Generating a 4096 bit RSA private key
+................................++
+...................................................................................++
+writing new private key to 'mcampos.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [CL]:
+State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [Santiago]:
+Organization Name (eg, company) [RumBox]:
+Organizational Unit Name (eg, section) [RUMBOX]:
+Common Name (eg, your name or your server's hostname) [mcampos]:
+Name [RUMBOX]:
+Email Address [mcampos@debian.cl]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:RUMBOX
+Using configuration from /root/easy-rsa/openssl.cnf
+Can't open /root/easy-rsa/keys/index.txt.attr for reading, No such file or directory
+139797502686464:error:02001002:system library:fopen:No such file or directory:../crypto/bio/bss_file.c:74:fopen('/root/easy-rsa/keys/index.txt.attr','r')
+139797502686464:error:2006D080:BIO routines:BIO_new_file:no such file:../crypto/bio/bss_file.c:81:
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CL'
+stateOrProvinceName   :PRINTABLE:'SANTIAGO'
+localityName          :PRINTABLE:'Santiago'
+organizationName      :PRINTABLE:'RumBox'
+organizationalUnitName:PRINTABLE:'RUMBOX'
+commonName            :PRINTABLE:'mcampos'
+name                  :PRINTABLE:'RUMBOX'
+emailAddress          :IA5STRING:'mcampos@debian.cl'
+Certificate is to be certified until Sep 20 17:36:39 2027 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+root@reverse:~/easy-rsa# 
+
+
+
+root@yugo-clon02:~/easy-rsa# openvpn --genkey --secret /root/easy-rsa/keys/ta.key
+root@yugo-clon02:~/easy-rsa# 
+
+mkdir -p /etc/openvpn/certs
+
+cp -pv /root/easy-rsa/keys/{ca.{crt,key},reverse.{crt,key},ta.key,dh4096.pem} /etc/openvpn/certs/
+
+
+root@reverse:~/easy-rsa# cp -pv /root/easy-rsa/keys/{ca.{crt,key},reverse.{crt,key},ta.key,dh4096.pem} /etc/openvpn/certs/
+'/root/easy-rsa/keys/ca.crt' -> '/etc/openvpn/certs/ca.crt'
+'/root/easy-rsa/keys/ca.key' -> '/etc/openvpn/certs/ca.key'
+'/root/easy-rsa/keys/reverse.crt' -> '/etc/openvpn/certs/reverse.crt'
+'/root/easy-rsa/keys/reverse.key' -> '/etc/openvpn/certs/reverse.key'
+'/root/easy-rsa/keys/ta.key' -> '/etc/openvpn/certs/ta.key'
+'/root/easy-rsa/keys/dh4096.pem' -> '/etc/openvpn/certs/dh4096.pem'
+root@reverse:~/easy-rsa# 
+
+
+
+
+Configurando OpenVPN Server
+
+Crear el archivo /etc/openvpn/server.conf con el sgte contenido:
+
+
+###script security 3 system
+###local 190.153.214.148 # IP Publica
+port 1194
+proto udp
+dev tun
+
+ca /etc/openvpn/certs/ca.crt
+cert /etc/openvpn/certs/reverse.crt
+key /etc/openvpn/certs/reverse.key  # This file should be kept secret
+dh /etc/openvpn/certs/dh4096.pem
+tls-auth /etc/openvpn/certs/ta.key 0  # This file is secret
+
+server 10.8.0.0 255.255.0.0
+ifconfig-pool-persist ipp.txt
+push "route 192.168.0.0 255.255.255.0"
+###push "redirect-gateway def1 bypass-dhcp"
+###push "dhcp-option DNS 8.8.8.8"
+###push "dhcp-option DNS 8.8.4.4"
+keepalive 1800 4000
+cipher DES-EDE3-CBC # Triple-DES
+comp-lzo
+max-clients 10
+###user nobody
+###group nogroup
+persist-key
+persist-tun
+#log openvpn.log
+#status openvpn-status.log
+log-append  openvpn.log
+verb 3
+mute 20
+
+----------------------
+
+root@reverse:~/easy-rsa# systemctl enable openvpn
+
+root@reverse:~/easy-rsa# systemctl enable openvpn
+Synchronizing state of openvpn.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable openvpn
+root@reverse:~/easy-rsa#
+
+root@reverse:~/easy-rsa# systemctl status openvpn
+● openvpn.service - OpenVPN service
+   Loaded: loaded (/lib/systemd/system/openvpn.service; enabled; vendor preset: enabled)
+   Active: inactive (dead)
+root@reverse:~/easy-rsa#
+
+root@reverse:~/easy-rsa# systemctl restart openvpn
+root@reverse:~/easy-rsa# systemctl status openvpn
+● openvpn.service - OpenVPN service
+   Loaded: loaded (/lib/systemd/system/openvpn.service; enabled; vendor preset: enabled)
+   Active: active (exited) since Fri 2017-09-22 15:24:49 -03; 1s ago
+  Process: 19810 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
+ Main PID: 19810 (code=exited, status=0/SUCCESS)
+
+sep 22 15:24:49 reverse systemd[1]: Starting OpenVPN service...
+sep 22 15:24:49 reverse systemd[1]: Started OpenVPN service.
+root@reverse:~/easy-rsa# systemctl
+
+----------------------
+Servidor corriendo, OK:
+
+
+root@reverse:/etc/openvpn# cat openvpn.log
+...
+Fri Sep 22 15:29:54 2017 OpenVPN 2.4.0 x86_64-pc-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [PKCS11] [MH/PKTINFO] [AEAD] built on Jun 22 2017
+Fri Sep 22 15:29:54 2017 library versions: OpenSSL 1.0.2l  25 May 2017, LZO 2.08
+Fri Sep 22 15:29:55 2017 Diffie-Hellman initialized with 4096 bit key
+Fri Sep 22 15:29:55 2017 Outgoing Control Channel Authentication: Using 160 bit message hash 'SHA1' for HMAC authentication
+Fri Sep 22 15:29:55 2017 Incoming Control Channel Authentication: Using 160 bit message hash 'SHA1' for HMAC authentication
+Fri Sep 22 15:29:55 2017 ROUTE_GATEWAY 186.10.87.113/255.255.255.248 IFACE=eth1 HWADDR=96:b8:2f:f4:94:7a
+Fri Sep 22 15:29:55 2017 TUN/TAP device tun0 opened
+Fri Sep 22 15:29:55 2017 TUN/TAP TX queue length set to 100
+Fri Sep 22 15:29:55 2017 do_ifconfig, tt->did_ifconfig_ipv6_setup=0
+Fri Sep 22 15:29:55 2017 /sbin/ip link set dev tun0 up mtu 1500
+Fri Sep 22 15:29:55 2017 /sbin/ip addr add dev tun0 local 10.8.0.1 peer 10.8.0.2
+Fri Sep 22 15:29:55 2017 /sbin/ip route add 10.8.0.0/16 via 10.8.0.2
+Fri Sep 22 15:29:55 2017 Could not determine IPv4/IPv6 protocol. Using AF_INET
+Fri Sep 22 15:29:55 2017 Socket Buffers: R=[212992->212992] S=[212992->212992]
+Fri Sep 22 15:29:55 2017 UDPv4 link local (bound): [AF_INET]186.10.87.116:1194
+Fri Sep 22 15:29:55 2017 UDPv4 link remote: [AF_UNSPEC]
+Fri Sep 22 15:29:55 2017 MULTI: multi_init called, r=256 v=256
+Fri Sep 22 15:29:55 2017 IFCONFIG POOL: base=10.8.0.4 size=16382, ipv6=0
+Fri Sep 22 15:29:55 2017 IFCONFIG POOL LIST
+Fri Sep 22 15:29:55 2017 Initialization Sequence Completed
+root@reverse:/etc/openvpn# 
+
+
+root@reverse:/etc/openvpn# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.124  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::9c7e:1fff:fe51:c4c2  prefixlen 64  scopeid 0x20<link>
+        ether 9e:7e:1f:51:c4:c2  txqueuelen 1000  (Ethernet)
+        RX packets 208858  bytes 18483287 (17.6 MiB)
+        RX errors 0  dropped 39  overruns 0  frame 0
+        TX packets 512  bytes 22544 (22.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 186.10.87.116  netmask 255.255.255.248  broadcast 186.10.87.119
+        inet6 fe80::94b8:2fff:fef4:947a  prefixlen 64  scopeid 0x20<link>
+        ether 96:b8:2f:f4:94:7a  txqueuelen 1000  (Ethernet)
+        RX packets 62120  bytes 56647916 (54.0 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 38684  bytes 3475177 (3.3 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+tun0: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1500
+        inet 10.8.0.1  netmask 255.255.255.255  destination 10.8.0.2
+        inet6 fe80::568e:b1a5:8bc0:f92  prefixlen 64  scopeid 0x20<link>
+        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen 100  (UNSPEC)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 9  bytes 432 (432.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@reverse:/etc/openvpn#
+
+
+
+

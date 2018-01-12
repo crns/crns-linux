@@ -1,0 +1,76 @@
+Como crear certifcados para conexion cliente openvpn.
+
+Primero logearse como root y cambiarse al directorio easy-rsa:
+
+cd easy-rsa/
+
+source ./vars
+
+Al ejecutarse aparece...
+
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+
+Probar que las variables están activas:
+
+echo $KEY_NAME
+RUMBOX
+
+OK, Ahora crear certificado cliente:
+
+./build-key user01
+
+...
+
+Atención aceptar todo pero al ingresar el "Common Name", se debe ingresar el nombre del cliente (hosts):
+
+Common Name (eg, your name or your server's hostname) [user01]:
+
+Luego ingresar un "Challenge password" que se deja igual al Common Name, ejemplo:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:user01
+
+Se aceptan los dialogos siguientes y se tienen los certificados creados en easy-rsa/keys.
+
+cd
+
+Desde la raiz de root copiar el directorio con los certifcados del servidor al directorio de configuración usuario/hosts OpenVPN (Nota: openvpn.client se utiliza aquí como plantilla):
+
+cp -rf openvpn.client/ user01
+
+Copiar los certificados de usuario a directorio de certificados/configuración de usuario:
+
+cp ~/easy-rsa/keys/user01.{crt,key} user01/
+
+Editar ~/user01/client.ovpn y modificar los nombres de certificados host/cliente:
+
+
+client
+dev tun
+proto udp
+remote 186.10.87.116 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+mute-replay-warnings
+ca ca.crt
+#
+cert user01.crt
+key user01.key
+#
+ns-cert-type server
+tls-auth ta.key 1
+cipher DES-EDE3-CBC
+explicit-exit-notify
+comp-lzo
+verb 3
+mute 20
+
+y guardar cambios para luego ejecutar en la raiz de root:
+
+zip -r user01.zip user01/
+
+El archivo zip user01.zip contiene la última versión estable del software cliente OpenVPN y la configuracion personalizada del cliente.
+
