@@ -29,8 +29,18 @@ root@reverse:~# cp -rfa /usr/share/easy-rsa ./
 root@reverse:~# ls -l
 total 4
 drwxr-xr-x 2 root root 4096 sep 22 14:15 easy-rsa
+root@reverse:~#
+
+ 
+Alternativa:
+
+~# ln -s /usr/share/easy-rsa ./
+root@reverse:~# ls -l
+total 0
+lrwxrwxrwx 1 root root 19 ene 12 14:49 easy-rsa -> /usr/share/easy-rsa
 root@reverse:~# 
 
+------------------------
 
 root@reverse:~# cd easy-rsa/
 root@reverse:~/easy-rsa#
@@ -40,11 +50,11 @@ cp vars{,.orig}
 root@reverse:~/easy-rsa# cp vars{,.orig}
 root@reverse:~/easy-rsa#
 
-
+Editar vars:
 
 Establecer los valores por default para easy-rsa. Por ejemplo.
-KEY_SIZE=4096
-KEY_COUNTRY="CL"
+KEY_SIZE=4096 (Linea 53)
+KEY_COUNTRY="CL" (desde Linea 64)
 KEY_PROVINCE="SANTIAGO"
 KEY_CITY="Santiago"
 KEY_ORG="RUMBOX"
@@ -77,6 +87,19 @@ root@yugo-clon02:~/easy-rsa# ./clean-all
 
 
 # ./build-ca
+
+...
+-----
+Country Name (2 letter code) [CL]:
+State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [SANTIAGO]:
+Organization Name (eg, company) [RUMBOX]:
+Organizational Unit Name (eg, section) []:Infraestructura TI
+Common Name (eg, your name or your server's hostname) [RUMBOX CA]:reverse
+Name [EasyRSA]:
+Email Address [mcampos.mact@gmail.com]:
+root@reverse:~/easy-rsa# 
+
 
 ./build-key-server [server-name]
 
@@ -371,6 +394,39 @@ tun0: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 root@reverse:/etc/openvpn#
+
+~/easy-rsa# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether c6:80:cc:7b:d7:ad brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.124/24 brd 192.168.0.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c480:ccff:fe7b:d7ad/64 scope link 
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether c6:2d:8b:4f:1a:c1 brd ff:ff:ff:ff:ff:ff
+    inet 186.10.87.116/29 brd 186.10.87.119 scope global eth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c42d:8bff:fe4f:1ac1/64 scope link 
+       valid_lft forever preferred_lft forever
+4: tun0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN group default qlen 100
+    link/none 
+    inet 10.8.0.1 peer 10.8.0.2/32 scope global tun0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::cdeb:6d94:ed0c:f09d/64 scope link flags 800 
+       valid_lft forever preferred_lft forever
+root@reverse:~/easy-rsa# 
+
+post-configuración:
+
+Activar rc.local para reglas de NAT OpenVPN LAN
+Activar forwarding ipv4
+
 
 
 
