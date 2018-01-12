@@ -1,0 +1,4 @@
+xen-create-image --pygrub --dist=stretch --hostname=theoden --ip=192.168.7.172 --mac=00:21:4d:d8:ad:68 --vcpus=4 --memory=1Gb --size=100Gb --swap=1Gb
+
+
+190.153.214.146

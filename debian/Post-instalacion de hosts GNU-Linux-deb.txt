@@ -138,29 +138,9 @@ systemd-timesyncd viene con systemd.
 
 Configuración:
 
-El archivo de configuración de systemd-timesyncd es /etc/systemd/timesyncd.conf.
+Editar el archivo /etc/systemd/timesyncd.conf.
 
-#  This file is part of systemd.
-#
-#  systemd is free software; you can redistribute it and/or modify it
-#  under the terms of the GNU Lesser General Public License as published by
-#  the Free Software Foundation; either version 2.1 of the License, or
-#  (at your option) any later version.
-#
-# Entries in this file show the compile time defaults.
-# You can change settings by editing this file.
-# Defaults can be restored by simply deleting this file.
-#
-# See timesyncd.conf(5) for details.
-
-[Time]
-#NTP=
-#FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
-
-
-
-
-Para agregar servidores de tiempo se agrega al final la línea "Servers=ntp.shoa.cl", ejemplo:
+Para agregar servidores de tiempo se descomenta y modifica la línea "#NTP=", ejemplo:
 
 [Time]
 NTP=ntp.shoa.cl
@@ -333,7 +313,7 @@ cat /proc/cpuinfo | grep -i rdrand | echo $?
  
 El resultado debe ser 0 si la CPU soporta la instruccion rdran, entonces activar soporte rdran en kernel.
 
-nano /etc/sysctl.conf
+Editar /etc/sysctl.conf y agregar al final:
 
 # Agrega soporte intel rdrand para suministrar entropía por hardware.
 kernel.random.read_wakeup_threshold = 2048
