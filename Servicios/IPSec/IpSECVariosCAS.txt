@@ -285,3 +285,10 @@ Conecion IpSEC INTESIS SUBDERE:
 
 
 
+######################################
+Ref:
+
+http://socpuppet.blogspot.cl/2014/05/openswan-to-fortigate-route-based-vpn.html
+
+http://tomatousb.org/forum/t-677831/tutorial-ipsec-site-to-site-vpn-with-strongswan
+

@@ -1,0 +1,64 @@
+Descargas de software para Windows:
+
+MD5 & SHA Checksum Utility:
+https://raylin.wordpress.com/downloads/md5-sha-1-checksum-utility/
+
+HashCheck:
+http://code.kliu.org/hashcheck/
+
+GIT:
+http://gitforwindows.org/
+
+Virtualbox:
+https://www.virtualbox.org/wiki/Downloads
+
+Debian 9:
+https://www.debian.org/CD/
+
+Debian Netinstall:
+https://www.debian.org/CD/netinst/
+
+Mirror descrga i386:
+https://cdimage.debian.org/debian-cd/current/i386/iso-cd/
+
+Mirror descarga amd64:
+https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
+
+
+CentOS:
+
+https://www.centos.org/download/
+
+Minimal ISO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GTD
+
+38 UF 44 U (0,8 UF)
+
+1,8 UF U
