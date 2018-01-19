@@ -425,6 +425,7 @@ Y verificar por última vez:
 ~# cat /proc/sys/kernel/random/entropy_avail
 3104
 
+ref: http://onexuan.com/blog/2014/01/android-entropy-of-opg-pro/
 
 
 6.2.3 Actualización del firmware microcode de la CPU: - Revisar -
