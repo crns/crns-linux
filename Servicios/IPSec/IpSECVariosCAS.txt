@@ -292,3 +292,83 @@ http://socpuppet.blogspot.cl/2014/05/openswan-to-fortigate-route-based-vpn.html
 
 http://tomatousb.org/forum/t-677831/tutorial-ipsec-site-to-site-vpn-with-strongswan
 
+
+
+
+################
+
+Intesis final:
+
+/etc/ipsec.d/subdere.conf
+
+#
+# Conexion a SUBDERE INTESIS 
+# Por crns
+#
+
+conn subdere
+        #
+        # Opciones
+        #
+        type=tunnel
+        ###aggrmode=no
+        compress=no
+        ###remote_peer_type=cisco
+        auto=add
+        ###dpddelay=30
+        ###dpdtimeout=120
+        ###dpdaction=clear
+        #
+        # Fase 1.
+        # 
+        ikelifetime=8h
+        authby=secret
+	keyexchange=ike
+	ike=3des-sha1-modp1024!
+        #
+        # Fase 2.
+        #
+	keylife=60m
+	esp=3des-sha1-modp1024!
+        #
+        # Remoto.
+        #
+        ###rightid=@subdere.cl
+        right=190.98.247.22
+        rightsubnet=10.111.72.0/27
+        #
+        # Local.
+        #
+        ###leftid=@theoden.caschile.cl
+        left=190.153.214.146
+        leftsubnet=192.168.7.0/24
+
+
+/etc/ipsec.secrets
+
+# This file holds shared secrets or RSA private keys for authentication.
+
+# RSA private key for this host, authenticating it to any other host
+# which knows the public part.
+
+# this file is managed with debconf and will contain the automatically created private key
+###include /var/lib/strongswan/ipsec.secrets.inc
+%any %any : PSK "SUB.,,25TREm"
+
+
+/etc/rc.local 
+
+#!/bin/bash
+
+#
+# POLITICA IPSec para red INTESIS SUBDERE
+#
+
+/sbin/iptables -t nat -I POSTROUTING -s 192.168.7.0/24 -d 10.111.72.0/27  -m policy --pol ipsec --dir out -j ACCEPT
+
+exit 0
+
+
+
+
+

@@ -1,0 +1,78 @@
+
+elendil.key       Clave privada del servidor con clave "caschile" usada para generar CSR (RSA 3DES 2048)
+
+# openssl genrsa -des3 -out elendil.key 2048
+Generating RSA private key, 2048 bit long modulus
+........+++
+..........+++
+e is 65537 (0x10001)
+Enter pass phrase for elendil.key:
+Verifying - Enter pass phrase for elendil.key:
+# 
+
+
+
+elendil.key.unsecure / e-com.key.unsecure           Clave privada del servidor sin clave, se usa en el servidor
+
+# openssl rsa -in elendil.key -out elendil.key.unsecure
+Enter pass phrase for elendil.key:
+writing RSA key
+# 
+
+
+
+elendil.csr / e-com.csr           Solicitud de firma Wildcard "*.e-com.cl"
+
+# openssl req -new -key elendil.key -out elendil.csr
+Enter pass phrase for elendil.key:
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:CL
+State or Province Name (full name) [Some-State]:SANTIAGO
+Locality Name (eg, city) []:SANTIAGO
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:CASCHILE S.A. de I.
+Organizational Unit Name (eg, section) []:Infraestructura TI
+Common Name (e.g. server FQDN or YOUR name) []:*.e-com.cl
+Email Address []:area.ti@e-com.cl
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:CASCHILE S.A. de I.
+#
+
+------------------------
+
+e-com.cl.crt           Certificado primario o wildcard "*.e-com.cl"
+
+intermediate.crt       Certificado intermediario del CA
+
+bundle.crt             Archivo con certificados concatenados wildcard e intermediario
+
+---------------
+MACT 07/12/2017
+REF http://httpd.apache.org/docs/2.2/ssl/ssl_faq.html#realcert
+
+
+
+----------------------------------------------
+Exportar certificado desde Apache para IIS con SSL:
+
+openssl pkcs12 -export -out SSLBackup.pfx -inkey yourprivatekey.txt -in yourSSLcertificate.crt -certfile intermediate.crt
+
+openssl pkcs12 -export -out ECOMBackup.pfx -inkey e-com.key.unsecure -in e-com.cl.crt -certfile intermediate.crt
+
+
+
+
+openssl pkcs12 -in SSL247Backup.pfx -out privatekey.txt -nodes
+
+openssl pkcs12 -in ECOMBackup.pfx -out ECOMprivatekey.key -nodes
+
+ref: https://www.ssl247.com.pe/soporte/Import-Export
+
