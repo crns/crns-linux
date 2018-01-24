@@ -1,0 +1,63 @@
+/dev/md0
+	/dev/sda1
+	/dev/sdb1
+	spare /dev/sdc1
+
+/dev/md1
+	/dev/sdc2
+
+/dev/md2
+	/dev/sda3
+	/dev/sdb3
+	spare /dev/sdc3
+
+/dev/md3
+	/dev/sdc4
+
+------------------------------------
+mdadm --detail /dev_/mdX
+
+Forzar fallo por software:
+
+mdadm --manage --set-faulty /dev/md0 /dev/sda1
+
+mdadm --manage --set-faulty /dev/md2 /dev/sda3
+
+Marcar como fail:
+
+mdadm --manage --fail /dev/md0 /dev/sda1
+
+Remover disco fail:
+
+mdadm --manage --remove /dev/md0 /dev/sda1
+
+
+Ahora remover particiones de disco sdb:
+
+mdadm --manage --fail /dev/md0 /dev/sdb1
+mdadm --manage --remove /dev/md0 /dev/sdb1
+
+mdadm --manage --fail /dev/md2 /dev/sdb3
+mdadm --manage --remove /dev/md2 /dev/sdb3
+
+
+--------------------------------
+
+Remplazar discos y copiar particion desde disco activo a nuevo:
+
+sfdisk -d /dev/sdc | sfdfisk /dev/sda
+
+--------------------------
+
+Agrgar particion a RAID:
+
+mdadm --manage --add /dev/md0 /dev/sda1
+
+
+
+Agregar partyicio SPARE a raid:
+
+mdadm --manage --add-spare /dev/md0 /dev/sdb1
+
+
+
