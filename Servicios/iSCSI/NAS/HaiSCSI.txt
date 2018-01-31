@@ -125,19 +125,14 @@ Change permissions and group ownership on some DRBD binaries for use with heartb
     # chmod u+s /sbin/drbdmeta
 
     	
-    # chgrp haclient /sbin/drbdsetup
-    # chmod o-x /sbin/drbdsetup
-    # chmod u+s /sbin/drbdsetup
-    # chgrp haclient /sbin/drbdmeta
-    # chmod o-x /sbin/drbdmeta
-    # chmod u+s /sbin/drbdmeta
-
 Edit /etc/drbd.conf and define two resources:
 
     The DRBD device that will contain iscsitarget configuration files.
     The DRBD device that will become the test LUN.
 
 /etc/drdb.conf
+
+
 global {
         usage-count no;
 }
@@ -339,6 +334,7 @@ resource iscsi.lun.test {
         }
 }
 
+
 Reboot nodes. Test connectivity (both networks) between nodes.
 
 Initialise DRBD meta data discs for the DRBD resources. This needs to be done on both nodes:
@@ -347,8 +343,6 @@ Initialise DRBD meta data discs for the DRBD resources. This needs to be done on
     # drbdadm create-md iscsi.lun.test
   
     	
-    # drbdadm create-md iscsi.config
-    # drbdadm create-md iscsi.lun.test
 
 Restart DRBD service.
 
@@ -357,7 +351,6 @@ Decide which node will act as the primary for the DRBD device that will contain 
     [node1] # drbdadm -- --overwrite-data-of-peer primary iscsi.config
   
     	
-    [node1] # drbdadm -- --overwrite-data-of-peer primary iscsi.config
 
 Check the status of the initial sync:
 
@@ -372,16 +365,15 @@ You can wait until the initial sync completes but it's not a requirement. Create
 
 Create the /srv/iscsi-config mount point on node 2.
 
+    [node2] # mkdir -p /srv/iscsi-config
+
 Ensure replication is working as expected. On the primary node:
 
     [node1] # dd if=/dev/zero of=/srv/iscsi-config/test.bin bs=1M count=9
     [node1] # umount /srv/iscsi-config
     [node1] # drbdadmin secondary iscsi.config
 
-    	
-    [node1] # dd if=/dev/zero of=/srv/iscsi-config/test.bin bs=1M count=9
-    [node1] # umount /srv/iscsi-config
-    [node1] # drbdadm secondary iscsi.config
+
 
 On node 2:
 
@@ -389,9 +381,7 @@ On node 2:
     [node2] # mount /dev/drbd0 /srv/iscsi-config
     [node2] # ls -l /srv/isci-config
 
-    [node2] # drbdadmin primary iscsi.config
-    [node2] # mount /dev/drbd0 /srv/iscsi-config
-    [node2] # ls -l /srv/isci-config
+
 
 Test replication the other way by deleting the file:
 
@@ -400,9 +390,6 @@ Test replication the other way by deleting the file:
     [node2] # drbdadm secondary iscsi.config
 
     	
-    [node2] # rm /srv/iscsi-config/test.bin
-    [node2] # umount /srv/isci-config
-    [node2] # drbdadm secondary iscsi.config
 
 Make node 1 the primary and mount /srv/iscsi-config (/dev/drbd0) and ensure the file has gone:
 
@@ -410,15 +397,17 @@ Make node 1 the primary and mount /srv/iscsi-config (/dev/drbd0) and ensure the 
     [node1] # mount /dev/drbd0 /srv/iscsi-config
     [node1] # ls -l /srv/iscsi-config
 
-    	
-    [node1] # drbdadm primary iscsi.config
-    [node1] # mount /dev/drbd0 /srv/iscsi-config
-    [node1] # ls -l /srv/iscsi-config
+   
+
+ ***	
 
 Decide which node will act as the primary for the DRBD device that contains the test LUN (/dev/drbd1) and initiate the first full sync between the nodes. Run the following on the primary:
 
-    [node1] # drbadm -- --overwrite-data-of-peer primary iscsi.lun.test
+    [node1] # drbdadm -- --overwrite-data-of-peer primary iscsi.data
 
+en nodo 2.
+
+	# cat /proc/drbd 
 
 
 -------------------------------------------
@@ -478,6 +467,8 @@ Relocate iscsitarget config to DRBD device. Make sure that node 1 is the primary
     [node1] # ln -s /srv/iscsi-config/initiators.allow /etc/iet/initiators.all
     [node1] # ln -s /srv/iscsi-config/targets.allow /etc/iet/targets.allow
 
+---
+
     [node2] # rm /etc/iet/ietd.conf
     [node2] # rm /etc/iet/initiators.allow
     [node2] # rm /etc/iet/targets.allow
@@ -518,6 +509,9 @@ Target iqn.2015-12.cl.caschile:lun.filer
         ErrorRecoveryLevel 0
 
 	
+#
+# Heartbeat
+#
 
 Configure heartbeat to control virtual IP address of cluster and to failover iscsitarget when a node fails.
 The following should be completed on node 1:

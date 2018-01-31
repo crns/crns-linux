@@ -239,7 +239,9 @@ Target 1: iqn.2017-12.caschile.cl.irulan:target02
         192.168.10.0/24
 ~# 
 
+Más referncias:
 
+http://linuxscribbles.blogspot.cl/2012/06/configure-iscsi-initiator-and-target.html
 
 -------------------
 ###################

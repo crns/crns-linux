@@ -1,0 +1,1045 @@
+High Availability iSCSI Target Usando GNU/Linux 
+
+Software:
+
+	GNU/Linux Debian 9/Stretch net-install-amd64
+	Linux-HA - Linux clustering software.
+	DRBD - Distributed Replicated Block Device. Allows you to RAID1 partitions over IP.
+	tgt - Linux implementation of an iSCSI target.
+
+Configuración:
+
+Esta guía es basada en lo siguiente:
+
+	Dos nodos (Debian 9/Stretch net-install-amd64)
+	Cada nodo tiene 2x NICs (1x en red y 1x para DRBD data).
+	Nodes:
+		irulan.xen.local / eth0 - 192.168.10.58/24
+		DRBD sync network: nodo1 / eth1 - 10.10.10.101/8
+		
+		chani.xen.local / eth0 - 192.168.10.57/24
+		DRBD sync network: nodo2 / eth1 10.10.10.102/8
+		
+		Cluster IP address: 192.168.10.59/24
+
+Configure /etc/network/interfaces:
+
+Nodo1:
+
+# The primary network interface
+allow-hotplug enp0s3
+iface enp0s3 inet static
+        address 192.168.10.58/24
+        gateway 192.168.10.1
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 192.168.7.8
+        dns-search xen.local
+
+auto enp0s8
+iface enp0s8 inet static
+	address 10.10.10.101/8
+
+
+Nodo2:
+
+# The primary network interface
+allow-hotplug enp0s3
+iface enp0s3 inet static
+        address 192.168.10.57/24
+        gateway 192.168.10.1
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 192.168.7.8
+        dns-search xen.local
+
+auto enp0s8
+iface enp0s8 inet static
+	address 10.10.10.102/8
+
+
+
+Activar:
+
+ifup enp0s8
+
+
+Verificar:
+
+
+Nodo1:
+
+root@irulan:~# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:89:b8:08 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.10.58/24 brd 192.168.10.255 scope global enp0s3
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:fe89:b808/64 scope link 
+       valid_lft forever preferred_lft forever
+3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:f3:a9:46 brd ff:ff:ff:ff:ff:ff
+    inet 10.10.10.101/8 brd 10.255.255.255 scope global enp0s8
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:fef3:a946/64 scope link 
+       valid_lft forever preferred_lft forever
+root@irulan:~# 
+
+
+Nodo2:
+
+root@chani:~# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:6b:88:07 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.10.57/24 brd 192.168.10.255 scope global enp0s3
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:fe6b:8807/64 scope link 
+       valid_lft forever preferred_lft forever
+3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:37:07:80 brd ff:ff:ff:ff:ff:ff
+    inet 10.10.10.102/8 brd 10.255.255.255 scope global enp0s8
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:fe37:780/64 scope link 
+       valid_lft forever preferred_lft forever
+root@chani:~# 
+
+
+root@irulan:~# ping 10.10.10.102 -c 5
+PING 10.10.10.102 (10.10.10.102) 56(84) bytes of data.
+64 bytes from 10.10.10.102: icmp_seq=1 ttl=64 time=0.241 ms
+64 bytes from 10.10.10.102: icmp_seq=2 ttl=64 time=0.223 ms
+64 bytes from 10.10.10.102: icmp_seq=3 ttl=64 time=0.243 ms
+64 bytes from 10.10.10.102: icmp_seq=4 ttl=64 time=0.196 ms
+64 bytes from 10.10.10.102: icmp_seq=5 ttl=64 time=0.252 ms
+
+--- 10.10.10.102 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4082ms
+rtt min/avg/max/mdev = 0.196/0.231/0.252/0.019 ms
+root@irulan:~# 
+
+root@chani:~# ping 10.10.10.101 -c 5
+PING 10.10.10.101 (10.10.10.101) 56(84) bytes of data.
+64 bytes from 10.10.10.101: icmp_seq=1 ttl=64 time=0.220 ms
+64 bytes from 10.10.10.101: icmp_seq=2 ttl=64 time=0.270 ms
+64 bytes from 10.10.10.101: icmp_seq=3 ttl=64 time=0.236 ms
+64 bytes from 10.10.10.101: icmp_seq=4 ttl=64 time=0.259 ms
+64 bytes from 10.10.10.101: icmp_seq=5 ttl=64 time=0.247 ms
+
+--- 10.10.10.101 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4080ms
+rtt min/avg/max/mdev = 0.220/0.246/0.270/0.022 ms
+root@chani:~# 
+
+Editar en ambos nodos /etc/hosts (¿¿¿ removing the loopback entry for the host ???):
+
+/etc/hosts
+
+127.0.0.1       localhost.localdomain   localhost
+192.168.10.58   irulan.xen.local
+192.168.10.57   chani.xen.local
+10.10.10.101    irulan
+10.10.10.102    chani
+
+
+###################################
+
+Preparar volumenes para drdb
+
+
+Instalar lvm2 e ambos nodos:
+
+apt-get -y install lvm2
+
+Crear pv con sdb en ambos nodos:
+
+~# pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+
+Crear Volume Group vg0
+
+~# vgcreate vg0 /dev/sdb
+  Volume group "vg0" successfully created
+
+
+#### Crear lv que se replicaran
+
+Crear DRBD meta data Logical Volume en Volume Group vg0:
+
+~# lvcreate -L1G -n drbd-metadata vg0
+  Logical volume "drbd-metadata" created.
+
+
+
+~# lvcreate -L1G -n iscsi-config vg0
+  Logical volume "iscsi-config" created.
+
+  
+Crear Logical Volume to become a data LUN later on:
+
+~# lvcreate -l 100%FREE -n data vg0
+  Logical volume "data" created.
+
+
+
+Verificar en ambos nodos:
+
+~# lvs
+  LV            VG  Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  data          vg0 -wi-a----- 48,00g                                                    
+  drbd-metadata vg0 -wi-a-----  1,00g                                                    
+  iscsi-config  vg0 -wi-a-----  1,00g                                                    
+                                                 
+
+
+~# lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg0/drbd-metadata
+  LV Name                drbd-metadata
+  VG Name                vg0
+  LV UUID                mlPdkf-pDKr-fRgV-16VQ-zIDW-CZtH-Mefwkk
+  LV Write Access        read/write
+  LV Creation host, time irulan, 2018-01-24 17:52:07 -0300
+  LV Status              available
+  # open                 0
+  LV Size                1,00 GiB
+  Current LE             256
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:0
+   
+  --- Logical volume ---
+  LV Path                /dev/vg0/iscsi-config
+  LV Name                iscsi-config
+  VG Name                vg0
+  LV UUID                JwyoR7-bpqu-zjrP-tZNV-apgq-zZTu-ZokKiU
+  LV Write Access        read/write
+  LV Creation host, time irulan, 2018-01-24 18:30:21 -0300
+  LV Status              available
+  # open                 0
+  LV Size                1,00 GiB
+  Current LE             256
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:1
+   
+  --- Logical volume ---
+  LV Path                /dev/vg0/data
+  LV Name                data
+  VG Name                vg0
+  LV UUID                v7egGv-Wc11-OIY3-7ckx-89ca-Qll1-nI1h7X
+  LV Write Access        read/write
+  LV Creation host, time irulan, 2018-01-24 18:32:39 -0300
+  LV Status              available
+  # open                 0
+  LV Size                48,00 GiB
+  Current LE             12287
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:2
+   
+
+   
+
+
+############
+
+Instalar los paquetes drbd8-utils and heartbeat.
+
+apt-get -y install drbd8-utils heartbeat
+
+
+
+Cambiar permisos y grupo propietario en algunos binarios DRBDpara usar con heartbeat, en ambos nodos:
+
+    # chgrp haclient /sbin/drbdsetup
+    # chmod o-x /sbin/drbdsetup
+    # chmod u+s /sbin/drbdsetup
+
+    # chgrp haclient /sbin/drbdmeta
+    # chmod o-x /sbin/drbdmeta
+    # chmod u+s /sbin/drbdmeta
+
+
+
+Editar /etc/drbd.conf y definir 2 resources:
+
+    El dispositivo DRBD que contendrá los archivos de configuracion del iscsitarget.
+    El dispositivo DRBD que se convertirá en DATA LUN.
+
+
+
+/etc/drbd.conf
+
+
+global {
+        usage-count no;
+}
+
+resource iscsi.config {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on nodo1 {
+        device  /dev/drbd0;
+        disk    /dev/vg0/iscsi-config;
+        address 10.10.10.101:7788; # Usa DRBD red inter-nodos dedicada
+        meta-disk /dev/vg0/drbd-metadata[0];
+        }
+
+        on nodo2 {
+        device  /dev/drbd0;
+        disk    /dev/vg0/iscsi-config;
+        address 10.10.10.102:7788; # Usa DRBD red inter-nodos dedicada
+        meta-disk /dev/vg0/drbd-metadata[0];
+        }
+}
+
+resource iscsi.data {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on nodo1 {
+        device  /dev/drbd1;
+        disk    /dev/vg0/data;
+        address 10.10.10.101:7789; # Usar red DRBD inter-nodos
+        meta-disk /dev/vg0/drbd-metadata[1];
+        }
+
+        on nodo2 {
+        device  /dev/drbd1;
+        disk    /dev/vg0/data;
+        address 10.10.10.102:7789; # Use private inter-node address
+        meta-disk /dev/vg0/drbd-metadata[1];
+        }
+}
+
+
+Reboot los nodos y luego probar la conectividad (ambas redes) entre nodos.
+
+#############################
+
+Habilitar e iniciar DRBD service.
+
+systemctl enable drbd
+
+systemctl start drbd
+
+
+Initialise DRBD meta data discs for the DRBD resources. This needs to be done on both nodes:
+
+    # dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+    # systemctl restart drbd
+
+    # drbdadm create-md iscsi.config
+    # drbdadm create-md iscsi.data
+
+    # drbdadm attach iscsi.config
+    # drbdadm attach iscsi.data
+
+    # drbd-overview
+
+ 0:iscsi.config/0  Connected Secondary/Secondary Inconsistent/Inconsistent 
+ 1:iscsi.data/0    Connected Secondary/Secondary Inconsistent/Inconsistent 
+
+
+    	
+
+~# drbdadm create-md iscsi.config
+WARN:
+  You are using the 'drbd-peer-outdater' as fence-peer program.
+  If you use that mechanism the dopd heartbeat plugin program needs
+  to be able to call drbdsetup and drbdmeta with root privileges.
+
+  You need to fix this with these commands:
+  dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+
+initializing activity log
+NOT initializing bitmap
+Writing meta data...
+New drbd meta data block successfully created.
+
+
+~# drbdadm create-md iscsi.data
+WARN:
+  You are using the 'drbd-peer-outdater' as fence-peer program.
+  If you use that mechanism the dopd heartbeat plugin program needs
+  to be able to call drbdsetup and drbdmeta with root privileges.
+
+  You need to fix this with these commands:
+  dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+
+md_offset 134217728
+al_offset 134221824
+bm_offset 134254592
+
+Found some data
+
+ ==> This might destroy existing data! <==
+
+Do you want to proceed?
+[need to type 'yes' to confirm] yes
+
+initializing activity log
+NOT initializing bitmap
+Writing meta data...
+New drbd meta data block successfully created.
+
+
+
+Verificar status en los nodos.
+
+~# systemctl status drbd
+● drbd.service - LSB: Control DRBD resources.
+   Loaded: loaded (/etc/init.d/drbd; generated; vendor preset: enabled)
+   Active: active (exited) since Thu 2018-01-25 10:03:48 -03; 37s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 654 ExecStop=/etc/init.d/drbd stop (code=exited, status=0/SUCCESS)
+  Process: 682 ExecStart=/etc/init.d/drbd start (code=exited, status=0/SUCCESS)
+
+ene 25 10:03:48 irulan drbd[682]:    prepare disk: iscsi.config iscsi.data
+ene 25 10:03:48 irulan drbd[682]:     adjust disk: iscsi.config iscsi.data
+ene 25 10:03:48 irulan drbd[682]:      adjust net: iscsi.config iscsi.data
+ene 25 10:03:48 irulan drbd[682]: ]
+ene 25 10:03:48 irulan drbd[682]: WARN: stdin/stdout is not a TTY; using /dev/consoleoutdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:48 irulan drbd[682]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:48 irulan drbd[682]: outdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:48 irulan drbd[682]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:48 irulan drbd[682]: .
+ene 25 10:03:48 irulan systemd[1]: Started LSB: Control DRBD resources..
+root@irulan:~# 
+
+
+root@chani:~# systemctl status drbd
+● drbd.service - LSB: Control DRBD resources.
+   Loaded: loaded (/etc/init.d/drbd; generated; vendor preset: enabled)
+   Active: active (exited) since Thu 2018-01-25 10:03:53 -03; 1min 36s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 613 ExecStop=/etc/init.d/drbd stop (code=exited, status=0/SUCCESS)
+  Process: 641 ExecStart=/etc/init.d/drbd start (code=exited, status=0/SUCCESS)
+
+ene 25 10:03:53 chani drbd[641]:    prepare disk: iscsi.config iscsi.data
+ene 25 10:03:53 chani drbd[641]:     adjust disk: iscsi.config iscsi.data
+ene 25 10:03:53 chani drbd[641]:      adjust net: iscsi.config iscsi.data
+ene 25 10:03:53 chani drbd[641]: ]
+ene 25 10:03:53 chani drbd[641]: WARN: stdin/stdout is not a TTY; using /dev/consoleoutdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:53 chani drbd[641]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:53 chani drbd[641]: outdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:53 chani drbd[641]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:53 chani drbd[641]: .
+ene 25 10:03:53 chani systemd[1]: Started LSB: Control DRBD resources..
+root@chani:~# 
+
+
+#########################
+
+Decide which node will act as the primary for the DRBD device that will contain the iSCSI configuration files (/dev/drbd0) and initiate the first full sync between the nodes. Run the following on the primary:
+
+    [irulan] # drbdadm -- --overwrite-data-of-peer primary iscsi.config
+
+root@irulan:~# drbdadm -- --overwrite-data-of-peer primary iscsi.config
+root@irulan:~#
+
+	
+
+Check the status of the initial sync:
+
+    [irulan] # cat /proc/drbd 
+
+root@irulan:~# cat /proc/drbd 
+version: 8.4.7 (api:1/proto:86-101)
+srcversion: 0904DF2CCF7283ACE07D07A 
+ 0: cs:SyncSource ro:Primary/Secondary ds:UpToDate/Inconsistent C r-----
+    ns:350208 nr:0 dw:0 dr:350208 al:0 bm:0 lo:0 pe:3 ua:0 ap:0 ep:1 wo:f oos:701440
+	[=====>..............] sync'ed: 33.5% (701440/1048576)K
+	finish: 0:00:18 speed: 38,568 (38,568) K/sec
+ 1: cs:Connected ro:Secondary/Secondary ds:Inconsistent/Inconsistent C r-----
+    ns:0 nr:0 dw:0 dr:0 al:0 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:50327296
+root@irulan:~# 
+
+
+You can wait until the initial sync completes but it's not a requirement. Create a filesystem on /dev/drbd0 (iSCSI configs) and mount it:
+
+    [irulan] # mkfs.ext4 /dev/drbd0
+    [irulan] # mkdir -p /srv/iscsi-config
+    [irulan] # mount /dev/drbd0 /srv/iscsi-config
+
+
+root@irulan:~# mkfs.ext4 /dev/drbd0
+mke2fs 1.43.4 (31-Jan-2017)
+Se está creando un sistema de ficheros con 262144 bloques de 4k y 65536 nodos-i
+UUID del sistema de ficheros: 19f18439-7ad1-4fa7-ba91-bfe4852f939b
+Respaldo del superbloque guardado en los bloques: 
+	32768, 98304, 163840, 229376
+
+Reservando las tablas de grupo: hecho                           
+Escribiendo las tablas de nodos-i: hecho                           
+Creando el fichero de transacciones (8192 bloques): hecho
+Escribiendo superbloques y la información contable del sistema de ficheros: hecho
+
+root@irulan:~# 
+
+root@irulan:~# mkdir -p /srv/iscsi-config
+root@irulan:~#
+
+root@irulan:~# mount /dev/drbd0 /srv/iscsi-config
+root@irulan:~#
+
+Verificar montaje.
+
+root@irulan:~# df -h
+S.ficheros     Tamaño Usados  Disp Uso% Montado en
+...
+/dev/drbd0       976M   2,6M  907M   1% /srv/iscsi-config
+root@irulan:~# 
+
+
+Create the /srv/iscsi-config mount point on node 2.
+
+    [chani] # mkdir -p /srv/iscsi-config
+
+Pruebas de replicación. Ensure replication is working as expected. On the primary node:
+
+    [irulan] # dd if=/dev/zero of=/srv/iscsi-config/test.bin bs=512 count=200000
+    [irulan] # umount /srv/iscsi-config
+    [irulan] # drbdadm secondary iscsi.config
+
+
+
+On node 2:
+
+    [chani] # drbdadm primary iscsi.config
+    [chani] # mount /dev/drbd0 /srv/iscsi-config
+    [chani] # ls -l /srv/isci-config
+
+
+
+Test replication the other way by deleting the file:
+
+    [chani] # rm /srv/iscsi-config/test.bin
+    [chani] # umount /srv/iscsi-config
+    [chani] # drbdadm secondary iscsi.config
+
+    	
+
+Make node 1 the primary and mount /srv/iscsi-config (/dev/drbd0) and ensure the file has gone:
+
+    [irulan] # drbdadm primary iscsi.config
+    [irulan] # mount /dev/drbd0 /srv/iscsi-config
+    [irulan] # ls -l /srv/iscsi-config
+
+
+#
+#iscsi.data
+#
+
+Decide which node will act as the primary for the DRBD device that contains the test LUN (/dev/drbd1) and initiate the first full sync between the nodes. Run the following on the primary:
+
+    [irulan] # drbdadm -- --overwrite-data-of-peer primary iscsi.data
+
+en nodo 2.
+
+root@chani:~# cat /proc/drbd 
+version: 8.4.7 (api:1/proto:86-101)
+srcversion: 0904DF2CCF7283ACE07D07A 
+ 0: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r-----
+    ns:104 nr:10961504 dw:10961608 dr:1069 al:3 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+ 1: cs:SyncTarget ro:Secondary/Primary ds:Inconsistent/UpToDate C r-----
+    ns:0 nr:472064 dw:472064 dr:0 al:0 bm:0 lo:0 pe:4 ua:0 ap:0 ep:1 wo:f oos:49855488
+	[>....................] sync'ed:  1.0% (48684/49148)M
+	finish: 0:21:06 speed: 39,336 (39,336) want: 50,160 K/sec
+root@chani:~#
+
+
+
+#
+# Configurar particiones LVM:
+#
+
+
+### Nota:Aqui mucho cuidado - eliminar este comentario !!
+
+##pvcreate /dev/drbd1
+
+;editar el archivo /etc/lvm/lvm.conf y agregar después de la linea 130:
+;
+;       # Example
+;        # Accept every block device:
+;        # filter = [ "a|.*/|" ]
+;        filter = [ "r|/dev/sdb|"
+
+    [irulan] # drbdadm primary iscsi.data
+
+##pvcreate /dev/drbd1
+
+#root@irulan:~# pvcreate /dev/drbd1
+#  Physical volume "/dev/drbd1" successfully created.
+#root@irulan:~#
+
+
+
+vgcreate vg0drbd /dev/drbd1
+
+#root@irulan:~# vgcreate vg0drbd /dev/drbd1
+#  Volume group "vg0drbd" successfully created
+#root@irulan:~#
+
+
+
+#lvcreate -l 100%FREE -n stor vg0drbd
+
+#root@irulan:~# lvcreate -l 100%FREE -n stor vg0drbd
+#  Logical volume "stor" created.
+#root@irulan:~#
+
+
+#Verificar.
+
+#root@irulan:~# lvs
+#  LV            VG      Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+#  data          vg0     -wi-ao---- 48,00g                                                    
+#  drbd-metadata vg0     -wi-ao----  1,00g                                                    
+#  iscsi-config  vg0     -wi-ao----  1,00g                                                    
+#  stor          vg0drbd -wi-a----- 47,99g                                                    
+#root@irulan:~#
+
+#root@irulan:~# lvscan
+#  ACTIVE            '/dev/vg0drbd/stor' [47,99 GiB] inherit
+#  ACTIVE            '/dev/vg0/drbd-metadata' [1,00 GiB] inherit
+#  ACTIVE            '/dev/vg0/iscsi-config' [1,00 GiB] inherit
+#  ACTIVE            '/dev/vg0/data' [48,00 GiB] inherit
+#root@irulan:~# 
+
+
+
+
+------------------------------------------
+Instalar tgt iscsitraget Server
+
+
+apt-get -y install tgt dkms
+
+Detener y deshabilitar el servicio.
+
+# systemctl stop tgt.service
+# systemctl disable tgt.service
+
+
+root@irulan:~# systemctl stop tgt.service
+root@irulan:~# 
+
+root@irulan:~# systemctl disable tgt.service
+Synchronizing state of tgt.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install disable tgt
+root@irulan:/etc/default# cd
+root@irulan:~#
+
+
+Relocate tgt config to DRBD device. Make sure that node 1 is the primary and that /srv/iscsi-config is mounted:
+
+
+    [irulan] # drbdadm primary iscsi.config
+    [irulan] # mount /dev/drbd0 /srv/iscsi-config
+
+    [irulan] # mv /etc/tgt/conf.d /srv/iscsi-config
+    [irulan] # mv /etc/tgt/targets.conf /srv/iscsi-config
+    
+    [irulan] # ln -s /srv/iscsi-config/conf.d /etc/tgt/conf.d
+    [irulan] # ln -s /srv/iscsi-config/targets.conf /etc/tgt/targets.conf
+
+    [irulan] # umount /srv/iscsi-config
+    [irulan] # drbdadm secondary iscsi.config
+
+---
+
+    [chani] # rm -r /etc/tgt/conf.d
+    [chani] # rm -f /etc/tgt/targets.conf
+    	
+    [chani] # drbdadm primary iscsi.config
+    [chani] # mount /dev/drbd0 /srv/iscsi-config
+
+    [chani] # ln -s /srv/iscsi-config/conf.d /etc/tgt/conf.d
+    [chani] # ln -s /srv/iscsi-config/targets.conf /etc/tgt/targets.conf
+
+
+    [chani] # umount /srv/iscsi-config
+    [chani] # drbdadm secondary iscsi.config
+
+#
+# Crear iscsitarget config en irulan.
+#
+
+
+#Nouta: Con "dmsetup ls" se obtiene la forma de nombrar la unidad en tgt.
+
+#root@irulan:~# dmsetup ls
+#vg0-drbd--metadata	(254:0)
+#vg0-data	(254:2)
+#vg0-iscsi--config	(254:1)
+#root@irulan:~#
+
+
+    [irulan] # drbdadm primary iscsi.config
+    [irulan] # mount /dev/drbd0 /srv/iscsi-config
+
+nano /etc/tgt/conf.d/target-stor.conf 
+
+# create new
+# naming rule : [ iqn.yaer-month.domain:any name ]
+
+<target iqn.2018-01.caschile.cl.irulan:target-stor>
+    # provided devicce as a iSCSI target
+    backing-store /dev/drbd1
+    # iSCSI Initiator's IP address you allow to connect
+    initiator-address 192.168.10.0/24
+    # authentication info ( incominguser <username> <password> )
+    incominguser caschile c4sch1l3
+</target>
+
+
+
+#
+# Verificar en TGT iscsitarget
+#
+
+    [irulan] # systemctl restart tgt 
+
+    [irulan] # netstat -lntp
+
+    [irulan] # tgtadm --mode target --op show
+
+    [irulan] # systemctl status tgt
+
+
+root@irulan:~# netstat -lntp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      469/sshd            
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      579/sendmail: MTA:  
+tcp        0      0 0.0.0.0:3260            0.0.0.0:*               LISTEN      2361/tgtd           
+tcp        0      0 127.0.0.1:587           0.0.0.0:*               LISTEN      579/sendmail: MTA:  
+tcp6       0      0 :::22                   :::*                    LISTEN      469/sshd            
+tcp6       0      0 :::3260                 :::*                    LISTEN      2361/tgtd           
+root@irulan:~# 
+
+root@irulan:~# tgtadm --mode target --op show
+Target 1: iqn.2018-01.irulan.xen.local:target-stor
+    System information:
+        Driver: iscsi
+        State: ready
+    I_T nexus information:
+    LUN information:
+        LUN: 0
+            Type: controller
+            SCSI ID: IET     00010000
+            SCSI SN: beaf10
+            Size: 0 MB, Block size: 1
+            Online: Yes
+            Removable media: No
+            Prevent removal: No
+            Readonly: No
+            SWP: No
+            Thin-provisioning: No
+            Backing store type: null
+            Backing store path: None
+            Backing store flags: 
+        LUN: 1
+            Type: disk
+            SCSI ID: IET     00010001
+            SCSI SN: beaf11
+            Size: 51531 MB, Block size: 512
+            Online: Yes
+            Removable media: No
+            Prevent removal: No
+            Readonly: No
+            SWP: No
+            Thin-provisioning: No
+            Backing store type: rdwr
+            Backing store path: /dev/mapper/vg0drbd-stor
+            Backing store flags: 
+    Account information:
+        caschile
+    ACL information:
+        192.168.10.0/24
+root@irulan:~#
+
+root@irulan:~# systemctl status tgt 
+● tgt.service - (i)SCSI target daemon
+   Loaded: loaded (/lib/systemd/system/tgt.service; disabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-01-30 10:22:12 -03; 2min 59s ago
+     Docs: man:tgtd(8)
+  Process: 2391 ExecStartPost=/usr/sbin/tgtadm --op update --mode sys --name State -v ready (code=exited, status=0/SUCCESS)
+  Process: 2364 ExecStartPost=/usr/sbin/tgt-admin -e -c /etc/tgt/targets.conf (code=exited, status=0/SUCCESS)
+  Process: 2362 ExecStartPost=/usr/sbin/tgtadm --op update --mode sys --name State -v offline (code=exited, status=0/SUCCESS)
+ Main PID: 2361 (tgtd)
+   Status: "Starting event loop..."
+    Tasks: 17 (limit: 4915)
+   CGroup: /system.slice/tgt.service
+           └─2361 /usr/sbin/tgtd -f
+
+ene 30 10:22:11 irulan systemd[1]: Starting (i)SCSI target daemon...
+ene 30 10:22:11 irulan tgtd[2361]: tgtd: iser_ib_init(3431) Failed to initialize RDMA; load kernel modules?
+ene 30 10:22:11 irulan tgtd[2361]: tgtd: work_timer_start(146) use timer_fd based scheduler
+ene 30 10:22:11 irulan tgtd[2361]: tgtd: bs_init(387) use signalfd notification
+ene 30 10:22:12 irulan tgtd[2361]: tgtd: device_mgmt(246) sz:16 params:path=/dev/drbd1
+ene 30 10:22:12 irulan tgtd[2361]: tgtd: bs_thread_open(409) 16
+ene 30 10:22:12 irulan systemd[1]: Started (i)SCSI target daemon.
+root@irulan:~# 
+
+
+***
+	
+#
+# Heartbeat
+#
+
+Configure heartbeat para controlar la direccion IP virtual del cluster y el failover del iscsitarget cuando un nodo falle.
+Lo sgte. deberá ser completado en ambos nodos.
+
+/etc/ha.d/ha.cf:
+
+logfacility     local0
+
+autojoin        none # All nodes are defined explicitly.
+auto_failback   no # Prevents nodes from flapping.
+
+keepalive       2
+deadtime        10
+warntime        5
+initdead        120
+
+mcast           enp0s3 239.0.0.1 694 1 0 # Shared network, so multicast heartbeats.
+bcast           enp0s8 # DRBD network is private, so we can use broadcasts.
+
+node            irulan
+node            chani
+
+respawn         hacluster /usr/lib/heartbeat/ipfail
+ping            192.168.7.1 # Ping a core network device to assist in determining network link status.
+
+	
+
+/etc/ha.d/authkeys:
+
+auth 3
+3 md5 password
+
+
+/etc/ha.d/haresources:
+
+irulan drbddisk::iscsi.config Filesystem::/dev/drbd0::/srv/iscsi-config::ext4 MailTo::manuel.campos@caschile.cl
+irulan IPaddr::192.168.10.56/24/enp0s3 drbddisk::iscsi.data portblock::tcp::3260::block tgt portblock::tcp::3260::unblock
+
+
+
+#
+# Esto es con lvm2 y volumen - chequear
+#
+##irulan IPaddr::192.168.10.56/24/enp0s3 drbddisk::iscsi.data LVM::vg0drbd portblock::tcp::3260::block tgt portblock::tcp::3260::unblock
+
+
+
+
+
+chmod /etc/ha.d/authkeys to 600.
+
+root@chani:~# ls -la /etc/ha.d/authkeys
+-rw-r--r-- 1 root root 22 ene 29 11:36 /etc/ha.d/authkeys
+root@chani:~# 
+root@chani:~# chmod 600 /etc/ha.d/authkeys
+root@chani:~# 
+root@chani:~# ls -la /etc/ha.d/authkeys
+-rw------- 1 root root 22 ene 29 11:36 /etc/ha.d/authkeys
+root@chani:~# 
+
+
+#
+#
+#
+
+Note: At the time of writing, the portblock resource agent script (/etc/ha.d/resource.d/portblock) is broken. Ubuntu bug #489719 (Ref: https://bugs.launchpad.net/ubuntu/+source/heartbeat/+bug/489719) has been filed, along with Debian bug #538987 (ref: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=538987;msg=2). Apply the following patch to both nodes: 
+
+--- portblock.orig	2009-11-28 20:03:57.964375908 +0000
++++ portblock	2009-11-28 20:04:13.264550812 +0000
+@@ -17,14 +17,14 @@
+     exit 1
+ }
+ 
+-if [ $# != 3 ]; then
++if [ $# != 4 ]; then
+     usage
+ fi
+ 
+ OCF_RESKEY_protocol=$1
+ OCF_RESKEY_portno=$2
+ OCF_RESKEY_action=$3
+-export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_action
++export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_protocol
+ 
+ OCF_TYPE=portblock
+ OCF_RESOURCE_INSTANCE=${OCF_TYPE}_$1_$2_$3
+
+
+Aplicando el patch:
+
+wget https://bugs.launchpad.net/ubuntu/+source/heartbeat/+bug/489719/+attachment/1052005/+files/portblock.patch
+
+root@irulan:~# patch /etc/ha.d/resource.d/portblock portblock.patch 
+patching file /etc/ha.d/resource.d/portblock
+root@irulan:~#
+
+
+Finally, reboot both nodes and test failover. The best way to do this is to connect the test LUN to a server, copy on a movie and play it. Fail one of the nodes either by pulling the power or via ”/etc/init.d/heartbeat stop”. The movie will freeze for a few seconds but should resume. Also tail /var/log/syslog.
+
+
+***
+
+Notificaciones por e-mail
+
+Instalar sendmail
+
+apt-get install sendmail
+
+y modificar la sgte linea en /etc/ha.d/haresources:
+
+irulan drbddisk::iscsi.config Filesystem::/dev/drbd0::/srv/iscsi-config::ext4 
+
+Debara agregar a continuacion lo sgte.
+
+irulan drbddisk::iscsi.config Filesystem::/dev/drbd0::/srv/iscsi-config::ext4 MailTo::manuel.campos@caschile.cl
+
+
+
+Optimización.
+
+(OJO esto es LVS) Configuración de los servidores reales:
+
+
+Debemos configurar los servidores reales de modo que acepten el forwarding que les envía el
+balanceador LVS por la IP virtual.
+Tenemos que configurar un alias virtual que levante la direccion virtual y además hacer que sea “sorda”
+a ARP de modo que no desvele la IP y no entre en conflicto.
+Los cambios a realizar en los parámetros del kernel de los sevidores reales serán:
+
+# /etc/sysctl.conf
+#habilitar la opcion de ignorar ARP
+net.ipv4.conf.all.ARP_ignore = 1
+#No responder a las solicitudes de ARP si la direccion IP esta configurada sobre el interfaz
+“lo” (loopback) o cualquier otro interfaz virtual enp0s3:0
+net.ipv4.conf.eth0.ARP_ignore = 1
+#Habilitar la opcion de anuncio ARP
+net.ipv4.conf.all.ARP_announce = 2
+
+Como la fuente IP de la peticon ARP entrará en la cache ARP del destino esto tiene el efecto de
+anunciar esta direccion. Esto no es deseable para “lo” o cualquier otro interfaz virtual "eth"x:0 de los
+servidores reales. Usando este valor haremos que los servidores reales siempre que reciban una peticion
+ARP usen la IP real como fuente de la peticion ARP.
+
+net.ipv4.conf.enp0s3.ARP_announce = 2
+
+
+Todo junto
+
+nano /etc/sysctl.conf.
+
+###
+# Habilitar la opcion de ignorar ARP
+net.ipv4.conf.all.arp_ignore = 1
+# No responder a las solicitudes de ARP si la direccion IP esta configurada sobre el interfaz
+# “lo” (loopback) o cualquier otro interfaz virtual.
+net.ipv4.conf.enp0s3.arp_ignore = 1
+# Habilitar la opcion de anuncio ARP
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.enp0s3.arp_announce = 2
+
+
+
+
+Y cargamos los cambios con:
+
+# sysctl -p
+
+
+Activar Heartbeat en ambos nodos:
+
+root@irulan:~# systemctl enable heartbeat
+Synchronizing state of heartbeat.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable heartbeat
+root@irulan:~# 
+
+
+
+- See more at: http://0wned.it/geek-bits/guides/high-availability-iscsi-target-using-linux/#sthash.cnbx19Li.dpuf	
+

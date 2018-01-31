@@ -1,0 +1,157 @@
+Finbrethil:
+
+root@fimbrethil:~# cat /etc/modules
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+
+bonding
+root@fimbrethil:~# 
+
+
+root@fimbrethil:~# cat /etc/modprobe.d/bonding.conf 
+options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1
+root@fimbrethil:~# 
+
+root@fimbrethil:~# cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto bond0
+iface bond0 inet static
+        ###hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.10.168/24
+        gateway 192.168.10.1
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 192.168.7.8
+        dns-search xen.local
+        up /sbin/ifenslave bond0 enp3s0 enp5s0
+        down /sbin/ifenslave -d bond0 enp3s0 enp5s0
+
+auto bond0.146
+iface bond0.146 inet static
+        address 192.168.146.168/24
+root@fimbrethil:~#
+
+root@fimbrethil:~# cat /etc/hosts
+127.0.0.1	localhost
+192.168.10.168	fimbrethil.xen.local	fimbrethil
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+root@fimbrethil:~# 
+
+
+
+Hirilorn:
+
+root@hirilorn:~# cat /etc/modules
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+
+bonding
+root@hirilorn:~# 
+
+root@hirilorn:~# cat /etc/modprobe.d/bonding.conf 
+options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1
+root@hirilorn:~#
+
+root@hirilorn:~# cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto bond0
+iface bond0 inet static
+        ###hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.10.162/24
+        gateway 192.168.10.1
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 192.168.7.8
+        dns-search xen.local
+        up /sbin/ifenslave bond0 enp3s0 enp5s0
+        down /sbin/ifenslave -d bond0 enp3s0 enp5s0
+
+auto bond0.146
+iface bond0.146 inet static
+        address 192.168.146.162/24
+root@hirilorn:~# 
+
+
+root@hirilorn:~# cat /etc/hostname 
+hirilorn
+root@hirilorn:~# 
+
+
+root@hirilorn:~# cat /etc/hosts
+127.0.0.1	localhost
+192.168.10.169	hirilorn.xen.local	hirilorn
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+root@hirilorn:~# 
+
+#
+#
+#
+
+root@fimbrethil:/proc/sys/net/ipv4/conf# ls -l
+total 0
+dr-xr-xr-x 1 root root 0 ene 30 17:46 all
+dr-xr-xr-x 1 root root 0 ene 30 15:51 bond0
+dr-xr-xr-x 1 root root 0 ene 30 16:03 bond0.1010
+dr-xr-xr-x 1 root root 0 ene 30 15:51 bond0.146
+dr-xr-xr-x 1 root root 0 ene 30 17:46 default
+dr-xr-xr-x 1 root root 0 ene 30 17:46 enp3s0
+dr-xr-xr-x 1 root root 0 ene 30 17:46 enp5s0
+dr-xr-xr-x 1 root root 0 ene 30 15:51 lo
+root@fimbrethil:/proc/sys/net/ipv4/conf# 
+
+
+
+Todo junto
+
+nano /etc/sysctl.conf.
+
+###
+# Habilitar la opcion de ignorar ARP
+net.ipv4.conf.all.arp_ignore = 1
+# No responder a las solicitudes de ARP si la direccion IP esta configurada sobre el interfaz
+# “lo” (loopback) o cualquier otro interfaz virtual.
+net.ipv4.conf.bond0.146.arp_ignore = 1
+# Habilitar la opcion de anuncio ARP
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.bond0.146.arp_announce = 2
+
+
+
+
+Y cargamos los cambios con:
+
+# sysctl -p
+
+
+
+
+
+
+
+
