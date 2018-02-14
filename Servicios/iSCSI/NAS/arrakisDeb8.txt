@@ -1,0 +1,1005 @@
+High Availability iSCSI Target Usando GNU/Linux 
+
+Esta guía es basada en lo siguiente:
+
+Hardware:
+
+@fimbrethil:
+ProLiant DL380 G5
+
+@hirilorn:
+ProLiant DL380 G5
+
+
+
+Software:
+
+GNU/Linux Debian 8/JESSIE net-install-amd64
+Linux-HA - Linux clustering software.
+DRBD - Distributed Replicated Block Device. Permite particiones RAID1 sobre IP.
+iscsitarget - Implementacion en Linux de un iSCSI target.
+
+
+Configuración:
+
+Cada nodo tiene 2x NICs configuradas en Bonding modo 4 LACP
+
+#
+# /etc/modules
+#
+
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+
+bonding
+
+#
+# /etc/modprobe.d/bonding.conf 
+#
+
+options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=1
+
+
+#
+#/etc/hosts
+#
+
+127.0.0.1	localhost.localdomain	localhost
+
+#Red de admistracion
+192.168.10.168	fimbrethil.local
+192.168.10.162	hirilorn.local
+
+#Red de Storage iscitarget XEN
+192.168.146.168	fimbrethil.xen.local
+192.168.146.162 hirilorn.xen.local
+
+#Cluster IP address 
+192.168.146.XXX	fangorn
+
+#Red de sincronismo DRBD
+10.10.10.101	fimbrethil
+10.10.10.102	hirilorn
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+
+Configuración de interfaces VLan's:		
+		
+
+/etc/network/interfaces en fimbrethil:
+
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto bond0
+iface bond0 inet static
+        ###hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.10.168/24
+        gateway 192.168.10.1
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 192.168.7.8
+        dns-search xen.local
+        up /sbin/ifenslave bond0 enp3s0 enp5s0
+        down /sbin/ifenslave -d bond0 enp3s0 enp5s0
+
+auto bond0.146
+iface bond0.146 inet static
+        address 192.168.146.168/24
+
+auto bond0.1010
+iface bond0.1010 inet static
+        address 10.10.10.101/24
+
+
+/etc/network/interfaces en Hirilorn
+
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto bond0
+iface bond0 inet static
+        ###hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.10.162/24
+        gateway 192.168.10.1
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 192.168.7.8
+        dns-search xen.local
+        up /sbin/ifenslave bond0 enp3s0 enp5s0
+        down /sbin/ifenslave -d bond0 enp3s0 enp5s0
+
+auto bond0.146
+iface bond0.146 inet static
+        address 192.168.146.162/24
+
+auto bond0.1010
+iface bond0.1010 inet static
+        address 10.10.10.102/24
+
+
+
+Verificar configuraciones:
+
+
+Nodo1:
+
+
+
+
+Nodo2:
+
+
+
+***
+
+
+Instalar los paquetes drbd8-utils and heartbeat.
+
+apt-get -y install drbd8-utils heartbeat
+
+
+
+Cambiar permisos y grupo propietario en algunos binarios DRBDpara usar con heartbeat, en ambos nodos:
+
+    # chgrp haclient /sbin/drbdsetup
+    # chmod o-x /sbin/drbdsetup
+    # chmod u+s /sbin/drbdsetup
+
+    # chgrp haclient /sbin/drbdmeta
+    # chmod o-x /sbin/drbdmeta
+    # chmod u+s /sbin/drbdmeta
+
+
+
+Editar /etc/drbd.conf y definir 2 resources:
+
+    El dispositivo DRBD que contendrá los archivos de configuracion del iscsitarget.
+    El dispositivo DRBD que se convertirá en DATA LUN.
+
+
+
+/etc/drbd.conf
+
+
+global {
+        usage-count no;
+}
+
+resource config {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password*";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on fimbrethil {
+        device  /dev/drbd0;
+        disk    /dev/cciss/c0d1p1;
+        address 10.10.10.101:7788; 
+        meta-disk internal;
+        }
+
+        on hirilorn {
+        device  /dev/drbd0;
+        disk    /dev/cciss/c0d1p1;
+        address 10.10.10.102:7788; 
+        meta-disk internal;
+        }
+}
+
+resource data {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password*";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on fimbrethil {
+        device  /dev/drbd1;
+        disk    /dev/cciss/c0d1p2;
+        address 10.10.10.101:7789; 
+        meta-disk internal;
+        }
+
+        on hirilorn {
+        device  /dev/drbd1;
+        disk    /dev/cciss/c0d1p2;
+        address 10.10.10.102:7789; 
+        meta-disk internal;
+        }
+}
+
+
+
+Habilitar e iniciar DRBD service.
+
+systemctl enable drbd
+
+systemctl start drbd
+
+
+Initialise DRBD meta data discs for the DRBD resources. This needs to be done on both nodes:
+
+    # dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+    # systemctl restart drbd
+
+    # drbdadm create-md config
+    # drbdadm create-md data
+
+    # drbdadm attach config
+    # drbdadm attach data
+
+    # drbd-overview
+
+ 0:iscsi.config/0  Connected Secondary/Secondary Inconsistent/Inconsistent 
+ 1:iscsi.data/0    Connected Secondary/Secondary Inconsistent/Inconsistent 
+
+
+    	
+
+~# drbdadm create-md iscsi.config
+WARN:
+  You are using the 'drbd-peer-outdater' as fence-peer program.
+  If you use that mehirilornsm the dopd heartbeat plugin program needs
+  to be able to call drbdsetup and drbdmeta with root privileges.
+
+  You need to fix this with these commands:
+  dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+
+initializing activity log
+NOT initializing bitmap
+Writing meta data...
+New drbd meta data block successfully created.
+
+
+~# drbdadm create-md iscsi.data
+WARN:
+  You are using the 'drbd-peer-outdater' as fence-peer program.
+  If you use that mehirilornsm the dopd heartbeat plugin program needs
+  to be able to call drbdsetup and drbdmeta with root privileges.
+
+  You need to fix this with these commands:
+  dpkg-statoverride --add --update root haclient 4750 /lib/drbd/drbdsetup-84
+
+md_offset 134217728
+al_offset 134221824
+bm_offset 134254592
+
+Found some data
+
+ ==> This might destroy existing data! <==
+
+Do you want to proceed?
+[need to type 'yes' to confirm] yes
+
+initializing activity log
+NOT initializing bitmap
+Writing meta data...
+New drbd meta data block successfully created.
+
+
+
+Verificar status en los nodos.
+
+~# systemctl status drbd
+● drbd.service - LSB: Control DRBD resources.
+   Loaded: loaded (/etc/init.d/drbd; generated; vendor preset: enabled)
+   Active: active (exited) since Thu 2018-01-25 10:03:48 -03; 37s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 654 ExecStop=/etc/init.d/drbd stop (code=exited, status=0/SUCCESS)
+  Process: 682 ExecStart=/etc/init.d/drbd start (code=exited, status=0/SUCCESS)
+
+ene 25 10:03:48 fimbrethil drbd[682]:    prepare disk: iscsi.config iscsi.data
+ene 25 10:03:48 fimbrethil drbd[682]:     adjust disk: iscsi.config iscsi.data
+ene 25 10:03:48 fimbrethil drbd[682]:      adjust net: iscsi.config iscsi.data
+ene 25 10:03:48 fimbrethil drbd[682]: ]
+ene 25 10:03:48 fimbrethil drbd[682]: WARN: stdin/stdout is not a TTY; using /dev/consoleoutdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:48 fimbrethil drbd[682]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:48 fimbrethil drbd[682]: outdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:48 fimbrethil drbd[682]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:48 fimbrethil drbd[682]: .
+ene 25 10:03:48 fimbrethil systemd[1]: Started LSB: Control DRBD resources..
+root@fimbrethil:~# 
+
+
+root@hirilorn:~# systemctl status drbd
+● drbd.service - LSB: Control DRBD resources.
+   Loaded: loaded (/etc/init.d/drbd; generated; vendor preset: enabled)
+   Active: active (exited) since Thu 2018-01-25 10:03:53 -03; 1min 36s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 613 ExecStop=/etc/init.d/drbd stop (code=exited, status=0/SUCCESS)
+  Process: 641 ExecStart=/etc/init.d/drbd start (code=exited, status=0/SUCCESS)
+
+ene 25 10:03:53 hirilorn drbd[641]:    prepare disk: iscsi.config iscsi.data
+ene 25 10:03:53 hirilorn drbd[641]:     adjust disk: iscsi.config iscsi.data
+ene 25 10:03:53 hirilorn drbd[641]:      adjust net: iscsi.config iscsi.data
+ene 25 10:03:53 hirilorn drbd[641]: ]
+ene 25 10:03:53 hirilorn drbd[641]: WARN: stdin/stdout is not a TTY; using /dev/consoleoutdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:53 hirilorn drbd[641]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:53 hirilorn drbd[641]: outdated-wfc-timeout has to be shorter than degr-wfc-timeout
+ene 25 10:03:53 hirilorn drbd[641]: outdated-wfc-timeout implicitly set to degr-wfc-timeout (120s)
+ene 25 10:03:53 hirilorn drbd[641]: .
+ene 25 10:03:53 hirilorn systemd[1]: Started LSB: Control DRBD resources..
+root@hirilorn:~# 
+
+
+#########################
+
+Decide which node will act as the primary for the DRBD device that will contain the iSCSI configuration files (/dev/drbd0) and initiate the first full sync between the nodes. Run the following on the primary:
+
+    [fimbrethil] # drbdadm -- --overwrite-data-of-peer primary config
+
+root@fimbrethil:~# drbdadm -- --overwrite-data-of-peer primary iscsi.config
+root@fimbrethil:~#
+
+	
+
+Check the status of the initial sync:
+
+    [fimbrethil] # cat /proc/drbd 
+
+root@fimbrethil:~# cat /proc/drbd 
+version: 8.4.7 (api:1/proto:86-101)
+srcversion: 0904DF2CCF7283ACE07D07A 
+ 0: cs:SyncSource ro:Primary/Secondary ds:UpToDate/Inconsistent C r-----
+    ns:350208 nr:0 dw:0 dr:350208 al:0 bm:0 lo:0 pe:3 ua:0 ap:0 ep:1 wo:f oos:701440
+	[=====>..............] sync'ed: 33.5% (701440/1048576)K
+	finish: 0:00:18 speed: 38,568 (38,568) K/sec
+ 1: cs:Connected ro:Secondary/Secondary ds:Inconsistent/Inconsistent C r-----
+    ns:0 nr:0 dw:0 dr:0 al:0 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:50327296
+root@fimbrethil:~# 
+
+
+You can wait until the initial sync completes but it's not a requirement. Create a filesystem on /dev/drbd0 (iSCSI configs) and mount it:
+
+    [fimbrethil] # mkfs.ext4 /dev/drbd0
+	     # mkdir -p /var/iscsi-config
+    [fimbrethil] # mount /dev/drbd0 /var/iscsi-config
+
+
+root@fimbrethil:~# mkfs.ext4 /dev/drbd0
+mke2fs 1.43.4 (31-Jan-2017)
+Se está creando un sistema de ficheros con 262144 bloques de 4k y 65536 nodos-i
+UUID del sistema de ficheros: 19f18439-7ad1-4fa7-ba91-bfe4852f939b
+Respaldo del superbloque guardado en los bloques: 
+	32768, 98304, 163840, 229376
+
+Reservando las tablas de grupo: hecho                           
+Escribiendo las tablas de nodos-i: hecho                           
+Creando el fichero de transacciones (8192 bloques): hecho
+Escribiendo superbloques y la información contable del sistema de ficheros: hecho
+
+root@fimbrethil:~# 
+
+root@fimbrethil:~# mkdir -p /var/iscsi-config
+root@fimbrethil:~#
+
+root@fimbrethil:~# mount /dev/drbd0 /var/iscsi-config
+root@fimbrethil:~#
+
+Verificar montaje.
+
+root@fimbrethil:~# df -h
+S.ficheros     Tamaño Usados  Disp Uso% Montado en
+...
+/dev/drbd0       976M   2,6M  907M   1% /srv/iscsi-config
+root@fimbrethil:~# 
+
+
+Create the /srv/iscsi-config mount point on node 2.
+
+    [hirilorn] # mkdir -p /var/iscsi-config
+
+Pruebas de replicación. Ensure replication is working as expected. On the primary node:
+
+    [fimbrethil] # dd if=/dev/zero of=/var/iscsi-config/test.bin bs=512 count=200000
+    [fimbrethil] # umount /var/iscsi-config
+    [fimbrethil] # drbdadm secondary config
+
+
+
+On node 2:
+
+    [hirilorn] # drbdadm primary config
+    [hirilorn] # mount /dev/drbd0 /var/iscsi-config
+    [hirilorn] # ls -l /var/isci-config
+
+
+
+Test replication the other way by deleting the file:
+
+    [hirilorn] # rm /var/iscsi-config/test.bin
+    [hirilorn] # umount /var/iscsi-config
+    [hirilorn] # drbdadm secondary config
+
+    	
+***
+Make node 1 the primary and mount /srv/iscsi-config (/dev/drbd0) and ensure the file has gone:
+
+    [fimbrethil] # drbdadm primary config
+    [fimbrethil] # mount /dev/drbd0 /var/iscsi-config
+    [fimbrethil] # ls -l /var/iscsi-config
+
+
+#
+#data
+#
+
+Decide which node will act as the primary for the DRBD device that contains the test LUN (/dev/drbd1) and initiate the first full sync between the nodes. Run the following on the primary:
+
+    [fimbrethil] # drbdadm -- --overwrite-data-of-peer primary data
+
+en nodo 2.
+
+root@hirilorn:~# cat /proc/drbd 
+version: 8.4.7 (api:1/proto:86-101)
+srcversion: 0904DF2CCF7283ACE07D07A 
+ 0: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r-----
+    ns:104 nr:10961504 dw:10961608 dr:1069 al:3 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+ 1: cs:SyncTarget ro:Secondary/Primary ds:Inconsistent/UpToDate C r-----
+    ns:0 nr:472064 dw:472064 dr:0 al:0 bm:0 lo:0 pe:4 ua:0 ap:0 ep:1 wo:f oos:49855488
+	[>....................] sync'ed:  1.0% (48684/49148)M
+	finish: 0:21:06 speed: 39,336 (39,336) want: 50,160 K/sec
+root@hirilorn:~#
+
+
+...................
+
+No permitir scan LVM sobre discos fisicos de drbd:
+
+cat /proc/partitions
+
+~# cat /proc/partitions 
+major minor  #blocks  name
+
+ 104        0   71652960 cciss/c0d0
+ 104        1   69556224 cciss/c0d0p1
+ 104        2          1 cciss/c0d0p2
+ 104        5    2094080 cciss/c0d0p5
+ 104       16  573367448 cciss/c0d1
+ 104       17    1048576 cciss/c0d1p1
+ 104       18  572314783 cciss/c0d1p2
+ 147        0    1048508 drbd0
+ 147        1  572297276 drbd1
+
+Particion /dev/cciss/c0d1p2 se debe omitir scan lvs
+
+editar /etc/lvm/lvm.conf y agregar en la linea 107 aprox, lo sgte.
+
+    # filter = [ "a/.*/" ]
+    filter = [ "r|/dev/cciss/c0d1p2|" ]
+ 
+
+
+Instalar el pqte. iscsitarget. Por default, iscsitarget (ietd) no inicia. 
+
+apt-get install iscsitarget
+
+
+Edite /etc/defaults/iscsitarget y establesca ISCSITARGET_ENABLE a true.
+
+
+
+Heartbeat will be used to control the iscsitarget service so remove it from init:
+
+    # systemctl stop iscsitarget
+    # systemctl disable iscsitarget
+
+Relocate iscsitarget config to DRBD device. Make sure that node 1 is the primary and that /srv/iscsi-config is mounted:
+
+    [fimbrethil] # drbdadm primary config
+    [fimbrethil] # mount /dev/drbd0 /var/iscsi-config
+    [fimbrethil] # mkdir /var/iscsi-config/iet
+    [fimbrethil] # mv /etc/iet/* /var/iscsi-config/iet
+
+
+    [fimbrethil] # ln -s /var/iscsi-config/iet/ietd.conf /etc/iet/ietd.conf
+    [fimbrethil] # ln -s /var/iscsi-config/iet/initiators.allow /etc/iet/initiators.all
+    [fimbrethil] # ln -s /var/iscsi-config/iet/targets.allow /etc/iet/targets.allow
+
+---
+
+    [hirilorn] # rm -f /etc/iet/*
+
+
+    [hirilorn] # ln -s /var/iscsi-config/iet/ietd.conf /etc/iet/ietd.conf
+    [hirilorn] # ln -s /var/iscsi-config/iet/initiators.allow /etc/iet/initiators.all
+    [hirilorn] # ln -s /var/iscsi-config/iet/targets.allow /etc/iet/targets.allow
+
+    	
+Create iscsitarget config on node fimbrethil. Example:
+
+/etc/iet/ietd.conf
+
+Target iqn.2018-02.local.xen:lun
+        Lun 0 Path=/dev/cciss/c0d1p2,Type=blockio,ScsiSN=401210223301
+        Alias lun.filer
+        HeaderDigest None
+        DataDigest None
+        MaxConnections 1
+        InitialR2T Yes
+        ImmediateData No
+        MaxRecvDataSegmentLength 8192
+        MaxXmitDataSegmentLength 8192
+        MaxBurstLength 262144
+        FirstBurstLength 65536
+        DefaultTime2Wait 2
+        DefaultTime2Retain 20
+        MaxOutstandingR2T 8
+        DataPDUInOrder Yes
+        DataSequenceInOrder Yes
+        ErrorRecoveryLevel 0
+        IncomingUser caschile c4sch1l3
+
+
+apt-get -y install module-assistant debhelper build-essential
+m-a a-i iscsitarget
+
+reboot
+
+
+(fuente: https://forum.openmediavault.org/index.php/Thread/5066-iscsi-target-plugin-install-error/)
+
+
+Cheaquear servicio iscsitarget:
+
+
+drdbadm primary config
+mount /dev/drbd0 /var/iscsci-config
+
+systemctl start iscsitarget
+
+
+~# netstat -lntp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      537/sshd        
+tcp        0      0 0.0.0.0:3260            0.0.0.0:*               LISTEN      647/ietd        
+tcp6       0      0 :::22                   :::*                    LISTEN      537/sshd        
+tcp6       0      0 :::3260                 :::*                    LISTEN      647/ietd        
+
+
+
+#Nota: Con "dmsetup ls" se obtiene la forma de nombrar la unidad en tgt.
+
+#root@fimbrethil:~# dmsetup ls
+#vg0-drbd--metadata	(254:0)
+#vg0-data	(254:2)
+#vg0-iscsi--config	(254:1)
+#root@fimbrethil:~#
+
+
+***
+	
+#
+# Heartbeat
+#
+
+
+
+Configure heartbeat para controlar la direccion IP virtual del cluster y el failover del iscsitarget cuando un nodo falle.
+Lo sgte. deberá ser completado en ambos nodos.
+
+/etc/ha.d/ha.cf:
+
+logfacility     local0
+
+autojoin        none # All nodes are defined explicitly.
+auto_failback   no # Prevents nodes from flapping.
+
+keepalive       2
+deadtime        10
+warntime        5
+initdead        120
+
+# Shared network, so multicast heartbeats.
+mcast           bond0.146 239.0.0.1 694 1 0                                           
+
+# DRBD network is private, so we can use broadcasts.
+bcast           bond0.1010                                                     
+
+node            fimbrethil
+node            hirilorn
+
+respawn         hacluster /usr/lib/heartbeat/ipfail
+# Ping a core network device to assist in determining network link status.
+ping            192.168.10.1
+
+	
+
+/etc/ha.d/authkeys:
+
+auth 3
+3 md5 password
+
+
+/etc/ha.d/haresources:
+
+fimbrethil drbddisk::config Filesystem::/dev/drbd0::/var/iscsi-config::ext4 MailTo::manuel.campos@caschile.cl
+fimbrethil IPaddr::192.168.146.56/24/bond0.146 drbddisk::data portblock::tcp::3260::block iscsitarget portblock::tcp::3260::unblock
+
+
+
+#
+# Esto es con lvm2 y volumen - chequear
+#
+##fimbrethil IPaddr::192.168.10.56/24/enp0s3 drbddisk::iscsi.data LVM::vg0drbd portblock::tcp::3260::block tgt portblock::tcp::3260::unblock
+
+
+
+
+
+chmod /etc/ha.d/authkeys to 600.
+
+root@hirilorn:~# ls -la /etc/ha.d/authkeys
+-rw-r--r-- 1 root root 22 ene 29 11:36 /etc/ha.d/authkeys
+root@hirilorn:~# 
+root@hirilorn:~# chmod 600 /etc/ha.d/authkeys
+root@hirilorn:~# 
+root@hirilorn:~# ls -la /etc/ha.d/authkeys
+-rw------- 1 root root 22 ene 29 11:36 /etc/ha.d/authkeys
+root@hirilorn:~# 
+
+
+#
+#
+#
+
+Note: At the time of writing, the portblock resource agent script (/etc/ha.d/resource.d/portblock) is broken. Ubuntu bug #489719 (Ref: https://bugs.launchpad.net/ubuntu/+source/heartbeat/+bug/489719) has been filed, along with Debian bug #538987 (ref: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=538987;msg=2). Apply the following patch to both nodes: 
+
+--- portblock.orig	2009-11-28 20:03:57.964375908 +0000
++++ portblock	2009-11-28 20:04:13.264550812 +0000
+@@ -17,14 +17,14 @@
+     exit 1
+ }
+ 
+-if [ $# != 3 ]; then
++if [ $# != 4 ]; then
+     usage
+ fi
+ 
+ OCF_RESKEY_protocol=$1
+ OCF_RESKEY_portno=$2
+ OCF_RESKEY_action=$3
+-export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_action
++export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_protocol
+ 
+ OCF_TYPE=portblock
+ OCF_RESOURCE_INSTANCE=${OCF_TYPE}_$1_$2_$3
+
+
+Aplicando el patch:
+
+wget https://bugs.launchpad.net/ubuntu/+source/heartbeat/+bug/489719/+attachment/1052005/+files/portblock.patch
+
+root@fimbrethil:~# patch /etc/ha.d/resource.d/portblock portblock.patch 
+patching file /etc/ha.d/resource.d/portblock
+root@fimbrethil:~#
+
+
+Finally, reboot both nodes and test failover. The best way to do this is to connect the test LUN to a server, copy on a movie and play it. Fail one of the nodes either by pulling the power or via ”/etc/init.d/heartbeat stop”. The movie will freeze for a few seconds but should resume. Also tail /var/log/syslog.
+
+
+***
+
+Notificaciones por e-mail
+
+Instalar sendmail
+
+apt-get install sendmail
+
+y modificar la sgte linea en /etc/ha.d/haresources:
+
+fimbrethil drbddisk::config Filesystem::/dev/drbd0::/srv/iscsi-config::ext4 
+
+Debara agregar a continuacion lo sgte.
+
+fimbrethil drbddisk::config Filesystem::/dev/drbd0::/srv/iscsi-config::ext4 MailTo::manuel.campos@caschile.cl
+
+
+
+Optimización.
+
+(OJO esto es LVS) Configuración de los servidores reales:
+
+
+Debemos configurar los servidores reales de modo que acepten el forwarding que les envía el
+balanceador LVS por la IP virtual.
+Tenemos que configurar un alias virtual que levante la direccion virtual y además hacer que sea “sorda”
+a ARP de modo que no desvele la IP y no entre en conflicto.
+Los cambios a realizar en los parámetros del kernel de los sevidores reales serán:
+
+# /etc/sysctl.conf
+#habilitar la opcion de ignorar ARP
+net.ipv4.conf.all.ARP_ignore = 1
+#No responder a las solicitudes de ARP si la direccion IP esta configurada sobre el interfaz
+“lo” (loopback) o cualquier otro interfaz virtual enp0s3:0
+net.ipv4.conf.eth0.ARP_ignore = 1
+#Habilitar la opcion de anuncio ARP
+net.ipv4.conf.all.ARP_announce = 2
+
+Como la fuente IP de la peticon ARP entrará en la cache ARP del destino esto tiene el efecto de
+anunciar esta direccion. Esto no es deseable para “lo” o cualquier otro interfaz virtual "eth"x:0 de los
+servidores reales. Usando este valor haremos que los servidores reales siempre que reciban una peticion
+ARP usen la IP real como fuente de la peticion ARP.
+
+net.ipv4.conf.enp0s3.ARP_announce = 2
+
+
+Todo junto
+
+nano /etc/sysctl.conf.
+
+###
+# Habilitar la opcion de ignorar ARP
+net.ipv4.conf.all.arp_ignore = 1
+# No responder a las solicitudes de ARP si la direccion IP esta configurada sobre el interfaz
+# “lo” (loopback) o cualquier otro interfaz virtual.
+net.ipv4.conf.enp0s3.arp_ignore = 1
+# Habilitar la opcion de anuncio ARP
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.enp0s3.arp_announce = 2
+
+
+
+
+Y cargamos los cambios con:
+
+# sysctl -p
+
+
+Activar Heartbeat en ambos nodos:
+
+root@fimbrethil:~# systemctl enable heartbeat
+Synchronizing state of heartbeat.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable heartbeat
+root@fimbrethil:~# 
+
+
+
+- See more at: http://0wned.it/geek-bits/guides/high-availability-iscsi-target-using-linux/#sthash.cnbx19Li.dpuf	
+
+
+
+Lo que sigue es por si se.....
+###################################
+
+Preparar volumenes para drdb
+
+
+Instalar lvm2 e ambos nodos:
+
+apt-get -y install lvm2
+
+Crear pv con sdb en ambos nodos:
+
+~# pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+
+Crear Volume Group vg0
+
+~# vgcreate vg0 /dev/sdb
+  Volume group "vg0" successfully created
+
+
+#### Crear lv que se replicaran
+
+Crear DRBD meta data Logical Volume en Volume Group vg0:
+
+~# lvcreate -L1G -n drbd-metadata vg0
+  Logical volume "drbd-metadata" created.
+
+
+
+~# lvcreate -L1G -n iscsi-config vg0
+  Logical volume "iscsi-config" created.
+
+  
+Crear Logical Volume to become a data LUN later on:
+
+~# lvcreate -l 100%FREE -n data vg0
+  Logical volume "data" created.
+
+
+
+Verificar en ambos nodos:
+
+~# lvs
+  LV            VG  Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  data          vg0 -wi-a----- 48,00g                                                    
+  drbd-metadata vg0 -wi-a-----  1,00g                                                    
+  iscsi-config  vg0 -wi-a-----  1,00g                                                    
+                                                 
+
+
+~# lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg0/drbd-metadata
+  LV Name                drbd-metadata
+  VG Name                vg0
+  LV UUID                mlPdkf-pDKr-fRgV-16VQ-zIDW-CZtH-Mefwkk
+  LV Write Access        read/write
+  LV Creation host, time fimbrethil, 2018-01-24 17:52:07 -0300
+  LV Status              available
+  # open                 0
+  LV Size                1,00 GiB
+  Current LE             256
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:0
+   
+  --- Logical volume ---
+  LV Path                /dev/vg0/iscsi-config
+  LV Name                iscsi-config
+  VG Name                vg0
+  LV UUID                JwyoR7-bpqu-zjrP-tZNV-apgq-zZTu-ZokKiU
+  LV Write Access        read/write
+  LV Creation host, time fimbrethil, 2018-01-24 18:30:21 -0300
+  LV Status              available
+  # open                 0
+  LV Size                1,00 GiB
+  Current LE             256
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:1
+   
+  --- Logical volume ---
+  LV Path                /dev/vg0/data
+  LV Name                data
+  VG Name                vg0
+  LV UUID                v7egGv-Wc11-OIY3-7ckx-89ca-Qll1-nI1h7X
+  LV Write Access        read/write
+  LV Creation host, time fimbrethil, 2018-01-24 18:32:39 -0300
+  LV Status              available
+  # open                 0
+  LV Size                48,00 GiB
+  Current LE             12287
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:2
+   
+
+   
+
+
+############
+
+
+#
+# Configurar particiones LVM:
+#
+
+
+### Nota:Aqui mucho cuidado - eliminar este comentario !!
+
+##pvcreate /dev/drbd1
+
+;editar el archivo /etc/lvm/lvm.conf y agregar después de la linea 130:
+;
+;       # Example
+;        # Accept every block device:
+;        # filter = [ "a|.*/|" ]
+;        filter = [ "r|/dev/sdb|"
+
+    [fimbrethil] # drbdadm primary iscsi.data
+
+##pvcreate /dev/drbd1
+
+#root@fimbrethil:~# pvcreate /dev/drbd1
+#  Physical volume "/dev/drbd1" successfully created.
+#root@fimbrethil:~#
+
+
+
+vgcreate vg0drbd /dev/drbd1
+
+#root@fimbrethil:~# vgcreate vg0drbd /dev/drbd1
+#  Volume group "vg0drbd" successfully created
+#root@fimbrethil:~#
+
+
+
+#lvcreate -l 100%FREE -n stor vg0drbd
+
+#root@fimbrethil:~# lvcreate -l 100%FREE -n stor vg0drbd
+#  Logical volume "stor" created.
+#root@fimbrethil:~#
+
+
+#Verificar.
+
+#root@fimbrethil:~# lvs
+#  LV            VG      Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+#  data          vg0     -wi-ao---- 48,00g                                                    
+#  drbd-metadata vg0     -wi-ao----  1,00g                                                    
+#  iscsi-config  vg0     -wi-ao----  1,00g                                                    
+#  stor          vg0drbd -wi-a----- 47,99g                                                    
+#root@fimbrethil:~#
+
+#root@fimbrethil:~# lvscan
+#  ACTIVE            '/dev/vg0drbd/stor' [47,99 GiB] inherit
+#  ACTIVE            '/dev/vg0/drbd-metadata' [1,00 GiB] inherit
+#  ACTIVE            '/dev/vg0/iscsi-config' [1,00 GiB] inherit
+#  ACTIVE            '/dev/vg0/data' [48,00 GiB] inherit
+#root@fimbrethil:~# 
+
+
+
+
+------------------------------------------
