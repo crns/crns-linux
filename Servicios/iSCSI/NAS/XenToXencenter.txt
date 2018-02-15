@@ -1,0 +1,144 @@
+Preparar
+
+En el dom0
+
+Es necesario tener la particion de sistema como primera particion listada en configuración de discos en su domU.cfg. Por otro lado Xenserver
+utiliza un formato de discos tipo xvda, xvdb, etc y no xvda1, xvda2, ... xvdan
+
+Config snippet en Faramir:
+#
+#  Disk device(s).
+#
+root        = '/dev/xvda2 ro'
+disk        = [
+                  'phy:/dev/vg0/faramir-disk,xvda2,w',
+                  'phy:/dev/vg0/faramir-swap,xvda1,w',
+
+Esto se debe pasar a 
+#
+#  Disk device(s).
+#
+root        = '/dev/xvda ro'
+disk        = [
+                  'phy:/dev/vg0/faramir-disk,xvda,w',
+                  'phy:/dev/vg0/faramir-swap,xvdb,w',
+              ]
+
+
+En el domU
+
+Estar seguro que /etc/fstab referencia los puntos de montaje /dev/xvda{1,2} pasen a /dev/xvd{a,b}
+
+Instalar un imagen de kernel linux-image-amd64 standard (since Xen support is in mainline Linux since Linux 2.6.37) 
+
+mkdir /boot/grub
+
+apt-get install linux-image-amd64
+
+You don't need to install grub, you just need to create a simple grub config file which will be read by pygrub on the Dom0.
+
+    Create first /boot/grub/menu.lst based on the content of /boot/. 
+
+cat > /boot/grub/menu.lst << EOF
+
+default         0
+timeout         2
+
+title           Debian GNU/Linux
+root            (hd0,0)
+kernel          /vmlinuz root=/dev/xvda ro
+initrd          /initrd.img
+
+title           Debian GNU/Linux (recovery mode)
+root            (hd0,0)
+kernel          /vmlinuz root=/dev/xvda ro single
+initrd          /initrd.img
+
+EOF
+
+
+
+En el dom0
+
+
+Check that grub was properly installed on the domU with 
+
+/usr/lib/xen-4.4/bin/pygrub /dev/vg0/faramir-disk
+
+which should great with the familiar grub menu, and then abort
+
+
+Replace the kernel and ramdisk parameters in the domU config file with the following line. 
+
+bootloader      = '/usr/lib/xen-default/bin/pygrub'
+
+
+bootloader      = '/usr/lib/xen-4.4/bin/pygrub'
+
+
+Nota:     find correct pygrub binary if /usr/lib/xen-default/bin/pygrub is missing 
+
+# show current xen version (use xl or xm)
+$ xl info | grep xen_version
+xen_version            : 4.4.1
+
+# find available pygrub binaries
+$ find /usr/lib/xen* -name pygrub
+/usr/lib/xen-4.4/bin/pygrub
+
+
+Ref: https://wiki.debian.org/PyGrub
+--------------
+
+Migrar mover
+
+Descargar script de migracion en Domu0
+
+wget http://www-archive.xenproject.org/files/xva/xva.py
+
+
+chmod +x xva.py
+
+
+El formato general es el siguiente:
+
+./xva.py -c /etc/xen/vm1.cfg -n vm1 -s xenserver1 --username=root --password="mypassword"
+
+
+
+En caso de problemas
+If you got this error:
+
+ssl.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)
+
+You can fix it by adding --no-ssl in the end of the xva command, and everything will work!
+
+./xva.py -c /etc/xen/vm1.cfg -n vm1 -s xenserver1 --username=root --password="mypassword" --no-ssl
+
+###
+
+./xva.py -c /etx/xen/faramir.cfg -n faramir -s 192.168.10.167 --username=root --password="eszriv167" --no-ssl
+
+root@minas-tirith:~# ./xva.py -c /etc/xen/faramir.cfg -n faramir -s 192.168.10.167 --username=root --password="xxxxxxnnn" --no-ssl
+VM Details:
+Name: faramir
+Type: Paravirtualised
+VCPUS: 2
+Memory(bytes): 1073741824
+ACPI: true
+APIC: true
+PAE: true
+NX: false
+Viridian: true
+Disk xvda(Bootable): /dev/vg0/faramir-swap
+Disk xvdb: /dev/vg0/faramir-disk
+Connecting to target 192.168.10.167
+
+Processing disk /dev/vg0/faramir-swap(1073741824 bytes)
+[ ########################################################################### ] 100% 
+Processing disk /dev/vg0/faramir-disk(9663676416 bytes)
+[ ########################################################################### ] 100% 
+
+VM Successfully streamed
+root@minas-tirith:~# 
+
