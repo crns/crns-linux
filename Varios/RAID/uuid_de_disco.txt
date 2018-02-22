@@ -1,0 +1,106 @@
+ El UUID puede conocerse mediante alguno de los siguientes comandos:
+
+ls -l /dev/disk/by-uuid/
+
+o bien:
+
+blkid /dev/md4
+
+Para conocer más detalles del dispositivo:
+
+vol_id /dev/md4
+
+
+Crear raid5 usando 4 discos
+
+mdadm --create --verbose /dev/md0 --level=5 --raid-devices=4 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+
+Crear raid5 usando 4 particiones de disco
+
+sfdisk -d /dev/sdb | sfdisk /dev/sdc
+sfdisk -d /dev/sdb | sfdisk /dev/sdd
+sfdisk -d /dev/sdb | sfdisk /dev/sde
+
+--------------------------------------------
+
+root@vlan-srv:~# cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0   21130240 sda
+   8        1     975872 sda1
+   8        2   20152320 sda2
+   8       16    8388608 sdb
+   8       17    8385898 sdb1
+   8       32    8388608 sdc
+   8       33    8385898 sdc1
+   8       48    8388608 sdd
+   8       49    8385898 sdd1
+   8       64    8388608 sde
+   8       65    8385898 sde1
+root@vlan-srv:~# blkid /dev/sdb1
+/dev/sdb1: UUID="25a2f1df-0572-f86d-a64e-96772f1340e3" LABEL="vlan-srv:0" TYPE="linux_raid_member" 
+root@vlan-srv:~# blkid /dev/sdc1
+/dev/sdc1: UUID="25a2f1df-0572-f86d-a64e-96772f1340e3" LABEL="vlan-srv:0" TYPE="linux_raid_member" 
+root@vlan-srv:~# blkid /dev/sdd1
+/dev/sdd1: UUID="25a2f1df-0572-f86d-a64e-96772f1340e3" LABEL="vlan-srv:0" TYPE="linux_raid_member" 
+root@vlan-srv:~# blkid /dev/sde1
+/dev/sde1: UUID="25a2f1df-0572-f86d-a64e-96772f1340e3" LABEL="vlan-srv:0" TYPE="linux_raid_member" 
+root@vlan-srv:~# 
+
+----------------------------------------------
+Crear desde cero
+
+root@vlan-srv:~# cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0   21130240 sda
+   8        1     975872 sda1
+   8        2   20152320 sda2
+   8       16    8388608 sdb
+   8       17    8385898 sdb1
+   8       32    8388608 sdc
+   8       33    8385898 sdc1
+   8       48    8388608 sdd
+   8       49    8385898 sdd1
+   8       64    8388608 sde
+   8       65    8385898 sde1
+root@vlan-srv:~# mdadm --create --verbose /dev/md0 --level=5 --raid-devices=4 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+mdadm: layout defaults to left-symmetric
+mdadm: chunk size defaults to 512K
+mdadm: layout defaults to left-symmetric
+mdadm: layout defaults to left-symmetric
+mdadm: layout defaults to left-symmetric
+mdadm: layout defaults to left-symmetric
+mdadm: layout defaults to left-symmetric
+mdadm: size set to 8384512K
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+root@vlan-srv:~# 
+
+
+---------------------------------------------
+
+mdadm --create --verbose /dev/md0 --level=5 --raid-devices=4 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+
+mdadm --detail --scan >> /etc/mdadm/mdadm.conf
+
+mdadm --readwrite /dev/md0
+
+mdadm --readwrite /dev/md2
+
+Detener
+
+mdadm --stop /dev/md0
+
+mdadm --assemble --update=resync -f /dev/md0 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+
+mdadm -a /dev/md0 /dev/sdd1
+
+
+------------------------------------
+
+
+
+
+
+

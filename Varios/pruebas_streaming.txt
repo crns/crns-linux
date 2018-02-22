@@ -1,0 +1,12 @@
+http://stackoverflow.com/questions/4206141/read-red5-live-stream-with-html5
+
+http://stackoverflow.com/questions/5858936/html5-live-streaming
+
+http://stackoverflow.com/questions/4995829/what-user-agents-support-mp4-h-264-video-in-the-html5-video-tag
+
+http://stackoverflow.com/questions/1735933/streaming-via-rtsp-or-rtp-in-html5
+
+https://wiki.videolan.org/Documentation:Streaming_HowTo_New/
+
+
+rtmp://190.153.214.149/oflaDemo/prometheus.mp4

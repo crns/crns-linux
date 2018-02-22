@@ -1,0 +1,93 @@
+Este documento contiene los procedimientos de instalación, configuración, integración, tunnnig y upgrade del SO y de los conjuntos de paquetes necesarios en la implementacion de un servidor de correo multidominio.
+
+
+Luego del primer reboot (desde una instalación base de linuz Squeeze 6.0):
+
+Configurar los sgtes. repositorios:
+
+root@frodo:~#
+root@frodo:/etc/apt# cat sources.list
+#
+deb http://security.debian.org/ wheezy/updates main contrib non-free
+deb-src http://security.debian.org/ wheezy/updates main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ wheezy main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ wheezy main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ wheezy-updates main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ wheezy-updates main contrib non-free
+
+
+- Actualizar todo el sistema y reiniciar:
+
+apt-get update
+apt-get upgrade
+
+Ahora instalar firmware propieetarios, esto permite por ejemplo actualización del microcódigo de las CPU, (si está disponible):
+
+root@frodo:/etc/apt# apt-get install firmware-linux-nonfree
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  firmware-linux-nonfree
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 312 kB de archivos.
+Se utilizarán 987 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/non-free firmware-linux-nonfree all 0.28+squeeze1 [312 kB]
+Descargados 312 kB en 0seg. (1655 kB/s)       
+Seleccionando el paquete firmware-linux-nonfree previamente no seleccionado.
+(Leyendo la base de datos ... 21941 ficheros o directorios instalados actualmente.)
+Desempaquetando firmware-linux-nonfree (de .../firmware-linux-nonfree_0.28+squeeze1_all.deb) ...
+Configurando firmware-linux-nonfree (0.28+squeeze1) ...
+update-initramfs: deferring update (trigger activated)
+Procesando disparadores para initramfs-tools ...
+update-initramfs: Generating /boot/initrd.img-2.6.32-5-amd64
+W: Possible missing firmware /lib/firmware/bnx2/bnx2-rv2p-09ax-5.0.0.j3.fw for module bnx2
+W: Possible missing firmware /lib/firmware/bnx2/bnx2-rv2p-06-5.0.0.j3.fw for module bnx2
+W: Possible missing firmware /lib/firmware/bnx2/bnx2-mips-06-5.0.0.j3.fw for module bnx2
+
+El error anterior se elimina instalando el paquete que falta:
+
+root@frodo:/etc/apt# apt-get install firmware-bnx2
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  firmware-bnx2
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 316 kB de archivos.
+Se utilizarán 717 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/non-free firmware-bnx2 all 0.28+squeeze1 [316 kB]
+Descargados 316 kB en 0seg. (1134 kB/s)
+Seleccionando el paquete firmware-bnx2 previamente no seleccionado.
+(Leyendo la base de datos ... 22033 ficheros o directorios instalados actualmente.)
+Desempaquetando firmware-bnx2 (de .../firmware-bnx2_0.28+squeeze1_all.deb) ...
+Configurando firmware-bnx2 (0.28+squeeze1) ...
+update-initramfs: deferring update (trigger activated)
+Procesando disparadores para initramfs-tools ...
+update-initramfs: Generating /boot/initrd.img-2.6.32-5-amd64
+root@frodo:/etc/apt# 
+
+Verificar 
+
+
+Ahora reboot
+
+Verificar update
+
+Tunning:
+
+Ahora -> crear_bonding_debian.txt
+
+Securizar acceso ssh:
+
+Continuar -> SecurizarSSHD.txt
+
+
+Sigue en NuevoMailServer02.txt ...
+
+
+
+
+

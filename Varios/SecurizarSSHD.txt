@@ -1,0 +1,27 @@
+Editar sshd_config
+
+nano /etc/ssh/sshd_config y modificar la sgte. opción para no permitir logeo al root:
+
+PermitRootLogin no
+
+agregar la sgte line despues de "#Banner /etc/issue" para evitar que el servicio entrege info sobre el SO en el que se ejecuta.
+
+#Banner /etc/issue.net
+DebianBanner no
+
+Antes:
+22/tcp   open  ssh        OpenSSH 6.0p1 Debian 4 (protocol 2.0)
+
+Despues:
+22/tcp   open  ssh        OpenSSH 6.0p1 (protocol 2.0)
+
+
+Reiniciar el servicio:
+
+root@meneldor:/etc/ssh# /etc/init.d/ssh restart
+[ ok ] Restarting OpenBSD Secure Shell server: sshd.
+root@meneldor:/etc/ssh# 
+
+
+
+

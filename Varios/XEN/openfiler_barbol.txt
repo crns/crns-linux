@@ -1,0 +1,43 @@
+#
+#  Kernel + memory size
+#
+###kernel      = '/boot/vmlinuz-3.2.0-4-amd64'
+###ramdisk     = '/boot/initrd.img-3.2.0-4-amd64'
+
+bootloader  = '/usr/lib/xen-4.1/bin/pygrub'
+
+vcpus       = '2'
+memory      = '1024'
+
+#
+#  Disk device(s).
+#
+root        = '/dev/xvda2 ro'
+disk        = [
+                  'file:/xen/domains/celeborn/disk.img,xvda2,w',
+                  'file:/xen/domains/celeborn/swap.img,xvda1,w',
+              ]
+
+
+#
+#  Physical volumes
+#
+
+
+#
+#  Hostname
+#
+name        = 'celeborn'
+
+#
+#  Networking
+#
+vif         = [ 'ip=192.168.10.162 ,mac=5c:d9:98:bc:46:3a' ]
+
+#
+#  Behaviour
+#
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart'
+

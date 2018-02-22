@@ -1,0 +1,43 @@
+root@frodo:~# apt-get install xen-tools
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  debootstrap libconfig-inifiles-perl libelf1 libencode-locale-perl libexpect-perl libfile-listing-perl libfile-slurp-perl libfont-afm-perl
+  libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl
+  libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libio-pty-perl libio-socket-ssl-perl libio-stty-perl liblua5.1-0
+  liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-http-perl libnet-ssleay-perl libnspr4 libnss3 librpm3 librpmbuild3
+  librpmio3 librpmsign1 libterm-size-perl libtext-template-perl liburi-perl libwww-perl libwww-robotrules-perl rinse rpm rpm-common rpm2cpio
+Paquetes sugeridos:
+  libdata-dump-perl libcrypt-ssleay-perl libauthen-ntlm-perl alien elfutils rpm-i18n reiserfsprogs xfsprogs cfengine2 btrfs-tools
+Se instalarán los siguientes paquetes NUEVOS:
+  debootstrap libconfig-inifiles-perl libelf1 libencode-locale-perl libexpect-perl libfile-listing-perl libfile-slurp-perl libfont-afm-perl
+  libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl
+  libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libio-pty-perl libio-socket-ssl-perl libio-stty-perl liblua5.1-0
+  liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-http-perl libnet-ssleay-perl libnspr4 libnss3 librpm3 librpmbuild3
+  librpmio3 librpmsign1 libterm-size-perl libtext-template-perl liburi-perl libwww-perl libwww-robotrules-perl rinse rpm rpm-common rpm2cpio
+  xen-tools
+0 actualizados, 43 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 10,7 MB de archivos.
+Se utilizarán 19,9 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+-----
+lvm = xen-vol
+size   = 450Gb      # Disk image size.
+memory = 4Gb    # Memory size
+swap   = 1Gb    # Swap size
+gateway    = 192.168.7.131
+netmask    = 255.255.255.0
+broadcast  = 192.168.7.255
+mirror = http://ftp.cl.debian.org/debian/
+mirror_precise = http://ftp.cl.debian.org/debian/ # (and any others you want)
+serial_device = hvc0
+disk_device = xvda #default
+copyhosts = 1
+
+
+-----
+xen-create-image --hostname=test --ip=192.168.7.38
+

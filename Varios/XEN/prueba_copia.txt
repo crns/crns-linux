@@ -1,0 +1,84 @@
+root@deimos:/xen-isos# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@fobos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB 101.4MB/s   00:05
+
+root@deimos:/xen-isos# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@vfobos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  16.4MB/s   00:31    
+
+root@deimos:/xen-isos# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@vdeimos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  31.7MB/s   00:16    
+
+root@deimos:/xen-isos# scp openfileresa-2.99.1-x86_64-disc1.iso root@averno:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  29.8MB/s   00:17    
+----------------------------------
+
+root@fobos:/home/mcampos# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@deimos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB 101.4MB/s   00:05    
+
+root@fobos:/home/mcampos# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@vdeimos:~/ 
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  28.2MB/s   00:18    
+
+root@fobos:/home/mcampos# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@vfobos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  19.5MB/s   00:26    
+
+root@fobos:/home/mcampos# scp openfileresa-2.99.1-x86_64-disc1.iso root@averno:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  15.9MB/s   00:32    
+
+----------------------------------
+[root@vdeimos mcampos]# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@vfobos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  11.5MB/s   00:44    
+
+[mcampos@vfobos ~]$ scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@vdeimos:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB   8.7MB/s   00:58    
+--------------------------------------
+
+[root@vdeimos mcampos]# scp openfileresa-2.99.1-x86_64-disc1.iso mcampos@192.168.7.160:~/
+openfileresa-2.99.1-x86_64-disc1.iso                                                                                100%  507MB  14.1MB/s   00:36    
+
+---------------------------------
+Modulos
+
+xenfs
+evtchn
+xen-netfront
+netxen_nic
+xen-blkfront
+
+mkinitrd -f --with=scsi_wait_scan /boot/initrd-2.6.22.9-0.1.4.smp.gcc3.4.x86.i686.img 2.6.22.9-0.1.4.smp.gcc3.4.x86.i686
+
+mkinitrd -f --preload xen-netfront --preload xen-blkfront /boot/initrd-`uname -r`.img `uname -r`
+
+
+--preload xen-netfront --prerload xen-blkfront
+
+-Antes-----------------------
+[root@averno boot]# dmesg | grep Xen
+ACPI: RSDP 00000000000f0e60 00024 (v02    Xen)
+ACPI: XSDT 00000000fc009fc0 00054 (v01    Xen      HVM 00000000 HVML 00000000)
+ACPI: FACP 00000000fc0098f0 000F4 (v04    Xen      HVM 00000000 HVML 00000000)
+ACPI: DSDT 00000000fc0012a0 085CD (v02    Xen      HVM 00000000 INTL 20140926)
+ACPI: APIC 00000000fc0099f0 00460 (v02    Xen      HVM 00000000 HVML 00000000)
+ACPI: HPET 00000000fc009ed0 00038 (v01    Xen      HVM 00000000 HVML 00000000)
+ACPI: WAET 00000000fc009f10 00028 (v01    Xen      HVM 00000000 HVML 00000000)
+ACPI: SSDT 00000000fc009f40 00031 (v02    Xen      HVM 00000000 INTL 20140926)
+ACPI: SSDT 00000000fc009f80 00031 (v02    Xen      HVM 00000000 INTL 20140926)
+Xen version 4.4.
+Booting paravirtualized kernel on Xen
+Xen HVM callback vector for event delivery is enabled
+[root@averno boot]# 
+
+-Despues--------------------------------------
+[root@averno ~]# dmesg | grep Xen
+ACPI: RSDP 00000000000f0e60 00024 (v02    Xen)
+ACPI: XSDT 00000000fc009fc0 00054 (v01    Xen      HVM 00000000 HVML 00000000)
+ACPI: FACP 00000000fc0098f0 000F4 (v04    Xen      HVM 00000000 HVML 00000000)
+ACPI: DSDT 00000000fc0012a0 085CD (v02    Xen      HVM 00000000 INTL 20140926)
+ACPI: APIC 00000000fc0099f0 00460 (v02    Xen      HVM 00000000 HVML 00000000)
+ACPI: HPET 00000000fc009ed0 00038 (v01    Xen      HVM 00000000 HVML 00000000)
+ACPI: WAET 00000000fc009f10 00028 (v01    Xen      HVM 00000000 HVML 00000000)
+ACPI: SSDT 00000000fc009f40 00031 (v02    Xen      HVM 00000000 INTL 20140926)
+ACPI: SSDT 00000000fc009f80 00031 (v02    Xen      HVM 00000000 INTL 20140926)
+Xen version 4.4.
+Booting paravirtualized kernel on Xen
+Xen HVM callback vector for event delivery is enabled
+Initialising Xen virtual ethernet driver.
+[root@averno ~]#

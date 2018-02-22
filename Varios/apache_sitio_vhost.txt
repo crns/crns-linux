@@ -1,0 +1,28 @@
+<VirtualHost *:80>
+        ServerName www.nunoa.cl
+        ServerAdmin webmaster@caschile.cl
+        DocumentRoot /home/nunoa/html_site/web_nunoa
+	DirectoryIndex index.php index.htm index.html
+
+        <Directory "/home/nunoa/html_site/web_nunoa">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+#        <IfModule php5-fpm.c>
+#                #php_value suhosin.get.max_value_length 2048
+#		php_value post_max_size 12M
+#		php_value upload_max_filezise 10M
+#        </IfModule>
+
+
+        ErrorLog ${APACHE_LOG_DIR}/www.nunoa.cl-error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/www.nunoa.cl-access.log combined
+
+</VirtualHost>
+

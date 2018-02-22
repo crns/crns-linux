@@ -1,0 +1,36 @@
+
+
+
+apt-get install postfix postfix-mysql
+
+apt-get --purge remove 'exim4*'
+
+
+apt-get install spamassassin spamass-milter
+
+apt-get install swaks
+
+---------------------------------
+
+nano /etc/postfix/mysql-virtual-mailbox-domains.cf
+
+user = mailuser
+password = mai1203ver
+hosts = 192.168.7.176
+dbname = mailserver
+query = SELECT 1 FROM virtual_domains WHERE name='%s'
+
+
+postconf virtual_mailbox_domains=mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+
+
+Probar:
+
+postmap -q e-com.cl mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+
+root@ramaviva:~# postmap -q e-com.cl mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+1
+
+
+
+k

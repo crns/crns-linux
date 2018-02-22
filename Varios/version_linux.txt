@@ -1,0 +1,47 @@
+Obtener versión de linux desde la shell:
+
+root@legolas:~# cat /proc/version
+Linux version 2.6.32-5-amd64 (Debian 2.6.32-48squeeze6) (jmm@debian.org) (gcc version 4.3.5 (Debian 4.3.5-4) ) #1 SMP Tue May 13 16:34:35 UTC 2014
+root@legolas:~# 
+
+root@legolas:~# cat /etc/issue*
+Debian GNU/Linux 6.0 \n \l
+
+Debian GNU/Linux 6.0
+root@legolas:~# 
+
+root@legolas:~# cat /etc/debian_version  
+6.0.10
+root@legolas:~# 
+
+root@legolas:~# uname -a
+Linux legolas 2.6.32-5-amd64 #1 SMP Tue May 13 16:34:35 UTC 2014 x86_64 GNU/Linux
+root@legolas:~# 
+
+Instalar lsb_release para obtener versión:
+
+root@legolas:~# apt-get install lsb-release
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  file libexpat1 libmagic1 mime-support python python-minimal python-support python2.6 python2.6-minimal
+Suggested packages:
+  lsb python-doc python-tk python-profiler python2.6-doc python2.6-profiler binutils binfmt-support
+The following NEW packages will be installed:
+  file libexpat1 libmagic1 lsb-release mime-support python python-minimal python-support python2.6 python2.6-minimal
+0 upgraded, 10 newly installed, 0 to remove and 0 not upgraded.
+Need to get 4232 kB/4690 kB of archives.
+After this operation, 19.0 MB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+Finalmente obtener versión:
+
+root@legolas:~# lsb_release -a
+No LSB modules are available.
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 6.0.10 (squeeze)
+Release:	6.0.10
+Codename:	squeeze
+root@legolas:~#
+

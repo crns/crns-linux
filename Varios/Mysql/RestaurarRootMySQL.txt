@@ -1,0 +1,46 @@
+¿Olvidaste o perdiste la contraseña del usuario 'root' de MySQL?, no hay problema, solo sigue estás sencillas instrucciones y podrás establecer una nueva. Claro siempre y cuando tengas acceso al usuario 'root' de Linux.
+
+Detener el servidor
+
+#> service mysqld stop
+o
+#> /etc/rc.d/init.d/mysqld stop
+
+
+Iniciar en modo FULL o abierto
+
+#> mysqld_safe --skip-grant-tables --skip-networking&
+
+--skip-grant-tables esta opción causa que el servidor no use el sistema de privilegios lo que le da acceso ilimitado a todas las bases de datos a todos los usuarios de la base de datos.
+
+NOTA: Si MySQL fue configurado y compilado con la opción '--disable-grant-options' entonces lo anterior no funcionará y no hay mucho que se pueda hacer entonces y no se podrá cambiar la contraseña, aunque en la práctica realmente esta opción casi no se usa.
+
+--skip-networking deja de escuchar (LISTEN) conexiones TCP/IP provenientes de la red, es decir MySQL trabajaría en un ambiente totalmente local.
+
+Iniciar el monitor
+
+#>mysql -u root
+
+Como no hay sistema de privilegios en este momento, no se preguntara por la contraseña.
+
+Usamos la base de datos del sistema mysql
+
+mysql> use mysql;
+
+
+Actualizamos el campo que cambiará la contraseña de 'root'
+
+mysql> UPDATE user SET password=PASSWORD('nuevo_pass') WHERE user='root';
+Query OK, 1 rows affected (0.07 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> exit
+#>
+
+
+Reiniciar el servidor y listo!!!
+
+#> service mysqld restart
+
+
+La siguiente vez que entrés al monitor (mysql -u root -p) usa la nueva clave o contraseña.

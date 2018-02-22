@@ -1,0 +1,52 @@
+su postgres
+
+cd /var/lib/postgresql
+
+Listar DB:
+
+psql -l
+________________________________________________________________
+
+Backup:cas_sifim
+
+pg_dump -sv cas_sifim -O > ./backup/cas_sifim.schema.sql
+
+pg_dump -Fc -f ./backup/cas_sifim.data.dump -a --disable-triggers cas_sifim
+
+______________________________________________________________________________________
+Backup: Prodemu
+
+pg_dump -sv prodemu_cas -O > ./prodemu_cas.schema-2013031101.sql
+
+pg_dump -Fc -f ./prodemu_cas.data-2013031101.dump -a --disable-triggers prodemu_cas
+
+prodemu_cas      | postgres | LATIN1
+
+/var/lib/pgsql/backups
+
+______________________________________________________________________________________
+
+cd
+
+
+Crear DB:
+
+psql <-
+
+CREATE DATABASE test_sifim ENCODING 'UTF8';
+
+\q <-
+
+Restore:
+
+psql test_sifim < ./backup/cas_sifim.schema.sql
+
+pg_restore -a -v -e -Fc -O --disable-triggers -d test_sifim ./backup/cas_sifim.data.dump
+
+Site:
+
+root@gandalf:/home/ingenieria/html_site/sifim_test/
+
+
+
+

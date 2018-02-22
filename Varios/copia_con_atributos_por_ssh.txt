@@ -1,0 +1,27 @@
+ssh root@h “cd /home/ && tar –cf -.” | ssh root@192.168.10.79 “cd /home/ && tar –xf –“
+
+tar cpzfv - home/* | ssh root@192.168.10.79 'cd /home/ && tar -xzf -'
+
+----
+tar cpzfv - mcampos/* | ssh mcampos@192.168.10.5 'cd /home/mcampos/ && tar -xzf -' 
+
+El anterior comando copio mcampos en /home/mcampos, quedo /home/mcampos/mcampos
+
+
+
+----
+
+
+Ok, funciona así; 
+
+cd en directorio /home desde alli ejecutar lo sgte:
+
+tar cpzfv - transparencias/html_site/Transparencia_Colina | ssh transparencias@190.98.197.126 'cd /home/ && tar -xzf -'
+
+Lo anterior se uso OK em migración de Transparencia_Colina entre legolas y vlegolas
+
+
+tar cpzfv - transparencias/html_site/Transparencia_Peumo | ssh transparencias@192.168.7.182 'cd /home/ && tar -xzf -'
+
+
+

@@ -1,0 +1,205 @@
+Creando un raid 1 Mirroring en Linux
+
+Verificar discos
+root@cas-storage:/home# cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0  244198584 sda
+   8        1  243260416 sda1
+   8        2     936960 sda2
+   8       16 1953514584 sdb
+   8       17  244189195 sdb1
+   8       32 1953514584 sdc
+
+sfdisk -d /dev/sdc | sfdisk /dev/sdb
+
+Creando el raid:
+
+
+mdadm --create --verbose /dev/md0 --level=1 --raid-devices=2 /dev/sdb1 /dev/sdc1
+
+root@cas-storage:/home# cat /proc/mdstat 
+Personalities : [raid6] [raid5] [raid4] [raid1] 
+md0 : active (auto-read-only) raid1 sdc1[1] sdb1[0]
+      1953510841 blocks super 1.2 [2/2] [UU]
+      	resync=PENDING
+      
+unused devices: <none>
+
+mdadm --detail --scan > /etc/mdadm/mdadm.conf
+
+mdadm --readwrite /dev/md0
+
+root@cas-storage:/home# cat /proc/mdstat 
+Personalities : [raid6] [raid5] [raid4] [raid1] 
+md0 : active raid1 sdc1[1] sdb1[0]
+      1953510841 blocks super 1.2 [2/2] [UU]
+      [>....................]  resync =  0.3% (7067392/1953510841) finish=454.8min speed=71324K/sec
+      
+unused devices: <none>
+
+
+Ahora LVM
+
+Iniciar Volumenes fisicos
+
+pvcreate /dev/md0
+
+root@cas-storage:/home# pvcreate /dev/md0
+  Physical volume "/dev/md0" successfully created
+
+root@cas-storage:/home# pvdisplay
+  "/dev/md0" is a new physical volume of "1,82 TiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/md0
+  VG Name               
+  PV Size               1,82 TiB
+  Allocatable           NO
+  PE Size               0   
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               rDIFEz-Jpre-PXt6-KeWe-mvk4-qJ1I-83x6sB
+
+
+Crear Volumen Lógico:
+
+vgcreate casstorage /dev/md0
+
+Volumen lógico
+
+lvcreate -L 900G -n lvu01 casstorage
+
+root@cas-storage:/home# lvcreate -L 900G -n lvu01 casstorage
+  Logical volume "lvu01" created
+
+
+Crear filesystem basado en LVM:
+
+mkfs.ext4 /dev/casstorage/lvu01
+
+Montar en el Filesystem
+
+root@cas-storage:/var# mount /dev/casstorage/lvu01 /var/samba
+
+verificar:
+
+root@cas-storage:/var# df -h
+S.ficheros            Size  Used Avail Use% Montado en
+/dev/sda1             229G  217G  279M 100% /
+tmpfs                 1,9G     0  1,9G   0% /lib/init/rw
+udev                  1,9G  164K  1,9G   1% /dev
+tmpfs                 1,9G     0  1,9G   0% /dev/shm
+//192.168.10.152/Testing/
+                      1,9T  1,2T  720G  62% /bacula-restores/var/samba/testing
+//192.168.10.152/stecnico/
+                      1,9T  1,2T  720G  62% /bacula-restores/var/samba/stecnico
+/dev/mapper/casstorage-lvu01
+                      886G  200M  841G   1% /var/samba
+root@cas-storage:/var# 
+
+
+Montaje automático FSTAB:
+
+conocer el UUID:
+
+blkid /dev/md0
+blkid /dev/mapper/casstorage-lvu01
+
+root@cas-storage:/var# blkid /dev/mapper/casstorage-lvu01
+/dev/mapper/casstorage-lvu01: UUID="faffc61b-3455-435b-bacf-d3868381048c" TYPE="ext4" 
+
+nano /etc/fstab
+
+root@cas-storage:/var# cat /etc/fstab 
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    defaults        0       0
+# / was on /dev/sda1 during installation
+UUID=4fbde970-2bb0-4e61-9a5f-7248b5635340 /               ext4    errors=remount-ro 0       1
+# swap was on /dev/sda2 during installation
+UUID=f85ae123-d27b-41d9-9563-ae8b51888baf none            swap    sw              0       0
+/dev/scd0       /media/cdrom0   udf,iso9660 user,noauto     0       0
+//192.168.10.152/Testing /bacula-restores/var/samba/testing  smbfs  rw,username=testing,password=tes0955ting   0 0 
+//192.168.10.152/stecnico /bacula-restores/var/samba/stecnico  smbfs  rw,username=servicio,password=servicio1632   0 0
+### Agregado por Manuel Campos para rescatar el NAS WDShareStore que murio el 08/02/2012 - R.I.P. ###
+###/dev/vg0/lv0	/home   
+#/dev/mapper/vg0-lv0 /var/samba ext3 rw,relatime,usrquota,grpquota,errors=continue,data=ordered 0 0
+UUID=faffc61b-3455-435b-bacf-d3868381048c 	/var/samba 	ext4 	rw,relatime,usrquota,grpquota,errors=continue,data=ordered 0 0
+
+Aumentar espacio de disco
+
+root@cas-storage:~# vgdisplay
+  --- Volume group ---
+  VG Name               casstorage
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  2
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               1
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               1,82 TiB
+  PE Size               4,00 MiB
+  Total PE              476931
+  Alloc PE / Size       230400 / 900,00 GiB
+  Free  PE / Size       246531 / 963,01 GiB
+  VG UUID               lgpUZ5-LFyg-zllw-94BU-BXOi-00Po-LyMEO7
+   
+root@cas-storage:~#
+
+
+root@cas-storage:~# lvdisplay
+  --- Logical volume ---
+  LV Name                /dev/casstorage/lvu01
+  VG Name                casstorage
+  LV UUID                Zsgh7Z-yH5c-KVaw-Oz21-Y0QG-3WyM-4U17pw
+  LV Write Access        read/write
+  LV Status              available
+  # open                 1
+  LV Size                900,00 GiB
+  Current LE             230400
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:0
+   
+root@cas-storage:~# 
+
+Agregar 600 GB
+
+root@cas-storage:~# resize2fs /dev/casstorage/lvu01
+resize2fs 1.41.12 (17-May-2010)
+Filesystem at /dev/casstorage/lvu01 is mounted on /var/samba; on-line resizing required
+old desc_blocks = 57, new_desc_blocks = 96
+Performing an on-line resize of /dev/casstorage/lvu01 to 402653184 (4k) blocks.
+El sistema de ficheros en /dev/casstorage/lvu01 tiene ahora 402653184 bloques.
+
+root@cas-storage:~# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

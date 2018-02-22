@@ -1,0 +1,10 @@
+Leyendo lista de paquetes... Hecho
+W: Error de GPG: http://packages.asterisk.org squeeze Release: Las firmas siguientes no se pudieron verificar porque su llave pública no está disponible: NO_PUBKEY 75307751175E41DF
+
+apt-key adv --keyserver subkeys.pgp.net --recv-keys 175E41DF
+
+apt-key adv --keyserver subkeys.pgp.net --recv-keys 175E41DF
+
+
+
+wget http://packages.asterisk.org/keys/175E41DF.pub -O - | apt-key add -

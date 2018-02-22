@@ -1,0 +1,10 @@
+1. Portada: De que se trata el documento y quien lo elaboro?
+2. Introduccion: Describe el uso del documento(para que sirve?) y de que habla?
+Este documento tiene como objetivo cubrir los pasos de instalación y operación de la aplicación Bat (Bat Administrator Tool), tanto para el ambiente Windows como en Linux.
+También la operación de la aplicación BAT para las labores de chequeo de status de las tapes, Realizar Backups en forma manual y varios escenarios para la recuperación de datos e incluso de versiones historiadas de archivos.
+Finalmente detalla como relizar la operatoria relacionada al manejo de Cintas de Backup, carga, etiquetado, control de status y formateo de tapes.
+
+3. Analisis y requerimientos del sistema(¿que se ocupa para poder instalarlo y usarlo?)
+3. Explicacion del funcionamiento: Debes de poner paso a paso y con pantallas bien explicadas como funciona el programa
+
+4. Glosario 

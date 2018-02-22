@@ -1,0 +1,114 @@
+
+
+Inicio 29/07/2014 15:37
+
+Ahora instalar los conectores a mysql que php requiere en roundcube:
+
+apt-get install php-mdb2-driver-mysql
+
+Cambiar "ServerTokens OS" en archivo /etc/apache2/conf.d/security a:
+
+ServerTokens Prod
+
+
+
+- Configurar Roundcube
+
+Crear archivo webmail con el siguiente contenido en: /etc/apache2/sites-avalaible:
+
+
+nano /etc/apache2/sites-avalaible/webmail
+
+<VirtualHost 192.168.1.8:80>
+        ServerAdmin mailmaster@nolostand.cl
+        ServerName mail2.nolostand.cl
+        ServerAlias mail2.*.*
+        DocumentRoot /var/lib/roundcube
+        Alias /program/js/tiny_mce/ /usr/share/tinymce/www/
+
+	<IfModule mod_php5.c>
+                php_admin_value memory_limit 128M
+                php_admin_value upload_max_filesize 20M
+                php_admin_value post_max_size 25M
+                php_admin_value max_execution_time 1000
+                php_admin_value max_input_time 1000
+#                php_flag register_globals off
+#                php_flag safe_mode off
+#                php_flag magic_quotes_gpc off
+#                php_flag magic_quotes_runtime off
+#                php_flag magic_quotes_sybase off
+        </IfModule>
+
+        <Directory /var/lib/roundcube/>
+                Options +FollowSymLinks
+                AllowOverride All
+                Order allow,deny
+                Allow from all
+        </Directory>
+        <Directory /var/lib/roundcube/config>
+                Options -FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /var/lib/roundcube/temp>
+                Options -FollowSymLinks
+                AllowOverride None
+                Order allow,deny
+                Deny from all
+        </Directory>
+        <Directory /var/lib/roundcube/logs>
+                Options -FollowSymLinks
+                AllowOverride None
+                Order allow,deny
+                Deny from all
+        </Directory>
+        <Directory /usr/share/tinymce/www/>
+                Options Indexes MultiViews FollowSymLinks
+                AllowOverride None
+                Order allow,deny
+                Allow from all
+        </Directory>
+</VirtualHost>
+Adding the following to /etc/php5/apache2/php.ini solved the problem:
+
+nano /etc/php5/apache2/php.ini
+
+suhosin.session.encrypt = 0
+
+
+Reiniciar apache
+
+- Ahora las opciones de configuración del Webmail Roundcube:
+
+Editar /etc/rouncube/main.inc.php
+
+$rcmail_config['default_host'] = ''; dejarlo en: $rcmail_config['default_host'] = 'localhost';  (Linea 78) 
+
+$rcmail_config['smtp_server'] = ''; dejarlo en : $rcmail_config['smtp_server'] = 'localhost';(linea 146)
+
+$rcmail_config['smtp_user'] = ''; -> $rcmail_config['smtp_user'] = '%u'; (linea 154)
+
+$rcmail_config['smtp_pass'] = ''; -> $rcmail_config['smtp_pass'] = '%p'; (linea 158)
+
+$rcmail_config['language'] = 'en_US'; -> $rcmail_config['language'] = 'es_ES'; (linea 433)
+
+Modificar linea 327 $rcmail_config['product_name'] = 'Webmail Cas-Chile';
+
+$rcmail_config['drafts_mbox'] = 'INBOX.Drafts'; linea 457
+
+
+$rcmail_config['junk_mbox'] = 'INBOX.Junk'; linea 461
+
+
+$rcmail_config['sent_mbox'] = 'INBOX.Sent'; linea 466
+
+
+$rcmail_config['trash_mbox'] = 'INBOX.Trash'; linea 471
+
+
+Modificar linea 476 $rcmail_config['default_folders'] = array('INBOX', 'INBOX.Drafts', 'INBOX.Sent', 'INBOX.Junk', 'INBOX.Trash');
+
+Modificar linea 479 $rcmail_config['create_default_folders'] = TRUE;
+
+
+
+

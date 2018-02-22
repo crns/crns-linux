@@ -1,0 +1,271 @@
+Instalar Debian 8 JESSIE en un Proliant DL320e Gen8
+
+Host: Morgul
+
+Ahora instalar XEN 4.4
+
+root@morgul:~# apt-get autoremove
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+root@morgul:~# 
+
+
+root@morgul:~# apt-get install xen-linux-system-amd64 xen-tools
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  bridge-utils debootstrap debugedit grub-xen-bin grub-xen-host ipxe-qemu libaio1 libasound2 libasound2-data libasyncns0 libbluetooth3
+  libboost-system1.55.0 libboost-thread1.55.0 libbrlapi0.6 libcaca0 libconfig-inifiles-perl libdata-validate-domain-perl libdata-validate-ip-perl
+  libdata-validate-uri-perl libdirectfb-1.2-9 libelf1 libexpect-perl libfdt1 libfile-slurp-perl libfile-which-perl libflac8 libice6 libio-pty-perl
+  libio-stty-perl libiscsi2 liblist-moreutils-perl liblog-message-perl liblog-message-simple-perl liblua5.2-0 libnet-domain-tld-perl
+  libnet-ipv6addr-perl libnet-netmask-perl libnetaddr-ip-perl libnetwork-ipv4addr-perl libnspr4 libnss3 libogg0 libopus0 libpulse0 librados2 librbd1
+  librpm3 librpmbuild3 librpmio3 librpmsign1 libsdl1.2debian libseccomp2 libsm6 libsndfile1 libsocket6-perl libspice-server1 libterm-size-perl
+  libterm-ui-perl libtext-template-perl libusbredirparser1 libvdeplug2 libvorbis0a libvorbisenc2 libx11-xcb1 libxen-4.4 libxenstore3.0 libxtst6
+  libyajl2 qemu-system-common qemu-system-x86 qemu-utils rinse rpm rpm-common rpm2cpio seabios sharutils x11-common xen-hypervisor-4.4-amd64
+  xen-linux-system-3.16.0-4-amd64 xen-system-amd64 xen-utils-4.4 xen-utils-common xenstore-utils
+Paquetes sugeridos:
+  rpm-i18n libasound2-plugins alsa-utils opus-tools pulseaudio samba vde2 sgabios ovmf alien elfutils rpmlint rpm2html btrfs-tools cfengine2
+  reiserfsprogs xfsprogs
+Paquetes recomendados:
+  xen-hypervisor-amd64 xen-hypervisor-i386 xen-hypervisor-i386-pae xen-utils xen-hypervisor-4.4
+Se instalarán los siguientes paquetes NUEVOS:
+  bridge-utils debootstrap debugedit grub-xen-bin grub-xen-host ipxe-qemu libaio1 libasound2 libasound2-data libasyncns0 libbluetooth3
+  libboost-system1.55.0 libboost-thread1.55.0 libbrlapi0.6 libcaca0 libconfig-inifiles-perl libdata-validate-domain-perl libdata-validate-ip-perl
+  libdata-validate-uri-perl libdirectfb-1.2-9 libelf1 libexpect-perl libfdt1 libfile-slurp-perl libfile-which-perl libflac8 libice6 libio-pty-perl
+  libio-stty-perl libiscsi2 liblist-moreutils-perl liblog-message-perl liblog-message-simple-perl liblua5.2-0 libnet-domain-tld-perl
+  libnet-ipv6addr-perl libnet-netmask-perl libnetaddr-ip-perl libnetwork-ipv4addr-perl libnspr4 libnss3 libogg0 libopus0 libpulse0 librados2 librbd1
+  librpm3 librpmbuild3 librpmio3 librpmsign1 libsdl1.2debian libseccomp2 libsm6 libsndfile1 libsocket6-perl libspice-server1 libterm-size-perl
+  libterm-ui-perl libtext-template-perl libusbredirparser1 libvdeplug2 libvorbis0a libvorbisenc2 libx11-xcb1 libxen-4.4 libxenstore3.0 libxtst6
+  libyajl2 qemu-system-common qemu-system-x86 qemu-utils rinse rpm rpm-common rpm2cpio seabios sharutils x11-common xen-hypervisor-4.4-amd64
+  xen-linux-system-3.16.0-4-amd64 xen-linux-system-amd64 xen-system-amd64 xen-tools xen-utils-4.4 xen-utils-common xenstore-utils
+0 actualizados, 86 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 26,3 MB de archivos.
+Se utilizarán 72,5 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+--------------------------------------------------
+Esto no es necesario en máquinas con boot EFI/UEFI
+
+Boot Xen Kernel
+
+To make sure Xen Kernel will boot it is necessary to change the boot order. Do not forget to update Grub after that.
+
+dpkg-divert --divert /etc/grub.d/08_linux_xen --rename /etc/grub.d/20_linux_xen
+
+root@morgul:~# dpkg-divert --divert /etc/grub.d/08_linux_xen --rename /etc/grub.d/20_linux_xen
+Añadiendo `desviación local de /etc/grub.d/20_linux_xen a /etc/grub.d/08_linux_xen'
+root@morgul:~# 
+
+update-grub
+
+root@morgul:~# update-grub
+Generating grub configuration file ...
+Encontrada imagen de linux: /boot/vmlinuz-3.16.0-4-amd64
+Encontrada imagen de memoria inicial: /boot/initrd.img-3.16.0-4-amd64
+Encontrada imagen de linux: /boot/vmlinuz-3.16.0-4-amd64
+Encontrada imagen de memoria inicial: /boot/initrd.img-3.16.0-4-amd64
+Encontrada imagen de linux: /boot/vmlinuz-3.16.0-4-amd64
+Encontrada imagen de memoria inicial: /boot/initrd.img-3.16.0-4-amd64
+hecho
+root@morgul:~# 
+
+-------
+
+Ahora configurar XEN:
+
+Modificar /etc/xen/xl.conf descomentando y cambiando la opcion:
+
+En la linea 24 descomentar:
+
+vif.default.backend="0"
+
+En la linea 34 insertar:
+
+vif.default.bridge="br0"
+
+Guardar y salir
+
+Crear directorio /etc/xen/auto
+
+mkdir /etc/xen/auto
+
+---------------------------------------------------
+
+Preparar almacenamiento para máquinas virtuales:
+
+apt-get install lvm2
+
+root@morgul:~# apt-get install lvm2
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dmeventd libdevmapper-event1.02.1 liblvm2cmd2.02 libreadline5
+Paquetes sugeridos:
+  thin-provisioning-tools
+Se instalarán los siguientes paquetes NUEVOS:
+  dmeventd libdevmapper-event1.02.1 liblvm2cmd2.02 libreadline5 lvm2
+0 actualizados, 5 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.471 kB de archivos.
+Se utilizarán 3.537 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+
+Chequear discos/raid/particiones:
+
+root@morgul:~# cat /proc/partitions
+major minor  #blocks  name
+
+  11        0     642048 sr0
+   8       16  976762584 sdb
+   8       17   97654784 sdb1
+   8       18    2148352 sdb2
+   8       19  876957696 sdb3
+   8        0  976762584 sda
+   8        1   97654784 sda1
+   8        2    2148352 sda2
+   8        3  876957696 sda3
+   9        1    2146304 md1
+   9        2  876826624 md2
+   9        0   97589248 md0
+root@morgul:~# 
+
+Se utilizará /dev/md2 para el almacenamiento de máquinas virtuales:
+
+root@morgul:~# pvcreate /dev/md2
+  Physical volume "/dev/md2" successfully created
+root@morgul:~# 
+
+root@morgul:~# pvscan
+  PV /dev/md2         lvm2 [836,21 GiB]
+  Total: 1 [836,21 GiB] / in use: 0 [0   ] / in no VG: 1 [836,21 GiB]
+root@morgul:~#
+
+vgcreate vg0 /dev/md2
+
+root@morgul:~# vgcreate vg0 /dev/md2
+  Volume group "vg0" successfully created
+root@morgul:~#
+
+pvdisplay
+
+root@morgul:~# pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/md2
+  VG Name               vg0
+  PV Size               836,21 GiB / not usable 4,00 MiB
+  Allocatable           yes 
+  PE Size               4,00 MiB
+  Total PE              214068
+  Free PE               214068
+  Allocated PE          0
+  PV UUID               4FVtlB-7mTh-Z5vJ-C7HT-606v-G9Jj-bB8Kdg
+   
+root@morgul:~#
+
+vgdisplay
+
+root@morgul:~# vgdisplay
+  --- Volume group ---
+  VG Name               vg0
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               836,20 GiB
+  PE Size               4,00 MiB
+  Total PE              214068
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       214068 / 836,20 GiB
+  VG UUID               3bVSIX-BWEy-VN0E-LJee-uTw5-xkEa-O4QoOC
+   
+root@morgul:~#  
+
+
+--------------------------
+
+Preparar XEN-TOOLS para crear máquinas Linux:
+
+cd /etc/xen-tools
+
+nano xen-tools.conf
+
+Descomentar la linea 55
+lvm = vg0
+
+En la sección "Disk and Sizing options" personalizar:
+
+size   = 100Gb      # Disk image size.
+memory = 4Gb    # Memory size
+swap   = 1Gb    # Swap size
+
+En la seccion "Networking setup values", descomentar y personalizar:
+
+gateway    = 192.168.7.131
+netmask    = 255.255.255.0
+broadcast  = 192.168.7.255
+
+Buscar y comentar la sgte. linea:
+
+mirror = `xt-guess-suite-and-mirror --mirror`
+
+comentarla y agregar:
+
+mirror = http://ftp.cl.debian.org/debian/
+
+Lista las opciones básicas:
+
+------------------
+Crear volumenes en vg0 para Wowsa Streaming Server:
+
+lvcreate -L 100G -n gollum-disk vg0
+lvcreate -L 1G -n gollum-swap vg0
+
+root@morgul:/etc/xen# lvcreate -L 100G -n gollum-disk vg0
+  Logical volume "gollum-disk" created
+root@morgul:/etc/xen#
+
+root@morgul:/etc/xen# lvcreate -L 1G -n gollum-swap vg0
+  Logical volume "gollum-swap" created
+root@morgul:/etc/xen# 
+
+root@morgul:/etc/xen# lvscan
+  ACTIVE            '/dev/vg0/gollum-disk' [100,00 GiB] inherit
+  ACTIVE            '/dev/vg0/gollum-swap' [1,00 GiB] inherit
+root@morgul:/etc/xen# 
+--------
+
+root@ceorl:/etc/xen# mkswap /dev/vg0/vgaladriel-swap
+Setting up swapspace version 1, size = 2097148 KiB
+no label, UUID=a2bdb534-39d0-40df-950f-cb0f900fbb55
+root@ceorl:/etc/xen# 
+
+--------------
+Copiar entre volumenes logicos:
+
+Origen a destino
+
+en origen: (origen 192.168.10.8 - destino 192.168.7.157)
+
+ssh-keygen -t dsa
+
+se instala en destino:
+
+scp ~/.ssh/id_dsa.pub root@192.168.7.157:~/.ssh/authorized_keys
+
+Iniciar copia:
+
+dd if=/dev/vg0/gollum-disk | ssh root@192.168.7.157 'dd of=/dev/vg0/gollum-disk'

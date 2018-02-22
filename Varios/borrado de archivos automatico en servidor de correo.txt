@@ -1,0 +1,9 @@
+
+Mover archivos segun antiguedad más de 60 dias desde directorio actual a ruta relativa destino:
+
+root@hayala:/var/vmail/e-com.cl/norielc/Maildir/cur# find . -name \* -mtime +60 -exec mv {} ../.INBOX.Respaldo/cur \;
+
+Borrar archivos segun antiguedad
+
+find /var/vmail/ -wholename '*/.INBOX.Junk/*/*' -ctime +30 | xargs rm -f
+

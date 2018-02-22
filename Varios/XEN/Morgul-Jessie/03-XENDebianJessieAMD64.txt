@@ -1,0 +1,105 @@
+Instalar DOMU Debian 8 JESSIE en GNU/Linux DEbian 8 - XEN-4.4 en un Proliant DL380e Gen8
+
+
+xen-create-image --lvm=tom --dist=jessie --hostname=tom --ip=192.168.7.169 --mac=00:1c:c0:8f:3d:09 --vcpus=2 --memory=2Gb --size=300Gb --swap=1G --force
+
+00:80:c8:3b:ae:79
+
+General Information
+--------------------
+Hostname       :  tom
+Distribution   :  jessie
+Mirror         :  http://ftp.cl.debian.org/debian/
+Partitions     :  swap            1G    (swap)
+                  /               300Gb (ext3)
+Image type     :  full
+Memory size    :  2Gb
+Kernel path    :  /boot/vmlinuz-3.16.0-4-amd64
+Initrd path    :  /boot/initrd.img-3.16.0-4-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.7.169 [MAC: 00:1c:c0:8f:3d:09]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.7.255
+Gateway        : 192.168.7.131
+
+
+Creating swap on /dev/vg0/tom-swap
+Done
+
+Creating ext3 filesystem on /dev/vg0/tom-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/tom.log
+
+Installation Summary
+---------------------
+Hostname        :  tom
+Distribution    :  jessie
+MAC Address     :  00:1c:c0:8f:3d:09
+IP Address(es)  :  192.168.7.169 
+RSA Fingerprint :  cd:35:47:60:cf:26:6d:67:9b:b8:4e:37:c7:ab:a9:44
+Root Password   :  bs5i5NDjAr4sExTNDRLaJH4
+
+
+
+-------
+
+
+root@tom:~# apt-get install ethtool iptables iproute vlan ifenslave bsdutils fail2ban bridge-utils linux-image-amd64 firmware-linux-nonfree dnsutils 
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+iptables is already the newest version.
+bsdutils is already the newest version.
+The following extra packages will be installed:
+  bind9-host file geoip-database libalgorithm-c3-perl libarchive-extract-perl libbind9-90 libcgi-fast-perl libcgi-pm-perl libclass-c3-perl
+  libclass-c3-xs-perl libcpan-meta-perl libdata-optlist-perl libdata-section-perl libdns100 libexpat1 libfcgi-perl libgeoip1 libisc95 libisccc90
+  libisccfg90 liblog-message-perl liblog-message-simple-perl liblwres90 libmagic1 libmodule-build-perl libmodule-pluggable-perl
+  libmodule-signature-perl libmro-compat-perl libpackage-constants-perl libparams-util-perl libpod-latex-perl libpod-readme-perl libpython-stdlib
+  libpython2.7-minimal libpython2.7-stdlib libregexp-common-perl libsoftware-license-perl libsqlite3-0 libsub-exporter-perl libsub-install-perl
+  libterm-ui-perl libtext-soundex-perl libtext-template-perl libxml2 mime-support perl perl-modules python python-minimal python-pyinotify python2.7
+  python2.7-minimal rename sgml-base whois xml-core
+Suggested packages:
+  rblcheck python-gamin mailx geoip-bin perl-doc libterm-readline-gnu-perl libterm-readline-perl-perl make libb-lint-perl
+  libcpanplus-dist-build-perl libcpanplus-perl libfile-checktree-perl libobject-accessor-perl python-doc python-tk python-pyinotify-doc
+  python2.7-doc binutils binfmt-support sgml-base-doc debhelper
+Recommended packages:
+  libarchive-tar-perl
+The following NEW packages will be installed:
+  bind9-host bridge-utils dnsutils ethtool fail2ban file firmware-linux-nonfree geoip-database ifenslave iproute libalgorithm-c3-perl
+  libarchive-extract-perl libbind9-90 libcgi-fast-perl libcgi-pm-perl libclass-c3-perl libclass-c3-xs-perl libcpan-meta-perl libdata-optlist-perl
+  libdata-section-perl libdns100 libexpat1 libfcgi-perl libgeoip1 libisc95 libisccc90 libisccfg90 liblog-message-perl liblog-message-simple-perl
+  liblwres90 libmagic1 libmodule-build-perl libmodule-pluggable-perl libmodule-signature-perl libmro-compat-perl libpackage-constants-perl
+  libparams-util-perl libpod-latex-perl libpod-readme-perl libpython-stdlib libpython2.7-minimal libpython2.7-stdlib libregexp-common-perl
+  libsoftware-license-perl libsqlite3-0 libsub-exporter-perl libsub-install-perl libterm-ui-perl libtext-soundex-perl libtext-template-perl libxml2
+  linux-image-amd64 mime-support perl perl-modules python python-minimal python-pyinotify python2.7 python2.7-minimal rename sgml-base vlan whois
+  xml-core
+0 upgraded, 65 newly installed, 0 to remove and 0 not upgraded.
+Need to get 17.0 MB of archives.
+After this operation, 75.9 MB of additional disk space will be used.
+Do you want to continue? [Y/n]
+
+------
+
+OK ahora configurar hostin Apache Worker:
+
+xen-create-image --lvm=vg0 --dist=stretch --hostname=ultra --ip=10.10.1.211 --mac=c3:03:06:8f:3d:09 --vcpus=4 --memory=5Gb --size=100Gb --swap=1G --password=cronos

@@ -1,0 +1,139 @@
+Instalar Debian 8 JESSIE en un Proliant DL380 Gen9 con Smart HBA H240 Controller
+
+Se debe desactivar en BIOS la opcion de raid integrada y solo dejar HP AHCI SATA Controller, de este modo el raid se controlara por mdadm desde el
+hipervisor XEN en GNU/Linux quien suministrara los discos en RAID 5 para el almacenamiento del Apliance Openfiler.
+
+Esquema de particiones (Discos 1 y 5):
+
+- 550.0 MB Se crean como particion EFI (/boot/efi), con estas particiones (dev/sda1 y /dev/sde1) no se crea un raid, se dejan tal cual.
+- 700.0 GB Se crean como particion para RAID, se asigna al RAID 1 /dev/md0 para /.
+- 280.0 GB Se crean como particion para RAID, se asigna al RAID 1 /dev/md1 como unidad LVM.
+- 19.7  GB Se crean como particion para RAID, se asigna al RAID 1 /dev/md2 como SWAP
+
+Se crea un RAID 5 con los 6 discos restantes, este raid se asignará a Openfiler para almacenamiento.
+
+
+Editar /etc/apt/sources y solo dejar lo siguiente:
+
+deb http://security.debian.org/ jessie/updates main contrib non-free
+deb-src http://security.debian.org/ jessie/updates main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ jessie main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ jessie main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ jessie-updates main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ jessie-updates main contrib non-free 
+
+OK, ahora actualización masiva de JESSIE
+
+apt-get update
+apt-get upgrade
+
+root@fobos:~# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Calculando la actualización... Listo
+Se actualizarán los siguientes paquetes:
+  libcups2 libssl1.0.0 openssl
+3 actualizados, 0 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.998 kB de archivos.
+Se utilizarán 37,9 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+Des:1 http://security.debian.org/ jessie/updates/main libssl1.0.0 amd64 1.0.1k-3+deb8u1 [1.038 kB]
+Des:2 http://security.debian.org/ jessie/updates/main libcups2 amd64 1.7.5-11+deb8u1 [283 kB]                                                        
+Des:3 http://security.debian.org/ jessie/updates/main openssl amd64 1.0.1k-3+deb8u1 [677 kB]                                                         
+Descargados 1.998 kB en 38s (52,3 kB/s)                                                                                                              
+Leyendo lista de cambios... Hecho.
+Preconfigurando paquetes ...
+(Leyendo la base de datos ... 28876 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../libssl1.0.0_1.0.1k-3+deb8u1_amd64.deb ...
+Desempaquetando libssl1.0.0:amd64 (1.0.1k-3+deb8u1) sobre (1.0.1k-3) ...
+Preparando para desempaquetar .../libcups2_1.7.5-11+deb8u1_amd64.deb ...
+Desempaquetando libcups2:amd64 (1.7.5-11+deb8u1) sobre (1.7.5-11) ...
+Preparando para desempaquetar .../openssl_1.0.1k-3+deb8u1_amd64.deb ...
+Desempaquetando openssl (1.0.1k-3+deb8u1) sobre (1.0.1k-3) ...
+Procesando disparadores para man-db (2.7.0.2-5) ...
+Configurando libssl1.0.0:amd64 (1.0.1k-3+deb8u1) ...
+Configurando libcups2:amd64 (1.7.5-11+deb8u1) ...
+Configurando openssl (1.0.1k-3+deb8u1) ...
+Procesando disparadores para libc-bin (2.19-18) ...
+root@fobos:~# 
+
+apt-get install firmware-linux-nonfree ifenslave ethtool
+
+root@fobos:~# apt-get install firmware-linux-nonfree ifenslave ethtool
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  ethtool firmware-linux-nonfree ifenslave
+0 actualizados, 3 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.497 kB de archivos.
+Se utilizarán 5.434 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ jessie/main ethtool amd64 1:3.16-1 [94,9 kB]
+Des:2 http://ftp.cl.debian.org/debian/ jessie/non-free firmware-linux-nonfree all 0.43 [1.386 kB]
+Des:3 http://ftp.cl.debian.org/debian/ jessie/main ifenslave all 2.6 [15,6 kB]
+Descargados 1.497 kB en 2s (727 kB/s)
+Seleccionando el paquete ethtool previamente no seleccionado.
+(Leyendo la base de datos ... 28876 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../ethtool_1%3a3.16-1_amd64.deb ...
+Desempaquetando ethtool (1:3.16-1) ...
+Seleccionando el paquete firmware-linux-nonfree previamente no seleccionado.
+Preparando para desempaquetar .../firmware-linux-nonfree_0.43_all.deb ...
+Desempaquetando firmware-linux-nonfree (0.43) ...
+Seleccionando el paquete ifenslave previamente no seleccionado.
+Preparando para desempaquetar .../archives/ifenslave_2.6_all.deb ...
+Desempaquetando ifenslave (2.6) ...
+Procesando disparadores para man-db (2.7.0.2-5) ...
+Configurando ethtool (1:3.16-1) ...
+Configurando firmware-linux-nonfree (0.43) ...
+update-initramfs: deferring update (trigger activated)
+Configurando ifenslave (2.6) ...
+Procesando disparadores para initramfs-tools (0.120) ...
+update-initramfs: Generating /boot/initrd.img-3.16.0-4-amd64
+root@fobos:~# 
+
+
+apt-get install firmware-linux-free
+
+root@fobos:~# apt-get install firmware-linux-free
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  firmware-linux-free
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 19,1 kB de archivos.
+Se utilizarán 90,1 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ jessie/main firmware-linux-free all 3.3 [19,1 kB]
+Descargados 19,1 kB en 0s (43,0 kB/s)          
+Seleccionando el paquete firmware-linux-free previamente no seleccionado.
+(Leyendo la base de datos ... 29131 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../firmware-linux-free_3.3_all.deb ...
+Desempaquetando firmware-linux-free (3.3) ...
+Configurando firmware-linux-free (3.3) ...
+update-initramfs: deferring update (trigger activated)
+Procesando disparadores para initramfs-tools (0.120) ...
+update-initramfs: Generating /boot/initrd.img-3.16.0-4-amd64
+root@fobos:~# 
+
+egrep '(vmx|svm)' --color=always /proc/cpuinfo
+
+
+root@fobos:~# egrep '(vmx|svm)' --color=always /proc/cpuinfo
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+root@fobos:~# 
+
+
+root@fobos:~# uname -a
+Linux fobos 3.16.0-4-amd64 #1 SMP Debian 3.16.7-ckt11-1 (2015-05-24) x86_64 GNU/Linux
+root@fobos:~#
+
+
+

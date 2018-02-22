@@ -1,0 +1,90 @@
+Filtros en el lado del servidor SIEVE
+
+
+Editar en /etc/dovecot/dovecot.conf
+
+Y los siguientes cambios se haran el la seccion Plugin settings:
+
+Linea 22
+
+protocols = imap imaps pop3 pop3s managesieve
+
+En la sección ManageSieve specific settings comentar toda la sección 
+
+protocol managesieve {
+			...
+			...
+}
+
+dejarlo:
+#protocol managesieve {
+#			...
+#			...
+#}
+
+Comentar toda la sección protocolo LDA y reemplazar por:
+
+protocol lda {
+    auth_socket_path = /var/run/dovecot/auth-master
+    postmaster_address = mcampos@sifim.cl
+    mail_plugin_dir = /usr/lib/dovecot/modules/lda
+    mail_plugins = sieve
+    log_path = /var/vmail/dovecot-deliver.log
+}
+
+
+linea 1276   #sieve=~/.dovecot.sieve
+
+Cambiar a 
+
+sieve_global_path = /var/vmail/globalsieverc
+
+Ubicar esta linea 
+
+#sieve_dir=~/sieve
+
+ y agregar despues:
+
+  sieve_global_dir = /var/vmail/sieve
+  sieve_maxscriptsize = 128
+  sieve=/var/vmail/%d/%n/.dovecot.sieve
+  sieve_dir=/var/vmail/%d/%n/sieve
+
+Terminar de editar el archivo
+
+Ahora crear el archivo /var/vmail/globalsieverc con el siguiente contenido
+
+# X-AntiAbuse
+# List-Unsubscribe
+require ["fileinto", "reject"];
+  if anyof (exists "X-Spam-Flag", exists "X-AntiAbuse", exists "List-Unsubscribe") {
+          if anyof (header :contains "X-Spam-Flag" "NO", header :contains "X-AntiAbuse" "NO") {
+          } else {
+          	fileinto "INBOX.Junk";
+          	stop;
+          }
+  }
+  elsif address :matches :domain "from" [
+	"rocketmail.com",
+	"tie.cl",
+	"lporl.cl",
+	"stask.info",
+	"fidelizateahora.com",
+	"clickmail.com",
+	"compraahora.com",
+	"clientecomprador.com",
+	"sigmar.com",
+	"imamas.cl"] {
+#	fileinto "INBOX.Junk";
+	reject "No SPAM Here!";
+	stop;
+  }
+
+and restart Dovecot:
+
+$> /etc/init.d/dovecot restart
+
+
+$> sendmail mcampos@cas-chile.cl < /usr/share/doc/spamassassin/examples/sample-spam.txt
+
+

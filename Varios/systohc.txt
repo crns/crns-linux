@@ -1,0 +1,8 @@
+
+### Establecer la hora del sistema con el comando Date ###
+# date --set="2011-09-20 12:56:00"
+### Sincronizar Hardware clock con hora del sistema ###
+# hwclock --systohc
+### Establecer hwclock en /etc/localtime ###
+# hwclock --adjust
+

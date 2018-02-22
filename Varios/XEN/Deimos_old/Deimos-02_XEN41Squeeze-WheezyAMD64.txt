@@ -1,0 +1,338 @@
+Configurar la Red (Instalando OpenVSwitch)
+
+
+Se instalará openvswitch-datapath-dkms debido a que no se necesita hacer nada despues de una actualización de sistema:
+
+Primero se instalan las dependencias de openvswitch con:
+
+apt-get install build-essential module-assistant linux-headers-`uname -r`
+
+root@deimos:~# apt-get install build-essential module-assistant linux-headers-`uname -r`
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  binutils cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl libalgorithm-diff-xs-perl
+  libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2 libmpfr4 libquadmath0
+  libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev make manpages-dev
+Paquetes sugeridos:
+  binutils-doc cpp-doc gcc-4.6-locales gcc-4.7-locales debian-keyring g++-multilib g++-4.7-multilib gcc-4.7-doc libstdc++6-4.7-dbg gcc-multilib
+  autoconf automake1.9 libtool flex bison gdb gcc-doc gcc-4.6-multilib libmudflap0-4.6-dev gcc-4.6-doc libgcc1-dbg libgomp1-dbg libquadmath0-dbg
+  libmudflap0-dbg binutils-gold gcc-4.7-multilib libmudflap0-4.7-dev libitm1-dbg libcloog-ppl0 libppl-c2 libppl7 glibc-doc libstdc++6-4.7-doc
+  make-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils build-essential cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl
+  libalgorithm-diff-xs-perl libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2
+  libmpfr4 libquadmath0 libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-amd64 linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev
+  make manpages-dev module-assistant
+0 actualizados, 35 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 54,6 MB de archivos.
+Se utilizarán 147 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Nos aseguramos de no tener instalado el paquete bridge-utils:
+
+apt-get remove --purge bridge-utils
+
+root@deimos:~# apt-get remove --purge bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Package 'bridge-utils' is not installed, so not removed
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@deimos:~# 
+
+apt-get autoremove
+
+root@deimos:~# apt-get autoremove
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@deimos:~# 
+
+
+Ahora instalar el soporte de opevswitch en el kernel con:
+
+1.- Repositorios:
+Asegurese de tener los repositorios de debian y de openstack para debian bien configurados. Los de OpenStack se agregan así:
+
+a.- Agregue las siguientes líneas a /etc/apt/sources.list:
+
+nano /etc/apt/sources.list
+
+deb http://archive.gplhost.com/debian havana main
+deb http://archive.gplhost.com/debian havana-backports main
+
+b.- Importe la llave del repositorio
+
+cd /tmp
+wget http://archive.gplhost.com/debian/repository_key.asc
+apt-key add repository_key.asc
+cd /
+
+Actualizar: (Nota: Debe tener las ramas "main contrib non-free" activas en los repositorios principales y de updates).
+
+apt-get update
+
+root@deimos:/tmp# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se actualizarán los siguientes paquetes:
+  libusb-1.0-0
+1 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 53,7 kB de archivos.
+Se utilizarán 63,5 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+-----------------------------
+
+
+apt-cache search openvswitch-datapath
+
+root@deimos:~# apt-cache search openvswitch-datapath
+openvswitch-datapath-dkms - Open vSwitch datapath module source - DKMS version
+openvswitch-datapath-source - Open vSwitch datapath module source - module-assistant version
+root@deimos:~# 
+
+
+
+apt-get install openvswitch-common openvswitch-controller python-openvswitch openvswitch-test openvswitch-switch openvswitch-datapath-dkms
+
+root@deimos:~# apt-get install openvswitch-common openvswitch-controller python-openvswitch openvswitch-test openvswitch-switch openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dkms menu openvswitch-pki python-openssl python-pam python-pkg-resources python-serial python-twisted-bin python-twisted-core python-twisted-web
+  python-zope.interface uuid-runtime
+Paquetes sugeridos:
+  menu-l10n gksu kdebase-bin kdebase-runtime ktsuss sux openvswitch-datapath-module python-openssl-doc python-openssl-dbg python-distribute
+  python-distribute-doc python-wxgtk2.8 python-wxgtk2.6 python-wxgtk python-twisted-bin-dbg python-tk python-gtk2 python-glade2 python-qt3
+Se instalarán los siguientes paquetes NUEVOS:
+  dkms menu openvswitch-common openvswitch-controller openvswitch-datapath-dkms openvswitch-pki openvswitch-switch openvswitch-test python-openssl
+  python-openvswitch python-pam python-pkg-resources python-serial python-twisted-bin python-twisted-core python-twisted-web python-zope.interface
+  uuid-runtime
+0 actualizados, 18 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 8.511 kB de archivos.
+Se utilizarán 37,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]?
+...
+
+
+
+...
+Creating controllerca...
+Creating switchca...
+Configurando openvswitch-controller (2.0.1-1~bpo70+1) ...
+[....] Starting ovs-controller : ovs-controller2015-03-20T20:53:40Z|00001|stream_ssl|INFO|Trusting CA cert from /etc/openvswitch-controller/cacert.pem (/C=US/ST=CA/O=Open vSwitch/OU=switchca/CN=OVS switchca CA Certificate (2015 mar 20 17:53:39)) (fingerprint c4:37:d0:b6:df:14:4c:e6:cc:56:35:a5:ac:cf:20:ae:72:1f:2b:38)
+. ok 
+Configurando openvswitch-datapath-dkms (2.0.1-1~bpo70+1) ...
+
+Creating symlink /var/lib/dkms/openvswitch/2.0.1/source ->
+                 /usr/src/openvswitch-2.0.1
+
+DKMS: add completed.
+
+Kernel preparation unnecessary for this kernel.  Skipping...
+
+Building module:
+cleaning build area....(bad exit status: 2)
+./configure --with-linux='/lib/modules/3.2.0-4-amd64/build' && make -C datapath/linux.........
+cleaning build area....(bad exit status: 2)
+
+DKMS: build completed.
+
+openvswitch:
+Running module version sanity check.
+ - Original module
+   - No original module exists within this kernel
+ - Installation
+   - Installing to /lib/modules/3.2.0-4-amd64/updates/dkms/
+
+depmod.....
+
+DKMS: install completed.
+Configurando openvswitch-switch (2.0.1-1~bpo70+1) ...
+Inserting openvswitch module.
+/etc/openvswitch/conf.db does not exist ... (warning).
+Creating empty database /etc/openvswitch/conf.db.
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+Configurando openvswitch-test (2.0.1-1~bpo70+1) ...
+Configurando python-openvswitch (2.0.1-1~bpo70+1) ...
+Procesando disparadores para menu ...
+Procesando disparadores para python-support ...
+root@deimos:~# 
+
+
+Chequeo final con:
+
+/etc/init.d/openvswitch-switch restart
+
+
+root@deimos:~# /etc/init.d/openvswitch-switch restart
+Killing ovs-vswitchd (17876).
+Killing ovsdb-server (17865).
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+root@deimos:~# 
+
+
+Y comprobamos que todo esta ok:
+
+/etc/init.d/openvswitch-switch status
+
+root@deimos:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 17967
+ovs-vswitchd is running with pid 17978
+root@deimos:~# 
+
+
+
+Presto!
+
+Reiniciar para asegura que todo carge por default:
+
+
+---
+
+Agregamos una definición de bond:
+
+editar /etc/network/interfaces
+
+auto bond0
+allow-br0 bond0
+iface bond0 inet manual
+	ovs_bridge br0
+	ovs_type OVSBond
+   	ovs_bonds eth0 eth1
+   	ovs_options bond_mode=balance-tcp lacp=active
+   	bond-miimon 100
+
+auto eth0
+iface eth0 inet manual
+  	bond-master bond0
+
+auto eth1
+iface eth1 inet manual
+  	bond-master bond0
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+   	address 172.16.20.1
+   	netmask 255.255.255.0
+   	ovs_type OVSBridge
+   	ovs_ports bond0
+	bridge-ports bond0
+
+La última linea permite que el bridge levante automáticamente sin problemas la configuración IP en el arranque todo OK. 
+
+---
+
+Ahora activar el bridge patra gestionarlo por OVS:
+
+ovs-vsctl add-br br0
+ovs-vsctl add-port br0 bond0
+
+Revisar:
+
+ovs-vsctl add-br br0
+
+root@crn-xen:~# ovs-vsctl show
+e459e336-a2d1-4473-a1d7-23c810e21856
+    Bridge "br0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+        Port "bond0"
+            Interface "bond0"
+    ovs_version: "2.0.1"
+root@crn-xen:~# 
+
+
+Se puede activar ahora con ifup br0 o reboot para asegurarnos que todo arranca automaticamente:
+
+Reboot and enjoy, happy hack!!
+
+------------------------
+Crear RAid5
+
+mdadm --create --verbose /dev/md1 --level=5 --raid-devices=6 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sdf1 /dev/sdg1 /dev/sdh1
+
+
+
+mdadm --detail --scan > mdadm.conf
+
+----
+Crear particion
+
+root@deimos:~# cat /sys/block/md1/queue/optimal_io_size 
+2621440
+root@deimos:~# cat /sys/block/md1/queue/minimum_io_size 
+524288
+root@deimos:~# cat /sys/block/md1/alignment_offset 
+0
+root@deimos:~# cat /sys/block/md1/queue/physical_block_size 
+512
+root@deimos:~# parted /dev/md1
+GNU Parted 2.3
+Using /dev/md1
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) mklabel GPT                                                      
+Warning: The existing disk label on /dev/md1 will be destroyed and all data on this disk will be lost. Do you want to continue?
+Yes/No? yes                                                               
+(parted) mkpart primary 5120s 500                                         
+(parted) mkpart primary 500 100%
+(parted) print                                                            
+Model: Linux Software RAID Array (md)
+Disk /dev/md1: 5000GB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+
+Number  Start   End     Size    File system  Name     Flags
+ 1      2621kB  501MB   498MB                primary
+ 2      501MB   5000GB  5000GB               primary
+
+(parted) q                                                                
+Information: You may need to update /etc/fstab.                           
+
+root@deimos:~# cat /proc/partitions
+major minor  #blocks  name
+
+   8       48  976762584 sdd
+   8       49  976760832 sdd1
+   8       32  976762584 sdc
+   8       33  976760832 sdc1
+   8        0  976762584 sda
+   8        1  976760832 sda1
+   8       16  976762584 sdb
+   8       17  976760832 sdb1
+   8       80  976762584 sdf
+   8       81  976760832 sdf1
+   8       64  976762584 sde
+   8       65  976760832 sde1
+   8      112  976762584 sdh
+   8      113  976760832 sdh1
+   8       96  976762584 sdg
+   8       97  976760832 sdg1
+   9        0  976629568 md0
+ 259        0  683592704 md0p1
+ 259        1  283203584 md0p2
+ 259        2    9831424 md0p3
+   8      128     262144 sdi
+   8      129     257008 sdi1
+   9        1 4883146240 md1
+ 259        4     486400 md1p1
+ 259        5 4882654720 md1p2
+ 253        0  104857600 dm-0
+ 253        1    2097152 dm-1
+root@deimos:~# 

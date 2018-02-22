@@ -1,0 +1,356 @@
+Instalar Archipel en Smeagol (XMPP Server)
+
+apt-get install ejabberd subversion erlang-dev erlang-xmerl build-essential erlang-tools python-libvirt python-setuptools
+
+cd /etc/ejabberd
+
+mv ejabberd.yml ejabberd.yml.orig
+
+nano ejabberd.yml
+
+
+
+###
+###             ejabberd configuration file
+###         Archipel Sample default condiguration
+
+###     =========
+###     DEBUGGING
+
+# Increase this if you want sone insane erlang debug
+loglevel: 3
+
+###     ================
+###     SERVED HOSTNAMES
+
+# Change it for you FQDN
+hosts:
+    - "FQDN"
+
+###     ===============
+###     LISTENING PORTS
+
+listen:
+    -
+      #it's a good idea to put xmlrpc behing a reverse proxy
+      #because you can't use tls directly, make it listen to localhost
+      #ip : "127.0.0.1"
+      # and read the Security section on the wiki
+      port: 4560
+      module: ejabberd_xmlrpc
+      access_commands:
+            xmlrpcaccess:
+                all : []
+
+## ejabberd c2s
+    -
+      port: 5222
+      module: ejabberd_c2s
+      ##
+      ## If you installed a SSL
+      ## certificate, specify the full path to the
+      ## file and uncomment this line:
+      ##
+      ## certfile: "/etc/ejabberd/ejabberd.pem"
+      ## starttls: true
+      max_stanza_size: 65536000
+      shaper: c2s_shaper
+      access: c2s
+
+## ejabbed s2s
+    -
+      port: 5269
+      module: ejabberd_s2s_in
+      max_stanza_size: 65536000
+
+## ejabberd http/s and websocket/s
+    -
+      port: 5280
+      module: ejabberd_http
+      request_handlers:
+        "/xmpp": ejabberd_http_ws
+      # if you want to use starttls with websock
+      # the URI will be wss://
+      # please be sure that the certificate belong
+      # to a trusted AC in your browser
+      # certfile: "/etc/ejabberd/ejabberd.pem"
+      # tls: true
+      web_admin: true
+      http_bind: true
+
+###     ===
+###     S2S
+s2s_access: Access
+s2s_use_starttls: optional
+#s2s_certfile: "/etc/ejabberd/ejabberd.pem"
+
+## domain_certfile: Specify a different certificate for each served hostname.
+##
+## host_config:
+##   "example.org":
+##     domain_certfile: "/path/to/example_org.pem"
+##   "example.com":
+##     domain_certfile: "/path/to/example_com.pem"
+
+###     ==============
+###     AUTHENTICATION
+
+auth_method: internal
+
+###     ===============
+###     TRAFFIC SHAPERS
+
+shaper:
+  # in B/s
+  normal: 1000
+  fast: 50000000
+
+###     ====================
+###     ACCESS CONTROL LISTS
+
+acl:
+    admin:
+        user:
+            - "admin": "FQDN"
+    local:
+        user_regexp: ""
+
+
+###     ============
+###     ACCESS RULES
+
+access:
+    max_user_sessions:
+        all: 10
+    local:
+        local: allow
+    c2s:
+        blocked: deny
+        all: allow
+    c2s_shaper:
+        admin: none
+        all: fast
+    s2s_shaper:
+        all: fast
+    s2s_access:
+        all: allow
+    announce:
+        admin: allow
+    configure:
+        admin: allow
+    muc_admin:
+        admin: allow
+    muc_create:
+        local: allow
+    muc:
+        all: allow
+    pubsub_createnode:
+        all: allow
+    register:
+        all: allow
+    xmlrpcaccess:
+        admin : allow
+
+### Frequency of account registration
+registration_timeout: infinity
+
+###     ================
+###     DEFAULT LANGUAGE
+
+language: "en"
+
+###     =======
+###     MODULES
+
+modules:
+    mod_adhoc: []
+    mod_announce:
+        access: announce
+    mod_caps: []
+    mod_configure: []
+    mod_disco: []
+    mod_http_bind:
+        max_inactivity: 400 # timeout valie for BOSH usefull for a large number of VM
+    mod_irc: []
+    mod_last: []
+    mod_muc:
+        access: muc
+        access_create: muc_create
+        access_persistent: muc_create
+        access_admin: muc_admin
+    mod_offline: []
+    mod_privacy: []
+    mod_private: []
+    mod_pubsub:
+        access_createnode: pubsub_createnode
+        ignore_pep_from_offline: true
+        last_item_cache: false
+        max_items_node: 1000
+        plugins:
+            - "flat"
+            - "hometree"
+            - "pep"
+    mod_register:
+        access: register
+    mod_roster: []
+    mod_shared_roster: []
+    mod_time: []
+    mod_vcard: []
+    mod_version: []
+    mod_admin_extra: []
+
+
+
+
+sed -i 's/FQDN/your.fqnd.com/' /etc/ejabberd/ejabberd.yaml
+
+sed -i 's/FQDN/smeagol.local/' /etc/ejabberd/ejabberd.yaml
+
+
+If you have not access to a DNS, you need to add in all the /etc/hosts files of your platform:
+
+X.X.X.X    your.fqdn.com
+
+nano /etc/hosts
+
+192.168.10.168    smeagol.local     smeagol
+
+
+root@smeagol:/etc/ejabberd# ejabberdctl status
+The node ejabberd@smeagol is started with status: started
+ejabberd 14.07 is running in that node
+
+Agregar Usuario Administrador:
+
+ejabberdctl register admin your.fqdn.com yourpassword
+
+ejabberdctl register admin smeagol.local cronos
+
+root@smeagol:~# ejabberdctl register admin smeagol.local cronos
+User admin@smeagol.local successfully registered
+
+Installation
+
+It is recommended to install central agent on the same server that runs ejabberd.
+
+root@smeagol:/etc/ejabberd# easy_install sqlalchemy
+Searching for sqlalchemy
+Reading https://pypi.python.org/simple/sqlalchemy/
+Best match: SQLAlchemy 1.0.11
+Downloading https://pypi.python.org/packages/source/S/SQLAlchemy/SQLAlchemy-1.0.11.tar.gz#md5=0bff4f96f0a25f44415a6bab7a741148
+Processing SQLAlchemy-1.0.11.tar.gz
+Writing /tmp/easy_install-Qxqatm/SQLAlchemy-1.0.11/setup.cfg
+Running SQLAlchemy-1.0.11/setup.py -q bdist_egg --dist-dir /tmp/easy_install-Qxqatm/SQLAlchemy-1.0.11/egg-dist-tmp-ugr1E_
+warning: no files found matching '*.jpg' under directory 'doc'
+warning: no files found matching '*.mako' under directory 'doc'
+warning: no files found matching 'distribute_setup.py'
+warning: no files found matching 'sa2to3.py'
+warning: no files found matching 'ez_setup.py'
+no previously-included directories found matching 'doc/build/output'
+lib/sqlalchemy/cextension/processors.c:10:20: fatal error: Python.h: No such file or directory
+ #include <Python.h>
+                    ^
+compilation terminated.
+***************************************************************************
+command 'x86_64-linux-gnu-gcc' failed with exit status 1
+WARNING: The C extension could not be compiled, speedups are not enabled.
+Failure information, if any, is above.
+Retrying the build without the C extension now.
+***************************************************************************
+warning: no files found matching '*.jpg' under directory 'doc'
+warning: no files found matching '*.mako' under directory 'doc'
+warning: no files found matching 'distribute_setup.py'
+warning: no files found matching 'sa2to3.py'
+warning: no files found matching 'ez_setup.py'
+no previously-included directories found matching 'doc/build/output'
+zip_safe flag not set; analyzing archive contents...
+***************************************************************************
+WARNING: The C extension could not be compiled, speedups are not enabled.
+Plain-Python build succeeded.
+***************************************************************************
+Adding SQLAlchemy 1.0.11 to easy-install.pth file
+
+Installed /usr/local/lib/python2.7/dist-packages/SQLAlchemy-1.0.11-py2.7.egg
+Processing dependencies for sqlalchemy
+Finished processing dependencies for sqlalchemy
+
+Instalacion de CentralAgent Archipel
+
+Next clone the Archipel repository
+
+root@smeagol:/etc/ejabberd# apt-get install git
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  git-man liberror-perl rsync
+Suggested packages:
+  gettext-base git-daemon-run git-daemon-sysvinit git-doc git-el git-email git-gui gitk gitweb git-arch git-cvs git-mediawiki git-svn
+The following NEW packages will be installed:
+  git git-man liberror-perl rsync
+0 upgraded, 4 newly installed, 0 to remove and 0 not upgraded.
+Need to get 4937 kB of archives.
+After this operation, 24.3 MB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+
+
+git clone https://github.com/ArchipelProject/Archipel.git
+
+cd Archipel
+
+./pull.sh
+
+Build the Central Agent in debug mode
+
+cd ArchipelAgent
+
+./buildCentralAgent -d
+
+
+
+Create the pubsub node for central agent
+
+If not done so already during Archipel Agent installation, login to one hypervisor and type the command :
+
+archipel-centralagentnode --jid=admin@FQDN --password=YOURPASSWORD --create
+
+archipel-centralagentnode --jid=admin@smeagol.local --password=cronos --create
+
+
+root@smeagol:~# archipel-centralagentnode --jid=admin@smeagol.local --password=cronos --create
+SUCCESS: pubsub node /archipel/centralagentkeepalive created
+
+
+
+
+Finalize the installation by typing :
+
+archipel-central-agent-initinstall -x your_ejabberd_server_FQDN
+
+archipel-central-agent-initinstall -x smeagol.local
+
+root@smeagol:~# archipel-central-agent-initinstall -x smeagol.local
+MESSAGE: Installation initialization started
+MESSAGE: Skipping xmpp server configuration as it is not in this machine.
+MESSAGE: Installing init script to /etc/init.d/archipel-central-agent
+SUCCESS: Init script installed
+SUCCESS: Init script chmoded
+MESSAGE: Installing configuration to /etc/archipel
+SUCCESS: Config folder installed
+SUCCESS: Config file chmoded
+MESSAGE: Pre-configuring /etc/archipel/archipel-central-agent.conf:
+MESSAGE: Installing data folder to /var/lib/archipel
+SUCCESS: Lib folder installed
+MESSAGE: Installation configuration for plugin archipel-central-agent-platformrequest 0.6.0beta-r0
+SUCCESS: platformrequest.conf installed
+MESSAGE: Installation configuration for plugin archipel-agent-xmppserver 0.6.0beta-r0
+SUCCESS: xmppserver.conf installed
+SUCCESS: Archipel installation complete
+MESSAGE: You may now edit /etc/archipel/archipel-central-agent.conf to match your info
+root@smeagol:~# 
+
+
+Ahora instalar Archipel Client:
+
+
+

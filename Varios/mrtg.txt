@@ -1,0 +1,7 @@
+apt-get instal install apache2
+apt-get install libapache2-mod-php4 php4-cli php4-common php4-cgi
+apt-get install mrtg snmpd
+
+editar /etc/mrtg
+
+

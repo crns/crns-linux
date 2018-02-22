@@ -1,0 +1,2 @@
+ffmpeg -i got-6x10-720p-rafaelituz.mkv -vcodec mpeg4 -b 4000k -acodec mp2 -ab 320k got10.avi
+

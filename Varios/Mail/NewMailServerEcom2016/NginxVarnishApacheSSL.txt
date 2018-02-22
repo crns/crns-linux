@@ -1,0 +1,405 @@
+Proxy de terminacion SSL Nginx, Varnish y Apache
+
+
+ab -n 1000 -c 5 http://wp.caschile.cl/index.php
+
+Server Software:        Apache
+Server Hostname:        wp.caschile.cl
+Server Port:            80
+
+Document Path:          /index.php
+Document Length:        0 bytes
+
+Concurrency Level:      5
+Time taken for tests:   174.655 seconds
+Complete requests:      1000
+Failed requests:        0
+Non-2xx responses:      1000
+Total transferred:      249000 bytes
+HTML transferred:       0 bytes
+Requests per second:    5.73 [#/sec] (mean)
+Time per request:       873.277 [ms] (mean)
+Time per request:       174.655 [ms] (mean, across all concurrent requests)
+Transfer rate:          1.39 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        7   38  62.7     18     876
+Processing:   532  833 299.8    742    3729
+Waiting:      532  832 299.4    739    3729
+Total:        548  871 306.0    778    3747
+
+Percentage of the requests served within a certain time (ms)
+  50%    778
+  66%    862
+  75%    933
+  80%    985
+  90%   1165
+  95%   1373
+  98%   1946
+  99%   2176
+ 100%   3747 (longest request)
+
+
+--------------------
+
+Instalar Varnish:
+
+apt-get install varnish
+
+root@antares:~# apt-get install varnish
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  binutils cpp cpp-4.7 gcc gcc-4.7 libc-dev-bin libc6-dev libgmp10 libitm1 libmpc2 libmpfr4 libquadmath0 libvarnishapi1 linux-libc-dev manpages-dev
+Paquetes sugeridos:
+  binutils-doc cpp-doc gcc-4.7-locales gcc-multilib make autoconf automake1.9 libtool flex bison gdb gcc-doc gcc-4.7-multilib libmudflap0-4.7-dev
+  gcc-4.7-doc libgcc1-dbg libgomp1-dbg libitm1-dbg libquadmath0-dbg libmudflap0-dbg libcloog-ppl0 libppl-c2 libppl7 binutils-gold glibc-doc
+  varnish-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils cpp cpp-4.7 gcc gcc-4.7 libc-dev-bin libc6-dev libgmp10 libitm1 libmpc2 libmpfr4 libquadmath0 libvarnishapi1 linux-libc-dev manpages-dev
+  varnish
+0 actualizados, 16 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 25,6 MB de archivos.
+Se utilizarán 65,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Editar el archivo de configuración de Varnish:
+
+nano /etc/varnish/default.vcl
+
+backend default {
+     .host = "127.0.0.1"; #Es la ip donde tiene que buscar el servidor web
+     .port = "8080"; #Es el puerto que esta escuchando el servidor web
+     .connect_timeout = 605s; #Los segundos antes de que de timeout
+}
+
+Ahora configurar las opciones finas de configuracion en el archivo /etc/default/varnish:
+
+nano /etc/default/varnish
+
+y reemplazar:
+
+DAEMON_OPTS="-a :6081 \
+             -T localhost:6082 \
+             -f /etc/varnish/default.vcl \
+             -S /etc/varnish/secret \
+             -s malloc,256m"
+
+por:
+
+DAEMON_OPTS="-a :80 \
+             -T localhost:6082 \
+             -f /etc/varnish/default.vcl \
+             -S /etc/varnish/secret \
+             -s malloc,1g"
+
+En Jessie hay que hacer algo mas:
+
+What we need to do is override the systemd init script for Varnish:
+
+cp /lib/systemd/system/varnish.service /etc/systemd/system/
+nano /etc/systemd/system/varnish.service
+
+You should get a file like this:
+
+[Unit]
+Description=Varnish HTTP accelerator
+[Service]
+Type=forking
+LimitNOFILE=131072
+LimitMEMLOCK=82000
+ExecStartPre=/usr/sbin/varnishd -C -f /etc/varnish/default.vcl
+ExecStart=/usr/sbin/varnishd -a :6081 -T localhost:6082 -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m
+ExecReload=/usr/share/varnish/reload-vcl
+[Install]
+WantedBy=multi-user.target
+
+You will notice that the -a line is still set to be port 6081 so let’s fix that by changing it to port 80:
+
+ExecStart=/usr/sbin/varnishd -a :80 -T localhost:6082 -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m
+
+So having configured the port in both places lets restart our services to be sure all the latest changes are in place:
+
+systemctl daemon-reload
+systemctl restart varnish.service
+
+And let’s double check the port:
+
+ps aux | grep varnish
+
+-------------------------------
+Ahora cambiar el puerto de servicio de apache en /etc/apache2/sites-available/default
+
+y reeplazar:
+
+<VirtualHost *:80>
+
+por
+
+<VirtualHost *:8080>
+
+
+en /etc/apache2/ports.conf
+
+reemplazar:
+
+NameVirtualHost *:80
+Listen 80
+
+por:
+
+NameVirtualHost *:8080
+Listen 127.0.0.1:8080
+
+y finalmente agregar el modulo de apache rpaf para que Apache reciba correctamente la IP de usuario y no la IP local.
+
+apt-get install libapache2-mod-rpaf
+
+-------------------------------------
+
+Varnish avanzado:
+
+Speed Up WordPress
+
+
+default.vcl 
+
+
+# Called after a document has been successfully retrieved from the backend.
+sub vcl_fetch {
+    # Uncomment to make the default cache "time to live" is 5 minutes, handy 
+    # but it may cache stale pages unless purged. (TODO)
+    # By default Varnish will use the headers sent to it by Apache (the backend server)
+    # to figure out the correct TTL. 
+    # WP Super Cache sends a TTL of 3 seconds, set in wp-content/cache/.htaccess
+ 
+    # set beresp.ttl   = 300s;
+ 
+    # Strip cookies for static files and set a long cache expiry time.
+    if (req.url ~ "\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm)$") {
+            unset beresp.http.set-cookie;
+            set beresp.ttl   = 24h;
+    }
+ 
+    # If WordPress cookies found then page is not cacheable
+    if (req.http.Cookie ~"(wp-postpass|wordpress_logged_in|comment_author_)") {
+        set beresp.cacheable = false;
+    } else {
+        set beresp.cacheable = true;
+    }
+ 
+    # Varnish determined the object was not cacheable
+    if (!beresp.cacheable) {
+        set beresp.http.X-Cacheable = "NO:Not Cacheable";
+    } else if ( req.http.Cookie ~"(wp-postpass|wordpress_logged_in|comment_author_)" ) {
+        # You don't wish to cache content for logged in users
+        set beresp.http.X-Cacheable = "NO:Got Session";
+        return(pass);
+    }  else if ( beresp.http.Cache-Control ~ "private") {
+        # You are respecting the Cache-Control=private header from the backend
+        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        return(pass);
+    } else if ( beresp.ttl < 1s ) {
+        # You are extending the lifetime of the object artificially
+        set beresp.ttl   = 300s;
+        set beresp.grace = 300s;
+        set beresp.http.X-Cacheable = "YES:Forced";
+    } else {
+        # Varnish determined the object was cacheable
+        set beresp.http.X-Cacheable = "YES";
+    }
+    if (beresp.status == 404 || beresp.status >= 500) {
+        set beresp.ttl = 0s;
+    }
+ 
+    # Deliver the content
+    return(deliver);
+}
+ 
+sub vcl_hash {
+    # Each cached page has to be identified by a key that unlocks it.
+    # Add the browser cookie only if a WordPress cookie found.
+    if ( req.http.Cookie ~"(wp-postpass|wordpress_logged_in|comment_author_)" ) {
+        set req.hash += req.http.Cookie;
+    }
+}
+ 
+# Deliver
+sub vcl_deliver {
+    # Uncomment these lines to remove these headers once you've finished setting up Varnish.
+    #remove resp.http.X-Varnish;
+    #remove resp.http.Via;
+    #remove resp.http.Age;
+    #remove resp.http.X-Powered-By;
+}
+ 
+# vcl_recv is called whenever a request is received
+sub vcl_recv {
+    # remove ?ver=xxxxx strings from urls so css and js files are cached.
+    # Watch out when upgrading WordPress, need to restart Varnish or flush cache.
+    set req.url = regsub(req.url, "\?ver=.*$", "");
+ 
+    # Remove "replytocom" from requests to make caching better.
+    set req.url = regsub(req.url, "\?replytocom=.*$", "");
+ 
+    remove req.http.X-Forwarded-For;
+    set    req.http.X-Forwarded-For = client.ip;
+ 
+    # Exclude this site because it breaks if cached
+    #if ( req.http.host == "example.com" ) {
+    #    return( pass );
+    #}
+ 
+    # Serve objects up to 2 minutes past their expiry if the backend is slow to respond.
+    set req.grace = 120s;
+    # Strip cookies for static files:
+    if (req.url ~ "\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm)$") {
+        unset req.http.Cookie;
+        return(lookup);
+    }
+    # Remove has_js and Google Analytics __* cookies.
+    set req.http.Cookie = regsuball(req.http.Cookie, "(^|;\s*)(__[a-z]+|has_js)=[^;]*", "");
+    # Remove a ";" prefix, if present.
+    set req.http.Cookie = regsub(req.http.Cookie, "^;\s*", "");
+    # Remove empty cookies.
+    if (req.http.Cookie ~ "^\s*$") {
+        unset req.http.Cookie;
+    }
+    if (req.request == "PURGE") {
+        if (!client.ip ~ purge) {
+                error 405 "Not allowed.";
+        }
+        purge("req.url ~ " req.url " && req.http.host == " req.http.host);
+        error 200 "Purged.";
+    }
+ 
+    # Pass anything other than GET and HEAD directly.
+    if (req.request != "GET" && req.request != "HEAD") {
+        return( pass );
+    }      /* We only deal with GET and HEAD by default */
+ 
+    # remove cookies for comments cookie to make caching better.
+    set req.http.cookie = regsub(req.http.cookie, "1231111111111111122222222333333=[^;]+(; )?", "");
+ 
+    # never cache the admin pages, or the server-status page
+    if (req.request == "GET" && (req.url ~ "(wp-admin|bb-admin|server-status)")) {
+        return(pipe);
+    }
+    # don't cache authenticated sessions
+    if (req.http.Cookie && req.http.Cookie ~ "(wordpress_|PHPSESSID)") {
+        return(pass);
+    }
+    # don't cache ajax requests
+    if(req.http.X-Requested-With == "XMLHttpRequest" || req.url ~ "nocache" || req.url ~ "(control.php|wp-comments-post.php|wp-login.php|bb-login.php|bb-reset-password.php|register.php)") {
+        return (pass);
+    }
+    return( lookup );
+}
+
+
+--------------------------------
+
+Instalar NGINX
+
+
+root@hayala:/etc/varnish# apt-get install nginx
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libxslt1.1 nginx-common nginx-full
+Paquetes sugeridos:
+  fcgiwrap nginx-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  libxslt1.1 nginx nginx-common nginx-full
+0 actualizados, 4 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 820 kB de archivos.
+Se utilizarán 1.911 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+Quitar password en certificado creado:
+
+openssl rsa -in ssl.key -out /etc/nginx/certs/ssl.key
+
+openssl rsa -in /etc/ssl/correo/sam.csr -out /etc/ssl/correo/sam.key
+
+crear definicion de hosting virtual host para correo.caschile.cl en directroio /etc/nginx/sites-available
+
+
+cd /etc/nginx/sites-available
+
+crear archivo correo.caschile.cl 
+
+nano correo.caschile.cl
+
+# Virtual Host configuration for example.com
+#
+# You can move that to a different file under sites-available/ and symlink that
+# to sites-enabled/ to enable it.
+#
+server {
+        listen 80;
+        listen [::]:80;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name correo.caschile.cl;
+        return      301 https://$server_name$request_uri;
+}
+
+server {
+        # SSL configuration
+        #
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
+
+        ssl on;
+        ssl_certificate /etc/nginx/certs/1_hayala.e-com.cl_bundle.crt;
+        ssl_certificate_key /etc/nginx/certs/ssl.key;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers ALL:!DH:!EXPORT:!RC4:+HIGH:+MEDIUM:!LOW:!aNULL:!eNULL;
+
+        # Add index.php to the list if you are using PHP
+        index index.php index.html index.htm index.nginx-debian.html;
+
+	server_name hayala.e-com.cl;
+	# add Strict-Transport-Security to prevent man in the middle attacks
+        add_header Strict-Transport-Security "max-age=31536000";
+
+        location / {
+                # Pass the request on to Varnish.
+                proxy_pass  http://127.0.0.1:81;
+
+                # Pass a bunch of headers to the downstream server, so they'll know what's going on.
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                # Most web apps can be configured to read this header and understand that the current session is actually HTTPS.
+                proxy_set_header X-Forwarded-Proto https;
+
+                # We expect the downsteam servers to redirect to the right hostname, so don't do any rewrites here.
+                proxy_redirect     off;
+        }
+}
+
+Guardar y activar de la sgte forma:
+
+cd /etc/nginx/sites-enabled
+
+ln -s /etc/nginx/sites-available/correo.caschile.cl ./
+
+Ahora reiniciar Nginx:
+
+/etc/init.d/nginx restart
+
+Lista la configuracion de Nginx/Varnish/Apache con SSL
+
+
+
+
+

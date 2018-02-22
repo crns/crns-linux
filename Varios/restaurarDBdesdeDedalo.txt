@@ -1,0 +1,28 @@
+mysqladmin -h 192.168.7.182 -u xen_crn -pxen29crn -f drop Transparencia_Malloa
+Database "Transparencia_Malloa" dropped
+
+mysqladmin -h 192.168.7.182 -u xen_crn -pxen29crn  create Transparencia_Malloa
+mysql -h 192.168.7.182 -u xen_crn -pxen29crn Transparencia_Malloa < Transparencia_Malloa.sql 
+mysql -h 192.168.7.182 -u xen_crn -pxen29crn Transparencia_Malloa < procedimientos_Transparencia_Malloa.sql 
+
+srv-dedalo:/home/mcampos/replicador/backups/192.168.10.203# 
+
+
+
+
+mysqladmin -h 192.168.7.182 -u xen_crn -pxen29crn -f drop Transparencia_Cobquecura
+Database "Transparencia_Malloa" dropped
+
+mysqladmin -h 192.168.7.182 -u xen_crn -pxen29crn  create Transparencia_Cobquecura
+mysql -h 192.168.7.182 -u xen_crn -pxen29crn Transparencia_Cobquecura < Transparencia_Cobquecura.sql 
+mysql -h 192.168.7.182 -u xen_crn -pxen29crn Transparencia_Cobquecura < procedimientos_Transparencia_Cobquecura.sql
+
+
+mysqladmin -h 192.168.7.182 -u xen_crn -pxen29crn -f drop Ticket_Cobquecura
+Database "Transparencia_Malloa" dropped
+
+mysqladmin -h 192.168.7.182 -u xen_crn -pxen29crn  create Ticket_Cobquecura
+
+mysql -h 192.168.7.182 -u xen_crn -pxen29crn Ticket_Cobquecura < Ticket_Cobquecura.sql
+
+mysql -h 192.168.7.182 -u xen_crn -pxen29crn Ticket_Cobquecura < procedimientos_Ticket_Cobquecura.sql

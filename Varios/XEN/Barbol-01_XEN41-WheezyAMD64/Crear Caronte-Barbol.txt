@@ -1,0 +1,64 @@
+lvcreate -L 100G -n caronte-disk vg0
+
+
+
+name = 'caronte'
+
+builder = 'hvm'
+
+memory = 2048
+shadow_memory = 8
+vcpus=2
+acpi=1
+apic=1
+
+# Choose a better mac address
+vif = [
+                'bridge=br0, mac=5c:d9:98:bc:47:3d, model=e1000',
+#                'bridge=br0, mac=5c:d9:98:bc:46:4e, model=e1000',
+]
+
+## The VM has the following block devices
+#  - A boot disk with a single partition for the OS, swap, and programs
+#  - The installation DVD
+#  - The PV drivers CD
+
+disk = [
+                'phy:/dev/vg0/caronte-disk,hda,w',
+                'file:/xen/ISOs/win7-32_64-full.iso,hdc:cdrom,r',
+                #'file:/xen/ISOs/HBCD-15.2.ISO,hdc:cdrom,r',
+                #'file:/xen/ISOs/windrivers.iso,hdd:cdrom,r'
+]
+
+#CRN# No cambiar
+###pvh=1
+##xen_platform_pci=1
+
+
+#En caso de perder el acceso usar esto
+# Boot from the DVD first
+boot='d'
+
+## Use VNC for the console.
+vnc=1
+vncunused=0
+vnclisten = '127.0.0.1'
+vncdisplay=1
+vncconsole=1
+vncpasswd='cronos'
+
+vncviewer=0
+sdl=0
+
+stdvga=0
+serial='pty'
+ne2000 = "0"
+
+#tsc_mode='default'
+usb=1
+usbdevice='tablet'
+
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart'
+

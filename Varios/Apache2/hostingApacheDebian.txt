@@ -1,0 +1,98 @@
+Procedimiento instalacion Apache 2 (mpm-prefork)en debian (Hosting CasChile)
+
+root@correo:/home/correo# apt-get install php5 libapache2-mod-php5 apache2 mysql-server mysql-client
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+mysql-server ya está en su versión más reciente.
+Se instalarán los siguientes paquetes extras:
+  apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap libonig2 libqdbm14
+  php5-cli php5-common php5-suhosin
+Paquetes sugeridos:
+  apache2-doc apache2-suexec apache2-suexec-custom php-pear
+Se instalarán los siguientes paquetes NUEVOS:
+  apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5 libapr1 libaprutil1 libaprutil1-dbd-sqlite3
+  libaprutil1-ldap libonig2 libqdbm14 mysql-client php5 php5-cli php5-common php5-suhosin
+0 actualizados, 17 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 9145 kB de archivos.
+Se utilizarán 25,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+----------------------------------------------
+Para Roundcube
+
+apt-get install php-mdb2-driver-mysql
+
+root@correo:~# apt-get install php-mdb2-driver-mysql
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  php-mdb2 php-pear php5-mysql
+Paquetes sugeridos:
+  php5-dev
+Se instalarán los siguientes paquetes NUEVOS:
+  php-mdb2 php-mdb2-driver-mysql php-pear php5-mysql
+0 actualizados, 4 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 562 kB de archivos.
+Se utilizarán 3740 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/main php-pear all 5.3.3-7+squeeze19 [363 kB]
+Des:2 http://ftp.cl.debian.org/debian/ squeeze/main php-mdb2 all 2.5.0b2-1 [81,7 kB]
+Des:3 http://ftp.cl.debian.org/debian/ squeeze/main php5-mysql amd64 5.3.3-7+squeeze19 [76,7 kB]
+Des:4 http://ftp.cl.debian.org/debian/ squeeze/main php-mdb2-driver-mysql all 1.5.0b2-1 [40,6 kB]
+Descargados 562 kB en 3seg. (183 kB/s)      
+Seleccionando el paquete php-pear previamente no seleccionado.
+(Leyendo la base de datos ... 30258 ficheros o directorios instalados actualmente.)
+Desempaquetando php-pear (de .../php-pear_5.3.3-7+squeeze19_all.deb) ...
+Seleccionando el paquete php-mdb2 previamente no seleccionado.
+Desempaquetando php-mdb2 (de .../php-mdb2_2.5.0b2-1_all.deb) ...
+Seleccionando el paquete php5-mysql previamente no seleccionado.
+Desempaquetando php5-mysql (de .../php5-mysql_5.3.3-7+squeeze19_amd64.deb) ...
+Seleccionando el paquete php-mdb2-driver-mysql previamente no seleccionado.
+Desempaquetando php-mdb2-driver-mysql (de .../php-mdb2-driver-mysql_1.5.0b2-1_all.deb) ...
+Procesando disparadores para libapache2-mod-php5 ...
+Reloading web server config: apache2.
+Configurando php-pear (5.3.3-7+squeeze19) ...
+Configurando php-mdb2 (2.5.0b2-1) ...
+Configurando php5-mysql (5.3.3-7+squeeze19) ...
+Configurando php-mdb2-driver-mysql (1.5.0b2-1) ...
+root@correo:~# 
+
+---------------------------------------------
+
+Instalar otros modulos php (ejem: legolas)
+
+apt-get install php-auth php-auth-sasl php-db php-http-request php-log php-mail php-mail-mime php-mail-mimedecode php-mdb2 php-net-dime php-net-smtp php-net-socket php-net-url php-soap php5-adodb
+
+
+root@correo:~# apt-get install php-auth php-auth-sasl php-db php-http-request php-log php-mail php-mail-mime php-mail-mimedecode php-mdb2 php-net-dime php-net-smtp php-net-socket php-net-url php-soap php5-adodb
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+php-mdb2 ya está en su versión más reciente.
+fijado php-mdb2 como instalado manualmente.
+Paquetes sugeridos:
+  php5-sqlite
+Se instalarán los siguientes paquetes NUEVOS:
+  php-auth php-auth-sasl php-db php-http-request php-log php-mail php-mail-mime php-mail-mimedecode php-net-dime php-net-smtp php-net-socket
+  php-net-url php-soap php5-adodb
+0 actualizados, 14 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 522 kB de archivos.
+Se utilizarán 3817 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+----------------------------------------------
+Probar umask
+saruman:/home/mcampos# umask
+0022
+
+Establecer umask a 002
+nano /etc/login.defs
+
+Agregar "session optional pam_umask.so usergroups"al final de:
+nano /etc/pam.d/common-session
+
+reiniciar sesion y probar umask
+

@@ -1,0 +1,15 @@
+tune2fs -O extents,uninit_bg,dir_index /dev/sdb1
+fsck -fp /dev/sdb1
+
+
+
+fsck.ext4 -vpf /dev/sdb1
+
+find /mnt -xdev -type f -print0 | xargs -0 chattr +e
+find /mnt -xdev -type d -print0 | xargs -0 chattr +e
+
+apt-get install e2fsprogs
+
+e4defrag /dev/sdb1
+
+mdadm --assemble --run --force /dev/md0 /dev/sd[bcde]4

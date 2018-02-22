@@ -1,0 +1,16 @@
+Celeborn
+
+192.168.10.162 
+root@celeborn:~# cat /proc/partitions 
+major minor  #blocks  name
+
+ 202        2  104857600 xvda2
+ 202        1    1048576 xvda1
+
+
+--kernel=/xen/boot/vmlinuz-3.2.0-4-amd64 --initrd=/xen/boot/initrd.img-2.6.32-5-amd64
+
+Crear host Squeeze en Barbol:
+
+root@barbol:/etc/xen# xen-create-image --dist=squeeze --kernel=/xen/boot/vmlinuz-3.2.0-4-amd64 --initrd=/xen/boot/initrd.img-2.6.32-5-amd64 --lvm=vg0 --hostname=ceres --ip=192.168.10.162 --mac=5c:d9:98:bc:46:5a --gateway=192.168.10.1 --netmask=255.255.255.0 --vcpus=2 --memory=1Gb --size=100Gb --swap=1G --force
+

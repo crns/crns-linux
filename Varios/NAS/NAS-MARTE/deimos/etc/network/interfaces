@@ -1,0 +1,45 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+###allow-hotplug eth0
+###iface eth0 inet static
+###	address 192.168.7.180
+###	netmask 255.255.255.0
+###	network 192.168.7.0
+###	broadcast 192.168.7.255
+###	gateway 192.168.7.1
+	# dns-* options are implemented by the resolvconf package, if installed
+###	dns-nameservers 200.75.0.5 200.75.0.4
+###	dns-search caschile.cl
+
+auto bond0
+iface bond0 inet static	
+	address 192.168.7.181
+	netmask 255.255.255.0
+	network 192.168.7.0
+	broadcast 192.168.7.255
+        gateway 192.168.7.1
+	up /sbin/ifenslave bond0 eth0 eth1 eth2 eth3
+	down /sbin/ifenslave -d bond0 eth0 eth1 eth2 eth3
+
+auto bond0.139
+iface bond0.139 inet static
+        address 192.168.39.181
+        netmask 255.255.255.0
+        network 192.168.39.0
+        broadcast 192.168.39.255
+
+auto bond0.150
+iface bond0.150 inet static
+        address 192.168.50.181
+        netmask 255.255.255.0
+        network 192.168.50.0
+        broadcast 192.168.50.255
+

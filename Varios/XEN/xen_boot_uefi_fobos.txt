@@ -1,0 +1,29 @@
+efibootmgr -c -g -d /dev/sda -p 1 -w -L "Xen EFI Loader" -l '\EFI\XEN\xen-4.4-amd64.efi'
+
+root@fobos:~# efibootmgr -c -g -d /dev/sda -p 1 -w -L "Xen EFI Loader" -l '\EFI\XEN\xen-4.4-amd64.efi'
+BootCurrent: 0014
+Timeout: 0 seconds
+BootOrder: 0015,0014,000D,0009,000A,000B,000C,000E,000F,0010,0000,0002,0001,0004,0005,0006,0007,0003
+Boot0000  Embedded UEFI Shell
+Boot0001  Diagnose Error
+Boot0002  System Utilities
+Boot0003  Intelligent Provisioning
+Boot0004  Boot Menu
+Boot0005  Network Boot
+Boot0006  Embedded Diagnostics
+Boot0007  View Integrated Management Log
+Boot0008* Internal USB 1 : HLDS Inc SuperMulti RW 
+Boot0009* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:2I, Bay:5, Box:2
+Boot000A* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:2I, Bay:6, Box:2
+Boot000B* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:2I, Bay:7, Box:2
+Boot000C* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:2I, Bay:8, Box:2
+Boot000D* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:1I, Bay:1, Box:2
+Boot000E* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:1I, Bay:2, Box:2
+Boot000F* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:1I, Bay:3, Box:2
+Boot0010* Slot 1 : Smart HBA H240 Controller - 931.51 GiB, Port:1I, Bay:4, Box:2
+Boot0011* Internal Virtual USB 1 : Intelligent Provisioning
+Boot0012* Internal Virtual USB 2 : Virtual Install Disk
+Boot0013* Internal Virtual USB 3 : Black Box
+Boot0014* debian
+Boot0015* Xen EFI Loader
+root@fobos:~#

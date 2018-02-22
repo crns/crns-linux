@@ -1,0 +1,27 @@
+Enmascarar hosts de la red local
+
+Crear el archivo /etc/postfix/header_checks
+
+
+
+
+
+
+Editar /etc/postfix y cambiar la linea 9 desde:
+
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+
+a:
+
+smtpd_banner = ESMTP
+
+Insertar antes de myhostname = las siguientes lineas:
+
+smtpd_sasl_authenticated_header = yes
+header_checks = regexp:/etc/postfix/header_checks
+
+
+Insertar despues de mailbox_size_limit = 0 lo sgte linea:
+message_size_limit = 40000000
+
+

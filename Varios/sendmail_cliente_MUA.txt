@@ -1,0 +1,54 @@
+Configurar Sendmail como Cliente de Correo Electronico
+
+Hoy en dia debido a los prodigiosos avances del SPAM y por obvias medidas de seguridad es usual que los servidores SMTP internos y externos requieran credenciales para aceptar el envio de correos.
+
+En ocasiones nos encontramos en la situacion en la que no contamos con un servidor de correos interno y alguna de nuestras herramientas de monitoreo ejemplo: Nagios, etc. necesita de un SMTP local para poder enviar dichas notificaciones.
+
+El procedimiento a seguir es sencillo utilizamos el servidor Sendmail que viene por defecto con las mayoria de distros linux para que tome todos los correos de nuestras herramientas de monitoreo instaladas en el mismo sistema y se conecte a un servidor de correo que requiere autenticacion y a traves de dicha cuenta envie los mensajes hacia los destinatarios deseados, en este caso nuestro servidor sendmail se convierte en un vulgar cliente de correo electronico :)
+
+Este procedimiento lo he probado en Slackware pero deberia funcionar en otras distros.
+
+Primero procedemos a trasladarnos al directorio /etc/mail y en este creamos es subdirectorio auth, la ejecucion de comandos quedaria:
+
+cd /etc/mail
+mkdir auth
+cd auth
+
+Crea en esta carpeta un archivo conteniendo los datos de conexion, nombre sugerido para el archivo es client-info
+
+"vi /etc/mail/auth/client-info"
+
+Dicho archivo contendra la siguiente informacion donde cuenta@server.com y password son las credenciales con las cuales nos conectaremos al servidor smtp desde nuestro sendmail.
+
+AuthInfo:smtp.server.com "U:cuenta@server.com" "I:cuenta@server.com" "P:password"
+
+Luego creamos las bases de datos de autenticacion:
+
+cd /etc/mail/auth
+
+makemap hash client-info < client-info
+
+Modificamos el archivo sendmail-slackware.mc que e encuentra en:
+
+/usr/share/sendmail/cf/cf
+
+Agregando las siguientes lineas:
+
+define(`SMART_HOST',`smtp.server.com')dnl
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+FEATURE(`authinfo',`hash /etc/mail/auth/client-info')dnl
+
+Donde smtp.server.com es nuestro servidor smtp de salida
+
+Generamos el archivo sendmail.cf
+
+cd /usr/share/sendmail/cf/cf
+m4 sendmail-slackware.mc > /etc/mail/sendmail.cf
+
+Y luego reiniciamos el demonio de sendmail y listo!!!
+
+Mas info: http://www.sendmail.org/~ca/email/auth.html
+
+
+http://vidagnu.blogspot.com/2009/02/configurar-sendmail-como-cliente-de.html
+

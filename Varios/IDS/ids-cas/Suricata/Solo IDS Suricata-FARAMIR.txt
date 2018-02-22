@@ -1,0 +1,45 @@
+apt-get install suricata libdata-dump-perl libcrypt-ssleay-perl libio-socket-ssl-perl libio-socket-inet6-perl
+
+root@vlan-srv:/etc/apt# apt-get install suricata libdata-dump-perl libcrypt-ssleay-perl libio-socket-ssl-perl libio-socket-inet6-perl
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libcap-ng0 libfont-afm-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhtp1 libltdl7 libmailtools-perl
+  libnet-libidn-perl libnet-ssleay-perl libnet1 libnetfilter-queue1 libpcap0.8 libprelude2 libsocket6-perl libtimedate-perl liburi-perl
+  libwww-perl libyaml-0-2 oinkmaster snort-rules-default
+Paquetes sugeridos:
+  snort snort-pgsql snort-mysql
+Se instalarán los siguientes paquetes NUEVOS:
+  libcap-ng0 libcrypt-ssleay-perl libdata-dump-perl libfont-afm-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl
+  libhtp1 libio-socket-inet6-perl libio-socket-ssl-perl libltdl7 libmailtools-perl libnet-libidn-perl libnet-ssleay-perl libnet1
+  libnetfilter-queue1 libpcap0.8 libprelude2 libsocket6-perl libtimedate-perl liburi-perl libwww-perl libyaml-0-2 oinkmaster snort-rules-default
+  suricata
+0 actualizados, 27 se instalarán, 0 para eliminar y 66 no actualizados.
+Necesito descargar 3721 kB de archivos.
+Se utilizarán 15,1 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Configurar Suricata:
+
+Editar /etc/suricata/suricata-debian.yaml y dejar lo que esta en negritas:
+______________________________________________
+
+...
+ - emerging-web_server.rules 
+ - emerging-web_specific_apps.rules 
+ - emerging-user_agents.rules 
+ - emerging-current_events.rules 
+
+classification-file: /etc/snort/classification.config 
+reference-config-file: /etc/snort/reference.config **
+
+# Holds variables that would be used by the engine. 
+vars: 
+...
+________________________________________________
+
+
+
+

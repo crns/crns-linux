@@ -1,0 +1,19 @@
+logfacility     local0
+
+autojoin        none # All nodes are defined explicitly.
+auto_failback   no # Prevents nodes from flapping.
+
+keepalive       2
+deadtime        10
+warntime        5
+initdead        120
+
+#mcast           eth0 239.0.0.1 694 1 0 # Shared network, so multicast heartbeats.
+bcast           bond0.150 # DRBD network is private, so we can use broadcasts.
+
+node            fobos
+node            deimos
+
+respawn         hacluster /usr/lib/heartbeat/ipfail
+ping            192.168.7.131 # Ping a core network device to assist in determining network link status.
+

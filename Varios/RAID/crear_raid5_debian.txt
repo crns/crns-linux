@@ -1,0 +1,269 @@
+
+
+Se recreará RAID5 desde 4 discos de 1T con LVM2:
+
+Detener LVM
+
+pvdisplay y vgdisplay - muestra los volumenes fisicos y logicos disponibles
+
+root@deb:~# vgchange -a n vg0
+  0 logical volume(s) in volume group "vg0" now active
+
+root@deb:~# lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv0
+  LV Name                lv0
+  VG Name                vg0
+  LV UUID                1x0wfA-Th24-z764-fHhV-xrql-ikDD-X3y9Lh
+  LV Write Access        read/write
+  LV Creation host, time , 
+  LV Status              NOT available
+  LV Size                2,72 TiB
+  Current LE             714218
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+
+Ahora desactivar raid:
+
+Verificar los raid activos
+
+root@deb:~# cat /proc/mdstat 
+Personalities : [raid1] [raid6] [raid5] [raid4] 
+md2 : active (auto-read-only) raid5 sdc4[0] sdb4[3] sdd4[2]
+      2926035456 blocks super 1.2 level 5, 512k chunk, algorithm 2 [4/3] [U_UU]
+      
+md1 : active (auto-read-only) raid1 sdd2[0] sdb2[3] sdc2[2] sde2[1]
+      1044160 blocks [4/4] [UUUU]
+      
+md126 : active (auto-read-only) raid1 sde1[1]
+      208768 blocks [4/1] [_U__]
+      
+unused devices: <none>
+
+Desactivar md2 md1 md126
+
+
+root@deb:~# mdadm --stop /dev/md2
+mdadm: stopped /dev/md2
+root@deb:~# mdadm --stop /dev/md1
+mdadm: stopped /dev/md1
+root@deb:~# mdadm --stop /dev/md126
+mdadm: stopped /dev/md126
+root@deb:~# cat /proc/mdstat 
+Personalities : [raid1] [raid6] [raid5] [raid4] 
+unused devices: <none>
+root@deb:~# 
+
+Ahora crear particion
+
+.....
+fdisk /dev/sdb
+.....
+
+Copiar estructura de partciones del disco /dev/sdb a los otros discos:
+
+sfdisk -d /dev/sdb | sfdisk /dev/sdc
+
+Comprobar:
+
+root@deb:~# cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0  156290904 sda
+   8        1  154296320 sda1
+   8        2    1992704 sda2
+   8       32  976762584 sdc
+   8       33  976761560 sdc1
+   8       64  976762584 sde
+   8       65  976761560 sde1
+   8       48  976762584 sdd
+   8       49  976761560 sdd1
+   8       16  976762584 sdb
+   8       17  976761560 sdb1
+
+
+Crear RAID5
+
+Creando el raid:
+
+mdadm --create --verbose /dev/md0 --level=5 --raid-devices=4 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+
+
+root@deb:~# mdadm --create --verbose /dev/md0 --level=5 --raid-devices=4 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1
+mdadm: layout defaults to left-symmetric
+mdadm: layout defaults to left-symmetric
+mdadm: chunk size defaults to 512K
+mdadm: size set to 976630272K
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+root@deb:~# 
+
+
+root@deb:~# cat /proc/mdstat 
+Personalities : [raid1] [raid6] [raid5] [raid4] 
+md0 : active (auto-read-only) raid5 sde1[4](S) sdd1[2] sdc1[1] sdb1[0]
+      2929890816 blocks super 1.2 level 5, 512k chunk, algorithm 2 [4/3] [UUU_]
+      
+unused devices: <none>
+root@deb:~# 
+
+
+.....
+
+root@deb:~# mdadm --readwrite /dev/md0
+
+root@deb:~# cat /proc/mdstat 
+Personalities : [raid1] [raid6] [raid5] [raid4] 
+md0 : active raid5 sde1[4] sdd1[2] sdc1[1] sdb1[0]
+      2929890816 blocks super 1.2 level 5, 512k chunk, algorithm 2 [4/3] [UUU_]
+      [>....................]  recovery =  0.0% (57180/976630272) finish=569.2min speed=28590K/sec
+      
+unused devices: <none>
+root@deb:~# 
+
+
+-------------------------------
+
+LVM Trabajo con los volumenes lógicos
+
+Crear/Agregar Volumen fisico:
+
+pvcreate /dev/md0
+
+root@deb:~# pvcreate /dev/md0
+  Writing physical volume data to disk "/dev/md0"
+  Physical volume "/dev/md0" successfully created
+root@deb:~# 
+
+Crear Grupo de Volumen:
+
+vgcreate cas_vg /dev/md0
+
+root@deb:~# vgcreate cas_vg /dev/md0
+  Volume group "cas_vg" successfully created
+root@deb:~# 
+
+
+root@deb:~# vgdisplay
+  --- Volume group ---
+  VG Name               cas_vg
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               2,73 TiB
+  PE Size               4,00 MiB
+  Total PE              715305
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       715305 / 2,73 TiB
+  VG UUID               VfRQrP-HMU1-1tWs-QRch-0BdM-xtfu-udwiKr
+   
+root@deb:~# 
+
+Crear Volumen lógico:
+
+Ver VG Size del comando vgdisplay anterior:
+
+lvcreate -L2,73G -n cas_sto cas_vg
+
+root@deb:~# lvcreate -L2,73G -n cas_sto cas_vg
+  Rounding up size to full physical extent 2,73 GiB
+  Logical volume "cas_sto" created
+root@deb:~# 
+
+Chequear:
+
+root@deb:~# lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/cas_vg/cas_sto
+  LV Name                cas_sto
+  VG Name                cas_vg
+  LV UUID                n6RRBp-dq3w-r26l-vQTM-F3hE-8oAj-5ZcnnW
+  LV Write Access        read/write
+  LV Creation host, time deb, 2014-01-20 09:21:20 -0300
+  LV Status              available
+  # open                 0
+  LV Size                2,73 GiB
+  Current LE             699
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     6144
+  Block device           253:0
+   
+root@deb:~# 
+
+
+
+Crear filesystem basado en LVM:
+
+mkfs.ext4 /dev/cas_vg/cas_sto
+
+root@deb:~# mkfs.ext4 /dev/cas_vg/cas_sto
+mke2fs 1.42.5 (29-Jul-2012)
+Etiqueta del sistema de ficheros=
+OS type: Linux
+Tamaño del bloque=4096 (bitácora=2)
+Tamaño del fragmento=4096 (bitácora=2)
+Stride=128 blocks, Stripe width=384 blocks
+179168 inodes, 715776 blocks
+35788 blocks (5.00%) reserved for the super user
+Primer bloque de datos=0
+Número máximo de bloques del sistema de ficheros=734003200
+22 bloque de grupos
+32768 bloques por grupo, 32768 fragmentos por grupo
+8144 nodos-i por grupo
+Respaldo del superbloque guardado en los bloques: 
+	32768, 98304, 163840, 229376, 294912
+
+Allocating group tables: hecho                           
+Escribiendo las tablas de nodos-i: hecho                           
+Creating journal (16384 blocks): hecho
+Escribiendo superbloques y la información contable del sistema de ficheros: hecho
+
+root@deb:~# 
+
+Agrandar Filesystem:
+
+root@deb:~# lvresize -L 2,728T /dev/cas_vg/cas_sto
+  Rounding up size to full physical extent 2,73 TiB
+  Extending logical volume cas_sto to 2,73 TiB
+  Logical volume cas_sto successfully resized
+root@deb:~# 
+
+resize2fs /dev/cas_vg/cas_sto
+
+root@deb:~# resize2fs /dev/cas_vg/cas_sto
+resize2fs 1.42.5 (29-Jul-2012)
+Filesystem at /dev/cas_vg/cas_sto is mounted on /var/samba; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 175
+Performing an on-line resize of /dev/cas_vg/cas_sto to 732292096 (4k) blocks.
+The filesystem on /dev/cas_vg/cas_sto is now 732292096 blocks long.
+
+root@deb:~# 
+
+----
+
+Notar que finalmente el device usado para el montage es /dev/mapper/cas_vg-cas_sto
+
+Ahora configurar montaje automático del filesystem:
+
+blkid /dev/mapper/cas_vg-cas_sto
+
+root@deb:~# blkid /dev/mapper/cas_vg-cas_sto
+/dev/mapper/cas_vg-cas_sto: UUID="6d8c07b3-941a-44e9-9977-544228426146" TYPE="ext4" 
+root@deb:~# 
+
+Editar /etc/fstab:
+
+
+

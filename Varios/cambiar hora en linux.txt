@@ -1,0 +1,33 @@
+Supongamos queremos poner: 27-Mayo-2007 y la hora 17:27.
+Esto lo haremos como root:
+
+# date --set "2015-07-28 08:46"
+Sun May 27 17:27:00 CET 2007
+
+Ahora realizaremos el mismo cambio para actualizar la fecha en la BIOS.
+
+# hwclock --set --date="2015-07-28 08:46"
+
+Para comprobarlo tecleamos:
+
+# hwclock
+Fri Feb 25 16:25:06 2000  -0.010586 seconds
+
+Y ya está!
+----------------------------------------------------
+Para sincronizar la hora, si la pila está agotada, etc, para que coja la "hora buena" en cada reinicio editar el fichero /etc/rc.d/rc.lo cal y colocar al final:
+
+ntpdate -u ntp.ubuntu.com
+
+
+
+Si además quieres sincronizar la fecha y la hora del sistema con la de la BIOS tras la línea anterior puedes escribir:
+
+
+
+hwclock --set --date="`date '+%D %H:%M:%S'`"
+
+________________________________________________________
+
+date --set "2015-06-08 17:24"
+hwclock --set --date="`date '+%D %H:%M:%S'`"

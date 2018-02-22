@@ -1,0 +1,21 @@
+root@frodo:~# lvresize -L 400G /dev/xen-vol/sam-disk
+
+root@frodo:~# e2fsck -f /dev/xen-vol/sam-disk
+
+root@frodo:~# resize2fs /dev/xen-vol/sam-disk
+
+root@frodo:~# resize2fs -f /dev/xen-vol/sam-disk
+
+root@frodo:~# e2fsck -f /dev/xen-vol/sam-disk
+
+-------------------------------------------
+
+lvextend -L +100G /dev/xen-vol/sam-disk
+
+e2fsck -f /dev/xen-vol/sam-disk
+
+resize2fs /dev/xen-vol/sam-disk
+
+xm create /etc/xen/sam.cfg -c
+
+

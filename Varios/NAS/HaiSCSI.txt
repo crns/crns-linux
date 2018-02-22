@@ -1,0 +1,648 @@
+High Availability iSCSI Target Using Linux
+Software
+
+    Linux-HA - Linux clustering software.
+    DRBD - Distributed Replicated Block Device. Allows you to RAID1 partitions over IP.
+    iscsitarget - Linux implementation of an iSCSI target.
+
+Configuration
+
+This guide is based on the following:
+
+    Two nodes (Ubuntu 9.10 AMD64)
+    Each node has 3x NICs (2x bonded on network and 1x for DRBD data).
+    Nodes:
+        san01-n1 (“node1”) / 172.16.254.101 / bond0 [slaves: eth0, eth1]
+            DRBD sync network: node1-drbd / 10.10.10.101 / eth2
+        san01-n2 (“node2”) / 172.16.254.102 / bond0 [slaves: eth0, eth1]
+            DRBD sync network: node2-drbd / 10.10.10.102 / eth2
+    Cluster IP address: 172.16.254.100
+
+Note: Unless explicitly stated (i.e. commands prefixed with [node1] or [node2]), commands and configurations should be completed on both nodes.
+
+Install Ubuntu/Debian. Use LVM and create one Volume Group (vg01). Create a Logical Volume for the OS (mount point /) and a Logival Volume for swap. Leave the rest of the space.
+
+Install package ifenslave and configure /etc/network/interfaces:
+
+/etc/network/interfaces
+# eth0 will be part of bond0
+auto eth0
+iface eth0 inet manual
+
+# eth1 will be part of bond0
+auto eth1
+iface eth1 inet manual
+
+# Bonded interfaces on real network
+auto bond0
+iface bond0 inet static
+   address 172.16.254.101
+   netmask 255.255.255.0
+   gateway 172.16.254.254
+   bond-mode 6
+   bond-miimon 100
+   bond-downdelay 200
+   bond-updelay 200
+   slaves eth0 eth1
+
+# DRBD private network
+auto eth2
+iface eth2 inet static
+   address 10.10.10.101
+   netmask 255.255.255.252
+
+	
+# eth0 will be part of bond0
+auto eth0
+iface eth0 inet manual
+ 
+# eth1 will be part of bond0
+auto eth1
+iface eth1 inet manual
+ 
+# Bonded interfaces on real network
+auto bond0
+iface bond0 inet static
+   address 172.16.254.101
+   netmask 255.255.255.0
+   gateway 172.16.254.254
+   bond-mode 6
+   bond-miimon 100
+   bond-downdelay 200
+   bond-updelay 200
+   slaves eth0 eth1
+ 
+# DRBD private network
+auto eth2
+iface eth2 inet static
+   address 10.10.10.101
+   netmask 255.255.255.252
+
+Create DRBD meta data Logical Volume on Volume Group vg01:
+
+    # lvcreate -L1G -ndrbd-metadata vg01
+  
+    	
+    # lvcreate -L1G -ndrbd-metadata vg01
+
+Create DRBD meta data Logical Volume on Volume Group vg01:
+
+    # lvcreate -L1G -ndrbd-metadata vg01
+    
+    	
+    # lvcreate -L1G -ndrbd-metadata vg01
+
+Create a Logical Volume to become a test LUN later on:
+
+    # lvcreate -L4G -nlun.test vg01
+ 
+    	
+    # lvcreate -L4G -nlun.test vg01
+
+Edit /etc/hosts (removing the loopback entry for the host):
+
+/etc/hosts
+172.16.254.101     san01-n1.domain.local san01-n1
+172.16.254.102     san01-n2.domain.local san01-n2
+10.10.10.101       node1-drbd
+10.10.10.102       node2-drbd
+
+	
+172.16.254.101     san01-n1.domain.local san01-n1
+172.16.254.102     san01-n2.domain.local san01-n2
+10.10.10.101       node1-drbd
+10.10.10.102       node2-drbd
+
+Install packages drbd8-utils and heartbeat.
+
+Change permissions and group ownership on some DRBD binaries for use with heartbeat:
+
+    # chgrp haclient /sbin/drbdsetup
+    # chmod o-x /sbin/drbdsetup
+    # chmod u+s /sbin/drbdsetup
+    # chgrp haclient /sbin/drbdmeta
+    # chmod o-x /sbin/drbdmeta
+    # chmod u+s /sbin/drbdmeta
+
+    	
+    # chgrp haclient /sbin/drbdsetup
+    # chmod o-x /sbin/drbdsetup
+    # chmod u+s /sbin/drbdsetup
+    # chgrp haclient /sbin/drbdmeta
+    # chmod o-x /sbin/drbdmeta
+    # chmod u+s /sbin/drbdmeta
+
+Edit /etc/drbd.conf and define two resources:
+
+    The DRBD device that will contain iscsitarget configuration files.
+    The DRBD device that will become the test LUN.
+
+/etc/drdb.conf
+global {
+        usage-count no;
+}
+
+resource iscsi.config {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on san01-n1 {
+        device  /dev/drbd0;
+        disk    /dev/vg01/iscsi-config;
+        address 10.10.10.101:7788; # Use DRBD dedicated network
+        meta-disk /dev/vg01/drbd-metadata[0];
+        }
+
+        on san01-n2 {
+        device  /dev/drbd0;
+        disk    /dev/vg01/iscsi-config;
+        address 10.10.10.102:7788; # Use DRBD dedicated network
+        meta-disk /dev/vg01/drbd-metadata[0];
+        }
+}
+
+resource iscsi.lun.test {
+        protocol C;
+
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+
+        startup {
+        degr-wfc-timeout 120;
+        }
+
+        disk {
+        on-io-error detach;
+        }
+
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+
+        on san01-n1 {
+        device  /dev/drbd1;
+        disk    /dev/vg01/lun.test;
+        address 10.10.10.101:7789; # Use private inter-node address
+        meta-disk /dev/vg01/drbd-metadata[1];
+        }
+
+        on san01-n2 {
+        device  /dev/drbd1;
+        disk    /dev/vg01/lun.test;
+        address 10.10.10.102:7789; # Use private inter-node address
+        meta-disk /dev/vg01/drbd-metadata[1];
+        }
+}
+
+	
+global {
+        usage-count no;
+}
+ 
+resource iscsi.config {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on san01-n1 {
+        device  /dev/drbd0;
+        disk    /dev/vg01/iscsi-config;
+        address 10.10.10.101:7788; # Use DRBD dedicated network
+        meta-disk /dev/vg01/drbd-metadata[0];
+        }
+ 
+        on san01-n2 {
+        device  /dev/drbd0;
+        disk    /dev/vg01/iscsi-config;
+        address 10.10.10.102:7788; # Use DRBD dedicated network
+        meta-disk /dev/vg01/drbd-metadata[0];
+        }
+}
+ 
+resource iscsi.lun.test {
+        protocol C;
+ 
+        handlers {
+        pri-on-incon-degr "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        pri-lost-after-sb "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        local-io-error "echo o &gt; /proc/sysrq-trigger ; halt -f";
+        outdate-peer "/usr/lib/heartbeat/drbd-peer-outdater -t 5";
+        }
+ 
+        startup {
+        degr-wfc-timeout 120;
+        }
+ 
+        disk {
+        on-io-error detach;
+        }
+ 
+        net {
+        cram-hmac-alg sha1;
+        shared-secret "password";
+        after-sb-0pri disconnect;
+        after-sb-1pri disconnect;
+        after-sb-2pri disconnect;
+        rr-conflict disconnect;
+        }
+ 
+        syncer {
+        rate 100M;
+        verify-alg sha1;
+        al-extents 257;
+        }
+ 
+        on san01-n1 {
+        device  /dev/drbd1;
+        disk    /dev/vg01/lun.test;
+        address 10.10.10.101:7789; # Use private inter-node address
+        meta-disk /dev/vg01/drbd-metadata[1];
+        }
+ 
+        on san01-n2 {
+        device  /dev/drbd1;
+        disk    /dev/vg01/lun.test;
+        address 10.10.10.102:7789; # Use private inter-node address
+        meta-disk /dev/vg01/drbd-metadata[1];
+        }
+}
+
+Reboot nodes. Test connectivity (both networks) between nodes.
+
+Initialise DRBD meta data discs for the DRBD resources. This needs to be done on both nodes:
+
+    # drbdadm create-md iscsi.config
+    # drbdadm create-md iscsi.lun.test
+  
+    	
+    # drbdadm create-md iscsi.config
+    # drbdadm create-md iscsi.lun.test
+
+Restart DRBD service.
+
+Decide which node will act as the primary for the DRBD device that will contain the iSCSI configuration files (/dev/drbd0) and initiate the first full sync between the nodes. Run the following on the primary:
+
+    [node1] # drbdadm -- --overwrite-data-of-peer primary iscsi.config
+  
+    	
+    [node1] # drbdadm -- --overwrite-data-of-peer primary iscsi.config
+
+Check the status of the initial sync:
+
+    [node1] # cat /proc/drbd 
+
+You can wait until the initial sync completes but it's not a requirement. Create a filesystem on /dev/drbd0 (iSCSI configs) and mount it:
+
+    [node1] # mkfs.ext4 /dev/drbd0
+    [node1] # mkdir -p /srv/iscsi-config
+    [node1] # mount /dev/drbd0 /srv/iscsi-config
+
+
+Create the /srv/iscsi-config mount point on node 2.
+
+Ensure replication is working as expected. On the primary node:
+
+    [node1] # dd if=/dev/zero of=/srv/iscsi-config/test.bin bs=1M count=9
+    [node1] # umount /srv/iscsi-config
+    [node1] # drbdadmin secondary iscsi.config
+
+    	
+    [node1] # dd if=/dev/zero of=/srv/iscsi-config/test.bin bs=1M count=9
+    [node1] # umount /srv/iscsi-config
+    [node1] # drbdadm secondary iscsi.config
+
+On node 2:
+
+    [node2] # drbdadm primary iscsi.config
+    [node2] # mount /dev/drbd0 /srv/iscsi-config
+    [node2] # ls -l /srv/isci-config
+
+    [node2] # drbdadmin primary iscsi.config
+    [node2] # mount /dev/drbd0 /srv/iscsi-config
+    [node2] # ls -l /srv/isci-config
+
+Test replication the other way by deleting the file:
+
+    [node2] # rm /srv/iscsi-config/test.bin
+    [node2] # umount /srv/isci-config
+    [node2] # drbdadm secondary iscsi.config
+
+    	
+    [node2] # rm /srv/iscsi-config/test.bin
+    [node2] # umount /srv/isci-config
+    [node2] # drbdadm secondary iscsi.config
+
+Make node 1 the primary and mount /srv/iscsi-config (/dev/drbd0) and ensure the file has gone:
+
+    [node1] # drbdadm primary iscsi.config
+    [node1] # mount /dev/drbd0 /srv/iscsi-config
+    [node1] # ls -l /srv/iscsi-config
+
+    	
+    [node1] # drbdadm primary iscsi.config
+    [node1] # mount /dev/drbd0 /srv/iscsi-config
+    [node1] # ls -l /srv/iscsi-config
+
+Decide which node will act as the primary for the DRBD device that contains the test LUN (/dev/drbd1) and initiate the first full sync between the nodes. Run the following on the primary:
+
+    [node1] # drbadm -- --overwrite-data-of-peer primary iscsi.lun.test
+
+
+
+-------------------------------------------
+
+Configurar particiones LVM:
+
+root@castor:~# cat /proc/partitions 
+major minor  #blocks  name
+
+ 202        4    2097152 xvda4
+ 202        3  104857600 xvda3
+ 202        2  104857600 xvda2
+ 202        1    1048576 xvda1
+ 147        0    2097052 drbd0
+ 147        1  104854364 drbd1
+root@castor:~#
+
+editar el archivo /etc/lvm/lvm.conf y sustituir la linea:
+
+
+    # filter = [ "a/.*/" ]
+    filter = [ "r|/dev/xvda3|", "r|/dev/xvda4|" ]
+
+
+
+pvcreate /dev/drbd1
+
+vgcreate vg0drbd /dev/drbd1
+
+lvcreate -L 10G -n filer vg0drbd
+
+root@castor:~# lvscan
+  ACTIVE            '/dev/vg0drbd/filer' [10.00 GiB] inherit
+root@castor:~#
+
+------------------------------------------
+
+Install the iscsitarget package. By default, iscsitarget (ietd) will not start. Edit /etc/defaults/iscsitarget and set ISCSITARGET_ENABLE to true.
+
+Heartbeat will be used to control the iscsitarget service so remove it from init:
+
+    # update-rc.d -f iscsitarget remove
+  
+    	
+    # update-rc.d -f iscsitarget remove
+
+Relocate iscsitarget config to DRBD device. Make sure that node 1 is the primary and that /srv/iscsi-config is mounted:
+
+    [node1] # drbdadm primary iscsi.config
+    [node1] # mount /dev/drbd0 /srv/iscsi-config
+    [node1] # mv /etc/iet/ietd.conf /srv/iscsi-config
+    [node1] # mv /etc/iet/initiators.allow /srv/iscsi-config
+    [node1] # mv /etc/iet/targets.allow /srv/iscsi-config
+
+
+    [node1] # ln -s /srv/iscsi-config/ietd.conf /etc/iet/ietd.conf
+    [node1] # ln -s /srv/iscsi-config/initiators.allow /etc/iet/initiators.all
+    [node1] # ln -s /srv/iscsi-config/targets.allow /etc/iet/targets.allow
+
+    [node2] # rm /etc/iet/ietd.conf
+    [node2] # rm /etc/iet/initiators.allow
+    [node2] # rm /etc/iet/targets.allow
+
+
+    [node2] # ln -s /srv/iscsi-config/ietd.conf /etc/iet/ietd.conf
+    [node2] # ln -s /srv/iscsi-config/initiators.allow /etc/iet/initiators.all
+    [node2] # ln -s /srv/iscsi-config/targets.allow /etc/iet/targets.allow
+
+    	
+    [node2] # drbdadm primary iscsi.config
+    [node2] # mount /dev/drbd0 /srv/iscsi-config
+    [node2] # rm /etc/iet/ietd.conf
+    [node2] # ln -s /srv/iscsi-config/ietd.conf /etc/iet/ietd.conf
+    [node2] # rm /etc/ietd.conf
+    [node2] # ln -s /srv/iscsi-config/ietd.conf /etc/ietd.conf
+
+Create iscsitarget config on node 1. Example:
+
+/etc/ietd.conf
+Target iqn.2015-12.cl.caschile:lun.filer
+        Lun 0 Path=/dev/vg0drbd/filer,Type=blockio,ScsiSN=291109213201
+        Alias lun.filer
+        HeaderDigest None
+        DataDigest None
+        MaxConnections 1
+        InitialR2T Yes
+        ImmediateData No
+        MaxRecvDataSegmentLength 8192
+        MaxXmitDataSegmentLength 8192
+        MaxBurstLength 262144
+        FirstBurstLength 65536
+        DefaultTime2Wait 2
+        DefaultTime2Retain 20
+        MaxOutstandingR2T 8
+        DataPDUInOrder Yes
+        DataSequenceInOrder Yes
+        ErrorRecoveryLevel 0
+
+	
+
+Configure heartbeat to control virtual IP address of cluster and to failover iscsitarget when a node fails.
+The following should be completed on node 1:
+
+/etc/ha.d/ha.cf:
+
+logfacility     local0
+
+autojoin        none # All nodes are defined explicitly.
+auto_failback   no # Prevents nodes from flapping.
+
+keepalive       2
+deadtime        10
+warntime        5
+initdead        120
+
+mcast           eth0 239.0.0.1 694 1 0 # Shared network, so multicast heartbeats.
+bcast           eth1.50 # DRBD network is private, so we can use broadcasts.
+
+node            castor
+node            pollux
+
+respawn         hacluster /usr/lib/heartbeat/ipfail
+ping            192.168.7.131 # Ping a core network device to assist in determining network link status.
+
+	
+
+/etc/ha.d/authkeys:
+
+auth 3
+3 md5 password
+
+
+/etc/ha.d/haresources:
+
+castor drbddisk::iscsi.config Filesystem::/dev/drbd0::/srv/iscsi-config::ext4
+castor IPaddr2::192.168.7.179/24/eth0 drbddisk::iscsi.lun LVM::vg0drbd portblock::tcp::3260::block iscsitarget portblock::tcp::3260::unblock
+
+
+chmod /etc/ha.d/authkeys to 600.
+
+
+Copy ha.cf, authkeys and haresources to node 2:
+
+    [node1] # scp /etc/ha.d/ha.cf root@pollux:/etc/ha.d
+    [node1] # scp /etc/ha.d/authkeys root@pollux:/etc/ha.d
+    [node1] # scp /etc/ha.d/haresources root@pollux:/etc/ha.d
+
+
+Note: At the time of writing, the portblock resource agent script (/etc/ha.d/resource.d/portblock) is broken. Ubuntu bug #489719 has been filed, along with Debian bug #538987. Apply the following patch to both nodes:
+
+--- portblock.orig	2009-11-28 20:03:57.964375908 +0000
++++ portblock	2009-11-28 20:04:13.264550812 +0000
+@@ -17,14 +17,14 @@
+     exit 1
+ }
+ 
+-if [ $# != 3 ]; then
++if [ $# != 4 ]; then
+     usage
+ fi
+ 
+ OCF_RESKEY_protocol=$1
+ OCF_RESKEY_portno=$2
+ OCF_RESKEY_action=$3
+-export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_action
++export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_protocol
+ 
+ OCF_TYPE=portblock
+ OCF_RESOURCE_INSTANCE=${OCF_TYPE}_$1_$2_$3
+
+	
+--- portblock.orig	2009-11-28 20:03:57.964375908 +0000
++++ portblock	2009-11-28 20:04:13.264550812 +0000
+@@ -17,14 +17,14 @@
+     exit 1
+ }
+ 
+-if [ $# != 3 ]; then
++if [ $# != 4 ]; then
+     usage
+ fi
+ 
+ OCF_RESKEY_protocol=$1
+ OCF_RESKEY_portno=$2
+ OCF_RESKEY_action=$3
+-export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_action
++export OCF_RESKEY_action OCF_RESKEY_portno OCF_RESKEY_protocol
+ 
+ OCF_TYPE=portblock
+ OCF_RESOURCE_INSTANCE=${OCF_TYPE}_$1_$2_$3
+
+Finally, reboot both nodes and test failover. The best way to do this is to connect the test LUN to a server, copy on a movie and play it. Fail one of the nodes either by pulling the power or via ”/etc/init.d/heartbeat stop”. The movie will freeze for a few seconds but should resume. Also tail /var/log/syslog.
+
+
+Instalar sendmail
+
+(OJO esto es LVS) Configuración de los servidores reales:
+
+
+Debemos configurar los servidores reales de modo que acepten el forwarding que les envía el
+balanceador LVS por la IP virtual.
+Tenemos que configurar un alias virtual que levante la direccion virtual y además hacer que sea “sorda”
+a ARP de modo que no desvele la IP y no entre en conflicto.
+Los cambios a realizar en los parámetros del kernel de los sevidores reales serán:
+
+# /etc/sysctl.conf
+#habilitar la opcion de ignorar ARP
+net.ipv4.conf.all.ARP_ignore = 1
+#No responder a las solicitudes de ARP si la direccion IP esta configurada sobre el interfaz
+“lo” (loopback) o cualquier otro interfaz virtual eth0:0
+net.ipv4.conf.eth0.ARP_ignore = 1
+#Habilitar la opcion de anuncio ARP
+net.ipv4.conf.all.ARP_announce = 2
+
+Como la fuente IP de la peticon ARP entrará en la cache ARP del destino esto tiene el efecto de
+anunciar esta direccion. Esto no es deseable para “lo” o cualquier otro interfaz virtual ethx:0 de los
+servidores reales. Usando este valor haremos que los servidores reales siempre que reciban una peticion
+ARP usen la IP real como fuente de la peticion ARP.
+
+net.ipv4.conf.eth0.ARP_announce = 2
+
+Y cargamos los cambios con:
+
+# sysctl -p
+
+
+- See more at: http://0wned.it/geek-bits/guides/high-availability-iscsi-target-using-linux/#sthash.cnbx19Li.dpuf

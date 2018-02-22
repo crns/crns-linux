@@ -1,0 +1,58 @@
+root@eomer:~/mysqlturner# ./mysqltuner.pl 
+
+ >>  MySQLTuner 1.3.0 - Major Hayden <major@mhtx.net>
+ >>  Bug reports, feature requests, and downloads at http://mysqltuner.com/
+ >>  Run with '--help' for additional options and output filtering
+[OK] Logged in using credentials from debian maintenance account.
+[OK] Currently running supported MySQL version 5.1.73-1
+[OK] Operating on 64-bit architecture
+
+-------- Storage Engine Statistics -------------------------------------------
+[--] Status: +ARCHIVE +BLACKHOLE +CSV -FEDERATED +InnoDB +MRG_MYISAM 
+[--] Data in MyISAM tables: 213M (Tables: 2214)
+[--] Data in InnoDB tables: 4M (Tables: 5)
+[--] Data in MEMORY tables: 0B (Tables: 16)
+[!!] Total fragmented tables: 45
+
+-------- Security Recommendations  -------------------------------------------
+[OK] All database users have passwords assigned
+
+-------- Performance Metrics -------------------------------------------------
+[--] Up for: 1d 11h 28m 34s (2M q [18.817 qps], 72K conn, TX: 25B, RX: 335M)
+[--] Reads / Writes: 83% / 17%
+[--] Total buffers: 58.0M global + 2.7M per thread (151 max threads)
+[OK] Maximum possible memory usage: 463.8M (9% of installed RAM)
+[OK] Slow queries: 0% (4/2M)
+[OK] Highest usage of available connections: 7% (12/151)
+[OK] Key buffer size / total MyISAM indexes: 16.0M/47.0M
+[OK] Key buffer hit rate: 99.4% (20M cached / 121K reads)
+[OK] Query cache efficiency: 69.3% (1M cached / 1M selects)
+[!!] Query cache prunes per day: 20069
+[OK] Sorts requiring temporary tables: 0% (138 temp sorts / 50K sorts)
+[!!] Joins performed without indexes: 925
+[!!] Temporary tables created on disk: 40% (26K on disk / 65K total)
+[OK] Thread cache hit rate: 99% (561 created / 72K connections)
+[!!] Table cache hit rate: 0% (64 open / 63K opened)
+[OK] Open file limit used: 12% (123/1K)
+[OK] Table locks acquired immediately: 99% (742K immediate / 744K locks)
+[OK] InnoDB buffer pool / data size: 8.0M/4.7M
+[OK] InnoDB log waits: 0
+-------- Recommendations -----------------------------------------------------
+General recommendations:
+    Run OPTIMIZE TABLE to defragment tables for better performance
+    Enable the slow query log to troubleshoot bad queries
+    Adjust your join queries to always utilize indexes
+    When making adjustments, make tmp_table_size/max_heap_table_size equal
+    Reduce your SELECT DISTINCT queries without LIMIT clauses
+    Increase table_open_cache gradually to avoid file descriptor limits
+    Read this before increasing table_open_cache over 64: http://bit.ly/1mi7c4C
+Variables to adjust:
+    query_cache_size (> 16M) ***32M
+    join_buffer_size (> 128.0K, or always use indexes with joins) ***256.0K
+    tmp_table_size (> 16M) ***32M
+    max_heap_table_size (> 16M) ***32M -> SELECT @@max_heap_table_size; SELECT @@tmp_table_size;
+    table_open_cache (> 64) ***-> http://www.techinfobest.com/optimize-mysql-table_open_cache/ ***11290 open_files_limit= Table_open_cache*2
+open_files_limit=22580
+
+root@eomer:~/mysqlturner# eo1135mer
+

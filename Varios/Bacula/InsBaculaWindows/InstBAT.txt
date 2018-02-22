@@ -1,0 +1,68 @@
+Instalando BAT (Bacula administrator tool)
+
+Recursos:
+La información de configuración del programa BAT y las versiones para windows 32 y 64 bits del mismo se encuentran en las suguientes rutas en el servidor SRV-DEDALO:
+
+Es el archivo para completar la configuración de la herramienta BAT (Credenciales de accso del File-Director).
+
+UNC:\\srv-dedalo\ftpcaschile\parches\Bacula\data.txt
+
+Directorio con los programas para Windows
+
+UNC:\\srv-dedalo\ftpcaschile\parches\Bacula\bacula-5.2.10 
+
+
+Instalando BAT version 32 bit en Windows 7 Ultimate
+
+Se copia la version del instalador Bat desde el srv-dedalo a el escritorio.
+
+img10.png
+
+Doble click para iniciar la instalación.
+
+img11
+
+Se inicia el Wizar, click en Next.
+
+img12
+
+En paso de "License Agreement" click en el botón "I Agree"
+
+img13
+
+En el paso de "Installatio Type" selecionar "Custom" y click en siguiente:
+
+img14
+
+En el paso "Choose Components" sólo dejar seleccionado los componentes "Consoles":
+
+img15
+
+En el paso "Choose Install Location" acptar el Destination folder por default y dar click en el botón Next:
+
+img16
+
+Para la siguiente pantalla se debe sumnistrar la información necesaria con la cuál BAT se autenticará el "Director" (Credenciales), esta información esta en el archivo
+data.txt, ya indicado, se abre el archivo data con block de notas y se traspasa la información requerida.
+
+img17
+
+Luego de ingresar los datos, click en Install, se inicioa la instalación 
+
+img18
+
+Finaliza la instalación al dar clicj en el botón "Finish":
+
+img19
+
+Para la primera ejecución de BAT ir a Inicio -> Todos los programas -> Bacula:
+
+img20
+
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+Preparando cliente WHEEZY virtualizado
+
+
+apt-get install linux-image-amd64 firmware-linux-nonfree vlan dnsutils fail2ban
+
+root@vgaladriel:~# apt-get install linux-image-amd64 firmware-linux-nonfree vlan dnsutils fail2ban
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+vlan is already the newest version.
+The following extra packages will be installed:
+  bind9-host file gamin geoip-database libbind9-80 libcap2 libclass-isa-perl libdns88 libexpat1 libffi5 libgamin0 libgeoip1 libglib2.0-0 libglib2.0-data libisc84 libisccc80
+  libisccfg82 liblwres80 libmagic1 libpcre3 libswitch-perl libxml2 mime-support perl perl-modules python python-central python-gamin python-minimal python-support python2.7
+  python2.7-minimal sgml-base shared-mime-info whois xml-core
+Suggested packages:
+  rblcheck mailx geoip-bin perl-doc libterm-readline-gnu-perl libterm-readline-perl-perl make libpod-plainer-perl python-doc python-tk python2.7-doc binutils binfmt-support
+  sgml-base-doc debhelper
+The following NEW packages will be installed:
+  bind9-host dnsutils fail2ban file firmware-linux-nonfree gamin geoip-database libbind9-80 libcap2 libclass-isa-perl libdns88 libexpat1 libffi5 libgamin0 libgeoip1
+  libglib2.0-0 libglib2.0-data libisc84 libisccc80 libisccfg82 liblwres80 libmagic1 libpcre3 libswitch-perl libxml2 linux-image-amd64 mime-support perl perl-modules python
+  python-central python-gamin python-minimal python-support python2.7 python2.7-minimal sgml-base shared-mime-info whois xml-core
+0 upgraded, 40 newly installed, 0 to remove and 0 not upgraded.
+Need to get 22.3 MB of archives.
+After this operation, 80.3 MB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+root@vgaladriel:~# apt-get install ethtool ifenslave                               
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+Note, selecting 'ifenslave-2.6' instead of 'ifenslave'
+The following NEW packages will be installed:
+  ethtool ifenslave-2.6
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 123 kB of archives.
+After this operation, 401 kB of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ wheezy/main ethtool amd64 1:3.4.2-1 [102 kB]
+Get:2 http://ftp.cl.debian.org/debian/ wheezy/main ifenslave-2.6 amd64 1.1.0-20 [21.4 kB]
+Fetched 123 kB in 1s (70.7 kB/s)    
+Selecting previously unselected package ethtool.
+(Reading database ... 20415 files and directories currently installed.)
+Unpacking ethtool (from .../ethtool_1%3a3.4.2-1_amd64.deb) ...
+Selecting previously unselected package ifenslave-2.6.
+Unpacking ifenslave-2.6 (from .../ifenslave-2.6_1.1.0-20_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up ethtool (1:3.4.2-1) ...
+Setting up ifenslave-2.6 (1.1.0-20) ...
+update-alternatives: using /sbin/ifenslave-2.6 to provide /sbin/ifenslave (ifenslave) in auto mode
+root@vgaladriel:~# 
+
+
+

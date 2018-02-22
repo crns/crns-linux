@@ -1,0 +1,15 @@
+127.0.0.1          localhost.localdomain    localhost
+
+192.168.7.180      vfobos.local    vfobos
+192.168.7.181	   vdeimos.local   vdeimos
+
+192.168.39.180	   fobos
+192.168.39.181     deimos
+
+192.168.50.180	   nodo1
+192.168.50.181	   nodo2
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters

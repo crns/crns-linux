@@ -1,0 +1,307 @@
+Verificar que repositorios non-free estan habilitados, para Wheezy se ocupan los mismos de Squeeze si se desea instalar Orale-java
+
+deb-src http://ftp.cl.debian.org/debian/ squeeze main contrib non-free
+deb http://ftp.cl.debian.org/debian squeeze main contrib non-free
+deb http://security.debian.org/ squeeze/updates main contrib non-free
+
+
+dar:
+
+apt-get update
+apt-get upgrade
+
+...
+root@cas-storage:/etc/apt# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@cas-storage:/etc/apt# 
+
+Instalar Java
+
+ap-get install sun-java6-bin sun-java6-jre sun-java6-jdk sun-java6-plugin sun-java6-fonts libcommons-el-java
+
+root@cas-storage:~# apt-get install sun-java6-bin sun-java6-jre sun-java6-jdk sun-java6-plugin sun-java6-fonts libcommons-el-java
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libnl1
+Utilice «apt-get autoremove» para eliminarlos.
+Se instalarán los siguientes paquetes extras:
+  avahi-daemon dictionaries-common gsfonts gsfonts-x11 hunspell-en-us iceweasel java-common libasound2 libavahi-core7 libdaemon0 libhunspell-1.2-0
+  libice6 libltdl7 libmozjs2d libnspr4-0d libnss-mdns libnss3-1d libservlet2.4-java libsm6 libstartup-notification0 libxcb-atom1 libxcb-aux0
+  libxcb-event1 libxt6 libxtst6 odbcinst odbcinst1debian2 unixodbc xulrunner-1.9.1
+Paquetes sugeridos:
+  avahi-autoipd ispell emacsen-common jed-extra hunspell openoffice.org-hunspell openoffice.org-core ttf-lyx latex-xft-fonts xfonts-mathml
+  ttf-mathematica4.1 xprint mozplugger default-jre equivs libasound2-plugins libservlet2.4-java-gcj binfmt-support sun-java6-demo openjdk-6-doc
+  sun-java6-source ttf-baekmuk ttf-unfonts ttf-unfonts-core ttf-kochi-gothic ttf-sazanami-gothic ttf-kochi-mincho ttf-sazanami-mincho
+  ttf-arphic-uming libmyodbc odbc-postgresql tdsodbc unixodbc-bin libdbus-glib-1-2 libgconf2-4 libgnome2-0 libgnomevfs2-0 libgnomeui-0 libcanberra0
+Se instalarán los siguientes paquetes NUEVOS:
+  avahi-daemon dictionaries-common gsfonts gsfonts-x11 hunspell-en-us iceweasel java-common libasound2 libavahi-core7 libcommons-el-java libdaemon0
+  libhunspell-1.2-0 libice6 libltdl7 libmozjs2d libnspr4-0d libnss-mdns libnss3-1d libservlet2.4-java libsm6 libstartup-notification0 libxcb-atom1
+  libxcb-aux0 libxcb-event1 libxt6 libxtst6 odbcinst odbcinst1debian2 sun-java6-bin sun-java6-fonts sun-java6-jdk sun-java6-jre sun-java6-plugin
+  unixodbc xulrunner-1.9.1
+0 actualizados, 35 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 73,1 MB de archivos.
+Se utilizarán 213 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+update-alternatives --set java /usr/lib/jvm/java-6-sun/jre/bin/java
+
+
+root@cas-storage:~# update-alternatives --set java /usr/lib/jvm/java-6-sun/jre/bin/java
+root@cas-storage:~#
+
+
+Instalar Mysql:
+
+apt-get install mysql-server-5.1 mysql-client-5.1 libmysql-java
+
+root@cas-storage:~# apt-get install mysql-server-5.1 mysql-client-5.1 libmysql-java
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libnl1
+Utilice «apt-get autoremove» para eliminarlos.
+Se instalarán los siguientes paquetes extras:
+  libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient16 libnet-daemon-perl libplrpc-perl mysql-common mysql-server-core-5.1
+Paquetes sugeridos:
+  libipc-sharedcache-perl liblog4j1.2-java libcommons-logging-java libterm-readkey-perl tinyca
+Se instalarán los siguientes paquetes NUEVOS:
+  libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysql-java libmysqlclient16 libnet-daemon-perl libplrpc-perl mysql-client-5.1 mysql-common
+  mysql-server-5.1 mysql-server-core-5.1
+0 actualizados, 11 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 24,9 MB de archivos.
+Se utilizarán 62,1 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Instalamos el servidor de aplicaciones Tomcat 6
+
+apt-get install tomcat6 tomcat6-admin tomcat6-docs tomcat6-examples tomcat6-user
+
+root@cas-storage:~# apt-get install tomcat6 tomcat6-admin tomcat6-docs tomcat6-examples tomcat6-user
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libnl1
+Utilice «apt-get autoremove» para eliminarlos.
+Se instalarán los siguientes paquetes extras:
+  authbind libcommons-collections3-java libcommons-dbcp-java libcommons-pool-java libecj-java libservlet2.5-java libtomcat6-java tomcat6-common
+Paquetes sugeridos:
+  libcommons-collections3-java-doc glassfish-javaee ecj ant libecj-java-gcj libtcnative-1
+Se instalarán los siguientes paquetes NUEVOS:
+  authbind libcommons-collections3-java libcommons-dbcp-java libcommons-pool-java libecj-java libservlet2.5-java libtomcat6-java tomcat6
+  tomcat6-admin tomcat6-common tomcat6-docs tomcat6-examples tomcat6-user
+0 actualizados, 13 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 6277 kB de archivos.
+Se utilizarán 12,3 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+...
+...
+Creating config file /etc/default/tomcat6 with new version
+Añadiendo el usuario del sistema `tomcat6' (UID 109) ...
+Añadiendo un nuevo usuario `tomcat6' (UID 109) con grupo `tomcat6' ...
+No se crea el directorio personal `/usr/share/tomcat6'.
+Starting Tomcat servlet engine: tomcat6.
+Configurando tomcat6-admin (6.0.35-1+squeeze4) ...
+Configurando tomcat6-docs (6.0.35-1+squeeze4) ...
+Configurando tomcat6-examples (6.0.35-1+squeeze4) ...
+Configurando tomcat6-user (6.0.35-1+squeeze4) ...
+root@cas-storage:~# 
+
+
+Para manejar el gestor de aplicaciones y el gestor de hosts de tomcat desde el explorador web debemos añadir nuestro usuario a los roles manager y admin de tomcat. Para ello configuramos el fichero /etc/tomcat6/tomcat-users.xml y añadimos el usuario a la sección tomcat-users. Sustituimos usuario y contraseña por los nuestros.
+
+<tomcat-users>
+<user username="usuario" password="contraseña" roles="admin,manager"/>
+</tomcat-users>
+
+
+
+<user username="mcampos" password="cronos2323" roles="admin,manager"/>
+
+
+
+Para configurar el conector AJP y que así el servidor web Apache envíe las peticiones a Tomcat configuramos el siguiente fichero y descomentamos la linea del conector.
+
+nano /etc/tomcat6/server.xml
+
+<!-- Define an AJP 1.3 Connector on port 8009 -->
+<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+
+
+Creamos el directorio endorsed en /var/lib/tomcat6/common
+
+mkdir /var/lib/tomcat6/common/endorsed
+chown -R tomcat6:tomcat6 /var/lib/tomcat6/common/endorsed
+
+root@cas-storage:/var/lib/tomcat6/common# ls -l
+total 8
+drwxr-xr-x 2 tomcat6 tomcat6 4096 jul 19  2013 classes
+drwxrwxr-x 2 root    root    4096 abr 23 12:47 endorsed
+root@cas-storage:/var/lib/tomcat6/common# chown -R tomcat6:tomcat6 /var/lib/tomcat6/common/endorsed
+root@cas-storage:/var/lib/tomcat6/common# ls -l
+total 8
+drwxr-xr-x 2 tomcat6 tomcat6 4096 jul 19  2013 classes
+drwxrwxr-x 2 tomcat6 tomcat6 4096 abr 23 12:47 endorsed
+root@cas-storage:/var/lib/tomcat6/common# 
+
+
+Para que podamos usar alfresco correctamente debemos cambiar unos parámetros en el fichero /etc/default/tomcat6
+
+Para resolver el problema de “Out of Memory” que nos puede surgir con alfresco lo cambiamos dependiendo de la memoria que tengamos, se recomienda tener al menos 3G.
+
+Original:
+JAVA_OPTS="-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC"
+
+Cambiar a:
+JAVA_OPTS="-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms1536m -Xmx1536m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC  -Xmx3G  -Djava.endorsed.dirs=/usr/share/tomcat6/endorsed:/var/lib/tomcat6/common/endorsed"
+
+Habilitamos esta opción para que tomcat o sus aplicaciones puedan usar puertos por debajo de 1024 con usuarios no privilegiados (como tomcat6).
+
+AUTHBIND=yes
+
+-----------
+
+Indicar que libmysql-java es el controlador JDBC de MySQL y libcommons-el-java son componentes reusables opensource de java. Esta instalación instala los jar JDBC de mysql y commons en java pero para que funcione correctamente con tomcat debemos incluirlo en el classpath de tomcat. Esto lo hacemos añadiendo un link simbólico al jar de mysql y commons en java en el directorio /usr/share/tomcat6/lib.
+
+cd /usr/share/tomcat6/lib
+ln -s ../../java/mysql.jar mysql.jar
+ln -s ../../java/commons-el.jar commons-el.jar
+
+
+Reiniciamos tomcat
+
+/etc/init.d/tomcat6 restart
+
+Listo Apache-Tomcat!!
+
+Instalación de Apache 2.2
+
+Instalamos el servidor web de apache. No es necesario en principio pero lo haremos para que sea apache el que se encargue de las peticiones web.
+
+aptitude install apache2 apache2-utils
+
+
+root@cas-storage:~# aptitude install apache2 apache2-utils
+Se instalarán los siguiente paquetes NUEVOS:     
+  apache2 apache2-mpm-worker{a} apache2-utils apache2.2-bin{a} apache2.2-common{a} libapr1{a} libaprutil1{a} libaprutil1-dbd-sqlite3{a} 
+  libaprutil1-ldap{a} openssl{a} ssl-cert{a} 
+0 paquetes actualizados, 11 nuevos instalados, 0 para eliminar y 0 sin actualizar.
+Necesito descargar 3223 kB de ficheros. Después de desempaquetar se usarán 9429 kB.
+¿Quiere continuar? [Y/n/?] 
+
+
+Para conectar el servidor web con el servidor de aplicaciones (contenedor de servlets y JSP) se usa el protocolo AJP. Para configurar esto se pueden usar, o el módulo de apache mod_jk o el módulo mod_proxy. La recomendación es usar el módulo mod_proxy ya que es más moderno y es el que configuraremos. También se puede usar para balanceo de carga, clusters… Por defecto, ya viene instalado con apache2.
+
+En la instalación de Tomcat ya configuramos el conector AJP para que funcionara correctamente. Ahora nos ocupamos de la parte de configuración de apache. Para configurar el conector editamos el fichero de configuración de mod proxy y lo dejamos así (Cambia la dirección ip del servidor tomcat):
+
+nano /etc/apache2/mods-available/proxy.conf
+---
+
+---
+Activamos los módulos proxy (se configuran en el mismo archivo anterior)
+
+a2enmod proxy_balancer proxy_ajp proxy
+
+root@cas-storage:~# a2enmod proxy_balancer proxy_ajp proxy
+Considering dependency proxy for proxy_balancer:
+Enabling module proxy.
+Enabling module proxy_balancer.
+Considering dependency proxy for proxy_ajp:
+Module proxy already enabled
+Enabling module proxy_ajp.
+Module proxy already enabled
+Run '/etc/init.d/apache2 restart' to activate new configuration!
+
+
+root@cas-storage:~# /etc/init.d/apache2 reload
+Reloading web server config: apache2.
+root@cas-storage:~# 
+
+Instalación de herramientas adicionales
+
+Para un correcto funcionamiento necesitamos instalar las siguientes herramientas.
+
+    Flash 10.x.
+    SWF Tools: para la conversion de pdf y swf usar la vista previa de pdfs.
+    OpenOffice.org
+    Imagemagick: Para manipulación de imágenes. Ya viene por defecto, pero por si acaso lo incluimos.
+
+Las herramientas que están en los repositorios de Debian las instalamos:
+
+aptitude install  flashplugin-nonfree openoffice.org imagemagick
+
+root@cas-storage:~# aptitude install  flashplugin-nonfree openoffice.org imagemagick
+Se instalarán los siguiente paquetes NUEVOS:     
+  ca-certificates{a} exiv2{a} flashplugin-nonfree gcj-4.4-base{a} gcj-4.4-jre-lib{a} ghostscript{a} imagemagick libcdt4{a} libcolamd2.7.1{a} 
+  libcommons-beanutils-java{a} libcommons-compress-java{a} libcommons-digester-java{a} libcommons-logging-java{a} libcroco3{a} libcupsimage2{a} 
+  libcurl3-gnutls{a} libdb-je-java{a} libdb4.7-java{a} libdb4.7-java-gcj{a} libdjvulibre-text{a} libdjvulibre21{a} libexiv2-9{a} libgcj-bc{a} 
+  libgcj-common{a} libgcj10{a} libgd2-noxpm{a} libgmp3c2{a} libgomp1{a} libgraph4{a} libgraphite3{a} libgs8{a} libgsf-1-114{a} libgsf-1-common{a} 
+  libgstreamer-plugins-base0.10-0{a} libgstreamer0.10-0{a} libgvc5{a} libhsqldb-java{a} libhyphen0{a} libicu44{a} libicu4j-java{a} libilmbase6{a} 
+  libjaxp1.3-java{a} libjbig2dec0{a} libjline-java{a} libjtidy-java{a} liblcms1{a} liblqr-1-0{a} liblucene2-java{a} libmagickcore3{a} 
+  libmagickcore3-extra{a} libmagickwand3{a} libmythes-1.2-0{a} libneon27-gnutls{a} libnetpbm10{a} libopenexr6{a} libpaper-utils{a} libpaper1{a} 
+  libpathplan4{a} libraptor1{a} librasqal2{a} librdf0{a} libregexp-java{a} librsvg2-2{a} libtextcat-data-utf8{a} libwmf0.2-7{a} libwpd8c2a{a} 
+  libwpg-0.1-1{a} libwps-0.1-1{a} libxaw7{a} libxdot4{a} libxmu6{a} libxpm4{a} libxslt1.1{a} lp-solve{a} netpbm{a} openoffice.org 
+  openoffice.org-base{a} openoffice.org-base-core{a} openoffice.org-calc{a} openoffice.org-common{a} openoffice.org-core{a} 
+  openoffice.org-draw{a} openoffice.org-emailmerge{a} openoffice.org-filter-binfilter{a} openoffice.org-filter-mobiledev{a} 
+  openoffice.org-impress{a} openoffice.org-java-common{a} openoffice.org-math{a} openoffice.org-officebean{a} 
+  openoffice.org-report-builder-bin{a} openoffice.org-style-galaxy{a} openoffice.org-writer{a} python-uno{a} ttf-dejavu{a} ttf-dejavu-extra{a} 
+  ttf-liberation{a} ttf-lyx{a} ttf-opensymbol{a} ttf-sil-gentium{a} ttf-sil-gentium-basic{a} ufraw-batch{a} uno-libs3{a} ure{a} xfonts-mathml{a} 
+0 paquetes actualizados, 104 nuevos instalados, 0 para eliminar y 0 sin actualizar.
+Necesito descargar 209 MB de ficheros. Después de desempaquetar se usarán 518 MB.
+¿Quiere continuar? [Y/n/?] 
+
+
+Herramientas para SWFTools y compilar
+
+apt-get install libjpeg62-dev libfreetype6-dev libpng3-dev libt1-dev libungif4-dev make build-essential
+
+Descargate la última versión de la herramienta con:
+
+wget http://www.swftools.org/swftools-2011-10-10-1647.tar.gz
+
+Descomprimimos el fichero que hemos bajado y lo compilamos:
+
+./configure
+make
+make install
+
+Puedes probar que se ha instalado de manera adecuada ejecuntando:
+
+pdf2swf -V
+
+Por último crea el siguiente enlace símbolico para que se pueda localizar el programa:
+
+ln -s /usr/local/bin/pdf2swf /usr/bin/pdf2swf
+
+crear la base de datos en MySQL. Para ello debemos usar el script
+
+nano db_setup.sql
+create database alfresco default character set utf8 collate utf8_bin;
+grant all on alfresco.* to 'alfresco'@'localhost' identified by 'alfresco' with grant option;
+grant all on alfresco.* to 'alfresco'@'localhost.localdomain' identified by 'alfresco' with grant option;
+
+Vemos que lo que hace es crear la base de datos para utf8 por defecto y los usuarios por defecto alfresco y contraseña alfresco. Lo dejamos así por ahora y creamos la base de datos y comprobamos que existe. Si queremos podemos poner nuestra contraseña ahora y luego acordarnos de cambiarla en el fichero de propiedades (más adelante) También comprobamos que existen los usuarios nuevos y recargamos las tablas de permisos.
+
+mysql -u root -p < db_setup.sql
+mysql -u root -p -e "select user,host,password from user where user like 'alfresco'" mysql
+mysqladmin -u root -p flush-privileges
+
+Creamos el directorio donde vamos a guardar el repositorio de alfresco que es donde se van a guardar los índices y los ficheros que subamos (documentos, etc.). Después cambiamos los permisos para que tomcat pueda leer los datos.
+
+mkdir -p /var/samba/alfresco/alf_data
+chown -R tomcat6:tomcat6 /var/samba/alfresco
+
+
+Ahora instalar afresco part 2....
+
+
+
+

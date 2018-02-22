@@ -1,0 +1,5 @@
+Para directorios:
+find ./ -type d -exec chmod 2775 {} \;
+
+Para archivos:
+find ./ ! -type d -exec chmod 644 {} \;

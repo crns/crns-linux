@@ -1,0 +1,10 @@
+Crear en host de donde se respaldaran BD Mysql la siguiente cuenta con privilegios de DBA:
+
+GRANT ALL PRIVILEGES ON *.* TO 'xen_crn'@'192.168.7.160' IDENTIFIED BY 'xen29crn' WITH GRANT OPTION;
+
+Lo anterior siginifica que esta permitido la conexión al usuario xen_crn sólo desde el host 192.168.7.160 con la contraseña indicada.
+El host es el servidor dedalo que posee varias IP en las respectivas redes de caschile.
+
+
+
+

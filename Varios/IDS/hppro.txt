@@ -1,0 +1,103 @@
+How to Setup a Software RAID on CentOS 5
+
+This article addresses the setting up of a software (mdraid) RAID1 at install time on systems without a true hardware RAID* controller. This implies controllers that expose the raw block devices directly to the operating system. It is also assumed that the devices involved are /dev/sda and /dev/sdb for the first two SATA or SCSI drives. Replace /dev/sda and /dev/sdb with /dev/hda and /dev/hdb (or possibly /dev/hdc for a secondary master) respectively for the first two parallel ATA drives. Adjust drive designations as required for other configurations. Be very careful to adjust commands for your situation and not simply blindly follow the procedure.
+
+Booting will only work with /boot on non-RAID or RAID1 partitions. RAID0, RAID5 or other RAID types will not work for /boot and RAID0 (striping with no redundancy) is not recommended for critical partitions. With the /boot constraints satisfied, the root and other partitions may be RAID5 or another type; however, these options are not covered in this example.**
+
+<!> The actions described in this write-up can damage an existing filesystem. Please experiment first on a test box and then only proceed after creating current & proven viable backups. Never blindly copy/paste commands, particularly as root, without a thorough understanding of their effects.
+
+The "dd" commands and the installation procedure described below will destroy all information on the disks. If you have data on the drives that you need access to, please backup the drives first.
+Section One
+
+    Disable any fake RAID in the motherboard or RAID controller BIOS so that it acts as a normal controller - usually either ATA or SATA, possibly SCSI. It may be necessary to overwrite the partition tables if fake raid has previously been used on the disks. Do not load a RAID driver. The following commands may be performed on the 2nd virtual console (Ctrl-Alt-F2) during a graphical install before partitioning, or booted in rescue mode from installation media, or from a LiveCD. The partition tables of the devices will be zeroed out and all contents of the drives lost!
+
+        dd if=/dev/zero of=/dev/sda bs=512 count=64
+        dd if=/dev/zero of=/dev/sdb bs=512 count=64
+
+    Begin graphical installation of CentOS. May need to use "boot: linux nodmraid" or Press [Tab] at the initial installation selection menu and add nodmraid to the boot commands.
+    Customize partitions and remove all partitions, including LVMs, for a fresh start
+    Create an ~100MB software RAID partition on sda and sdb for /boot
+    Create a software RAID partition on sda and sdb for swap. This partition size is based on the amount of RAM and personal preferences. The example uses 1GB. This is going to be RAIDed swap.***
+    Create a software RAID partition on sda and sdb for / and fill to maximum allowable size
+    Click the RAID button, create a RAID device
+    Pick the two 100MB partitions, mount point /boot, filesystem type ext3, RAID1 (default RAID device should be md0), click OK
+    Click the RAID button, create a RAID device
+    Pick the two 1GB partitions, filesystem type swap, RAID1 (default RAID device should be md1), click OK
+    Click the RAID button, create a RAID device
+    Pick the two large partitions, mount point /, filesystem type ext3, RAID1 (default RAID device should be md2), click OK
+    Your partitions are complete. Your screen should look similar to this:
+
+        RAID Devices
+
+        /dev/md0 ext3 [check mark] 100
+        /dev/md1 swap [check mark] 1024
+        /dev/md2 ext3 [check mark] [lots of GBs]
+
+        Hard Drives
+
+        /dev/sda
+           /dev/sda1 /dev/md0 software RAID [no check mark] 100
+           /dev/sda2 /dev/md1 software RAID [no check mark] 1024
+           /dev/sda3 /dev/md2 software RAID [no check mark] [lots of GBs]
+        /dev/sdb
+           /dev/sdb1 /dev/md0 software RAID [no check mark] 100
+           /dev/sdb2 /dev/md1 software RAID [no check mark] 1024
+           /dev/sdb3 /dev/md2 software RAID [no check mark] [lots of GBs]
+
+    Click next to go to the GRUB bootloader screen.
+    It should default to installing GRUB to /dev/sda, click Next
+    Continue installing CentOS, selecting desired packages
+    Proceed to Section Two after CentOS is installed and the system has been rebooted. Do not update CentOS, do not do anything else! 
+
+Section Two
+
+This will assure that both members of the RAID1 /boot are bootable. Repeat after a disk failure/replacement.
+
+Method 1 - in GRUB at boot
+
+Stop at the GRUB menu and enter the "c" option, which gives you the GRUB prompt. Then:
+
+    grub> root (hd1,0)
+    grub> setup (hd1)
+    grub> root (hd0,0)
+    grub> setup (hd0)
+
+Hit the ESC key to get back to the GRUB menu, and boot normally. Perform steps 1 and 5-8 in Method 2.
+
+Method 2 - in GRUB on the running system
+
+    Make sure you're root.
+    Input the command "/sbin/grub", hit Enter
+    Enter the following commands in the GRUB shell:
+
+        grub> device (hd0) /dev/sda
+        grub> device (hd1) /dev/sdb
+        grub> root (hd0,0)
+        grub> setup (hd0)
+        grub> root (hd1,0)
+        grub> setup (hd1)
+        grub> quit
+
+    Cross your fingers. Type in "reboot", hit Enter.
+    Once you're booted up, do a system update.
+    Reboot if the kernel or glibc was updated.
+    Check that you're actually running the updated kernel, if any, by typing "uname -a", hit Enter
+    Done! 
+
+    This guide is based on information provided by TimVerhoeven of #centos on irc.freenode.net as quoted in a CentOS Forum thread and extensively edited with feedback from Forum users and centos-docs.
+    The above procedure assumes a graphical installation. Creating RAID-1 devices in text mode can be done, but is quite tedious and exacting. You first need to create each RAID member partition on each disk and specify only one disk for each. If you don't specify a unique disk (either sda OR sdb) for each partition, then Disk Druid seems to want to mess around with the layout when you create the RAID devices. At the stage of creating the RAID devices be sure to only select the desired RAID partitions for each device and deselect others as the RAID devices are created.
+
+    It should be possible to apply a similar approach to / on RAID1 without a /boot. Here's a link to a Fedora guide using that approach that should be largely applicable. The Fedora article also contains very good instructions on recovery using mdadm.
+
+    Additional RAID articles on the Wiki include How to Convert a CentOS 5 System to RAID1 Using a Rescue Disk and How to install CentOS 5 on a software partitionable RAID1.
+    General articles on software RAID:
+
+        http://tldp.org/HOWTO/Software-RAID-HOWTO.html http://en.wikipedia.org/wiki/Mdadm 
+
+    Nice Linux Journal article on Recovery of RAID and LVM2 Volumes.
+
+    * Some controllers claim to be hardware RAID but require drivers to function, similar to winmodems. These controllers are often called "fake RAID" or "fraid" and are usually better used on CentOS with the RAID function disabled. This external article addresses the issues in some detail.
+
+    ** For a general explanation of RAID see the Wikipedia article or google for some of the other excellent descriptions available. See the Deployment Guide section Redundant Array of Independent Disks (RAID) or CentOS 5 FAQ entry "How do I install a software RAID on CentOS 5?" for more Enterprise Linux 5 specific information.
+    *** An alternative approach that might give somewhat better performance and twice the swap area for equivalent partition sizes, at the expense of redundancy, would be to use two non-RAID swap partitions. This should perform somewhat like striped RAID0, but will still survive the failure of a single drive, albeit with half the available swap.
+    Alternative B: Use the rest of the space for a single additional RAID1, then create an LVM volume on /dev/md1, create /, swap, and optionally /home or other filesystems, as Logical Volumes in LVM. Skip the rest of Section 1. 

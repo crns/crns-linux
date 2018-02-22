@@ -1,0 +1,5 @@
+mt -f /dev/st0 status
+mt -f /dev/st0 erase
+mt -f /dev/st0 rewind
+mt -f /dev/st0
+

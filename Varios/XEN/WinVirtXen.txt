@@ -1,0 +1,49 @@
+lvcreate -L 100G -n pippin xen-vol
+
+
+ssh frodo -L 5902:127.0.0.1:5902
+
+
+
+
+
+xen-create-image --hostname=nombremv --size=5Gb --swap=256Mb --ide --ip=192.168.0.11 --netmask=255.255.255.0 --gateway=192.168.0.1 --force --dir=/
+home/xen --memory=128Mb --arch=i386 --kernel=/boot/vmlinuz-2.6.26-2-xen-686 --debootstrap --dist=lenny --mirror=http://ftp.fr.debian.org/debian/ --passwd 
+
+--------------------------
+
+xen-create-image --name=pippin --hostname=pippin --name=pippin--size=100Gb --ide --force --memory=2048Mb --kernel=/usr/lib/xen/boot/hvmloader --builder=hvm --device-model=/usr/lib/xen-4.1/bin/quemu-dm --shadow-memory=8Mb --vcpus=2 --acpi=1 --apic=1 --boot=dc --usbdevice=tablet --vnc=1 --vncunused=0 --vnclisten=127.0.0.1 --vncdisplay=2 --vncconsole=1 --vncpasswd=cronos --vncviewer=0 --sdl=0 --stdvga=0 --serial=pty --ne2000=0 --on_poweroff=destroy --on_reboot=restart --on_crash=restart
+
+-----------------------
+import os, re
+arch = os.uname()[4]
+if re.search('64', arch):
+    arch_libdir = 'lib64'
+else:
+    arch_libdir = 'lib'
+
+*kernel = "/usr/lib/xen/boot/hvmloader"
+builder='hvm'
+memory = 1024
+
+# Should be at least 2KB per MB of domain memory, plus a few MB per vcpu.
+shadow_memory = 8
+name = "xenwin2008"
+vif = [ 'type=ioemu, bridge=xenbr0' ]
+acpi = 1
+apic = 1
+disk = [ 'file:/home/xen/xenwin2008.img,hda,w', 'file:/home/xen/windows2008.iso,hdc:cdrom,r' ]
+
+device_model = '/usr/' + arch_libdir + '/xen/bin/qemu-dm'
+
+#-----------------------------------------------------------------------------
+# boot on floppy (a), hard disk (c) or CD-ROM (d) 
+# default: hard disk, cd-rom, floppy
+boot="dc"
+sdl=0
+vnc=1
+vncconsole=1
+vncpasswd=''
+
+serial='pty'
+usbdevice='tablet'

@@ -1,0 +1,15 @@
+root@correo:/usr/lib/php5/20090626# apt-get install php5-intl
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  libicu44
+The following packages will be REMOVED:
+  php5-idn
+The following NEW packages will be installed:
+  libicu44 php5-intl
+0 upgraded, 2 newly installed, 1 to remove and 0 not upgraded.
+Need to get 0 B/7127 kB of archives.
+After this operation, 19.0 MB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+

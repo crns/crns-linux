@@ -1,0 +1,310 @@
+Configurar la Red (Instalando OpenVSwitch)
+
+
+Se instalará openvswitch-datapath-dkms debido a que no se necesita hacer nada despues de una actualización de sistema:
+
+Primero se instalan las dependencias de openvswitch con:
+
+apt-get install build-essential module-assistant linux-headers-`uname -r`
+
+root@crn-xen:~# apt-get install build-essential module-assistant linux-headers-`uname -r`
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libreadline5
+Use 'apt-get autoremove' to remove it.
+Se instalarán los siguientes paquetes extras:
+  binutils bzip2 cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl
+  libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2 libmpfr4 libquadmath0 libstdc++6-4.7-dev libtimedate-perl
+  linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev make manpages-dev
+Paquetes sugeridos:
+  binutils-doc bzip2-doc cpp-doc gcc-4.6-locales gcc-4.7-locales debian-keyring g++-multilib g++-4.7-multilib gcc-4.7-doc libstdc++6-4.7-dbg gcc-multilib autoconf automake1.9
+  libtool flex bison gdb gcc-doc gcc-4.6-multilib libmudflap0-4.6-dev gcc-4.6-doc libgcc1-dbg libgomp1-dbg libquadmath0-dbg libmudflap0-dbg binutils-gold gcc-4.7-multilib
+  libmudflap0-4.7-dev libitm1-dbg libcloog-ppl0 libppl-c2 libppl7 glibc-doc libstdc++6-4.7-doc make-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils build-essential bzip2 cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl libalgorithm-diff-xs-perl
+  libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2 libmpfr4 libquadmath0 libstdc++6-4.7-dev
+  libtimedate-perl linux-headers-3.2.0-4-amd64 linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev make manpages-dev module-assistant
+0 actualizados, 36 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 54,6 MB de archivos.
+Se utilizarán 154 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Nos aseguramos de tener desintalado el paquete bridge-utils:
+
+
+root@crn-xen:~# apt-get remove --purge bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Package 'bridge-utils' is not installed, so not removed
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libreadline5
+Use 'apt-get autoremove' to remove it.
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@crn-xen:~#
+
+root@crn-xen:~# apt-get autoremove
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Los siguientes paquetes se ELIMINARÁN:
+  libreadline5
+0 actualizados, 0 se instalarán, 1 para eliminar y 0 no actualizados.
+Se liberarán 326 kB después de esta operación.
+¿Desea continuar [S/n]? 
+(Leyendo la base de datos ... 41899 ficheros o directorios instalados actualmente.)
+Desinstalando libreadline5:amd64 ...
+root@crn-xen:~# 
+
+
+
+Ahora instalar el soporte de opevswitch en el kernel con:
+
+root@crn-xen:~# apt-cache search openvswitch-datapath
+openvswitch-datapath-dkms - Open vSwitch datapath module source - DKMS version
+openvswitch-datapath-source - Open vSwitch datapath module source - module-assistant version
+root@crn-xen:~# 
+
+root@crn-xen:~# apt-get install openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dkms menu
+Paquetes sugeridos:
+  menu-l10n gksu kdebase-bin kdebase-runtime ktsuss sux
+Se instalarán los siguientes paquetes NUEVOS:
+  dkms menu openvswitch-datapath-dkms
+0 actualizados, 3 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 2.516 kB de archivos.
+Se utilizarán 14,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]?
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main dkms all 2.2.0.3-1.2 [77,4 kB]
+Des:2 http://ftp.cl.debian.org/debian/ wheezy/main menu amd64 2.1.46 [480 kB]
+Des:3 http://ftp.cl.debian.org/debian/ wheezy/main openvswitch-datapath-dkms all 1.4.2+git20120612-9.1~deb7u1 [1.959 kB]
+Descargados 2.516 kB en 2seg. (981 kB/s)             
+Seleccionando el paquete dkms previamente no seleccionado.
+(Leyendo la base de datos ... 41886 ficheros o directorios instalados actualmente.)
+Desempaquetando dkms (de .../dkms_2.2.0.3-1.2_all.deb) ...
+Seleccionando el paquete menu previamente no seleccionado.
+Desempaquetando menu (de .../archives/menu_2.1.46_amd64.deb) ...
+Seleccionando el paquete openvswitch-datapath-dkms previamente no seleccionado.
+Desempaquetando openvswitch-datapath-dkms (de .../openvswitch-datapath-dkms_1.4.2+git20120612-9.1~deb7u1_all.deb) ...
+Procesando disparadores para man-db ...
+Procesando disparadores para install-info ...
+Configurando dkms (2.2.0.3-1.2) ...
+Configurando menu (2.1.46) ...
+Configurando openvswitch-datapath-dkms (1.4.2+git20120612-9.1~deb7u1) ...
+
+Creating symlink /var/lib/dkms/openvswitch/1.4.2+git20120612/source ->
+                 /usr/src/openvswitch-1.4.2+git20120612
+
+DKMS: add completed.
+
+Kernel preparation unnecessary for this kernel.  Skipping...
+
+Building module:
+cleaning build area....(bad exit status: 2)
+./configure --with-linux='/lib/modules/3.2.0-4-amd64/build' && make -C datapath/linux.......(bad exit status: 2)
+Error! Bad return status for module build on kernel: 3.2.0-4-amd64 (x86_64)
+Consult /var/lib/dkms/openvswitch/1.4.2+git20120612/build/make.log for more information.
+Procesando disparadores para menu ...
+root@crn-xen:~# 
+
+
+ERROR --->>> Solución:
+
+1.- Repositorios:
+Asegurese de tener los repositorios de debian y de openstack para debian bien configurados. Los de OpenStack se agregan así:
+
+a.- Agregue las siguientes líneas a /etc/apt/sources.list:
+
+deb http://archive.gplhost.com/debian havana main
+deb http://archive.gplhost.com/debian havana-backports main
+
+b.- Importe la llave del repositorio
+
+cd /tmp
+wget http://archive.gplhost.com/debian/repository_key.asc
+apt-key add repository_key.asc
+cd /
+
+Actualizar: (Nota: Debe tener las ramas "main contrib non-free" activas en los repositorios principales y de updates).
+
+apt-get update
+
+apt-get install openvswitch-common openvswitch-controller python-openvswitch openvswitch-test openvswitch-switch openvswitch-datapath-dkms
+
+root@crn-xen:~# apt-get install openvswitch-common openvswitch-controller python-openvswitch openvswitch-test openvswitch-switch openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  bridge-utils
+Use 'apt-get autoremove' to remove it.
+Se instalarán los siguientes paquetes extras:
+  openvswitch-pki
+Paquetes sugeridos:
+  openvswitch-datapath-module
+Se instalarán los siguientes paquetes NUEVOS:
+  openvswitch-common openvswitch-controller openvswitch-datapath-dkms openvswitch-pki openvswitch-switch openvswitch-test python-openvswitch
+0 actualizados, 7 se instalarán, 0 para eliminar y 9 no actualizados.
+Se necesita descargar 0 B/5.689 kB de archivos.
+Se utilizarán 25,3 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+Seleccionando el paquete openvswitch-common previamente no seleccionado.
+(Leyendo la base de datos ... 46350 ficheros o directorios instalados actualmente.)
+Desempaquetando openvswitch-common (de .../openvswitch-common_2.0.1-1~bpo70+1_amd64.deb) ...
+Seleccionando el paquete openvswitch-pki previamente no seleccionado.
+Desempaquetando openvswitch-pki (de .../openvswitch-pki_2.0.1-1~bpo70+1_all.deb) ...
+Seleccionando el paquete openvswitch-controller previamente no seleccionado.
+Desempaquetando openvswitch-controller (de .../openvswitch-controller_2.0.1-1~bpo70+1_amd64.deb) ...
+Seleccionando el paquete openvswitch-datapath-dkms previamente no seleccionado.
+Desempaquetando openvswitch-datapath-dkms (de .../openvswitch-datapath-dkms_2.0.1-1~bpo70+1_all.deb) ...
+Seleccionando el paquete openvswitch-switch previamente no seleccionado.
+Desempaquetando openvswitch-switch (de .../openvswitch-switch_2.0.1-1~bpo70+1_amd64.deb) ...
+Seleccionando el paquete openvswitch-test previamente no seleccionado.
+Desempaquetando openvswitch-test (de .../openvswitch-test_2.0.1-1~bpo70+1_all.deb) ...
+Seleccionando el paquete python-openvswitch previamente no seleccionado.
+Desempaquetando python-openvswitch (de .../python-openvswitch_2.0.1-1~bpo70+1_all.deb) ...
+Procesando disparadores para man-db ...
+Configurando openvswitch-common (2.0.1-1~bpo70+1) ...
+Configurando openvswitch-pki (2.0.1-1~bpo70+1) ...
+Configurando openvswitch-controller (2.0.1-1~bpo70+1) ...
+[....] Starting ovs-controller : ovs-controller2015-02-19T09:22:01Z|00001|stream_ssl|INFO|Trusting CA cert from /etc/openvswitch-controller/cacert.pem (/C=US/ST=CA/O=Open vSwitch/OU=switchca/CN=OVS switchca CA Certificate (2015 feb 18 14:15:32)) (fingerprint 74:bb:01:d9:9a:76:ab:65:f3:0c:c7:3c:d6:e1:8e:10:9e:69:e5:00)
+. ok 
+Configurando openvswitch-datapath-dkms (2.0.1-1~bpo70+1) ...
+
+Creating symlink /var/lib/dkms/openvswitch/2.0.1/source ->
+                 /usr/src/openvswitch-2.0.1
+
+DKMS: add completed.
+
+Kernel preparation unnecessary for this kernel.  Skipping...
+
+Building module:
+cleaning build area....(bad exit status: 2)
+./configure --with-linux='/lib/modules/3.2.0-4-amd64/build' && make -C datapath/linux..........
+cleaning build area....(bad exit status: 2)
+
+DKMS: build completed.
+
+openvswitch:
+Running module version sanity check.
+ - Original module
+   - No original module exists within this kernel
+ - Installation
+   - Installing to /lib/modules/3.2.0-4-amd64/kernel/drivers/net/openvswitch//
+
+depmod....
+
+DKMS: install completed.
+Configurando openvswitch-switch (2.0.1-1~bpo70+1) ...
+/etc/openvswitch/conf.db does not exist ... (warning).
+Creating empty database /etc/openvswitch/conf.db.
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+Configurando openvswitch-test (2.0.1-1~bpo70+1) ...
+Configurando python-openvswitch (2.0.1-1~bpo70+1) ...
+root@crn-xen:~# /etc/init.d/openvswitch-switch restart
+Killing ovs-vswitchd (11604).
+Killing ovsdb-server (11593).
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+root@crn-xen:~#
+
+Chequeo final con:
+
+root@crn-xen:~# /etc/init.d/openvswitch-switch restart
+Killing ovs-vswitchd (11688).
+Killing ovsdb-server (11677).
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+root@crn-xen:~# 
+
+
+Y comprobamos que todo esta ok:
+
+root@crn-xen:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 11898
+ovs-vswitchd is running with pid 11909
+root@crn-xen:~# 
+
+
+
+Presto!
+
+Reiniciar para asegura que todo carge por default:
+
+
+---
+Agregamos una definición de bond:
+
+editar /etc/network/interfaces
+
+auto bond0
+allow-br0 bond0
+iface bond0 inet manual
+	ovs_bridge br0
+	ovs_type OVSBond
+   	ovs_bonds eth0 eth1
+   	ovs_options bond_mode=balance-tcp lacp=active
+   	bond-miimon 100
+
+auto eth0
+iface eth0 inet manual
+  	bond-master bond0
+
+auto eth1
+iface eth1 inet manual
+  	bond-master bond0
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+   	address 172.16.20.1
+   	netmask 255.255.255.0
+   	ovs_type OVSBridge
+   	ovs_ports bond0
+	bridge-ports bond0
+
+La última linea permite que el bridge levante automáticamente sin problemas la configuración IP en el arranque todo OK. 
+
+---
+
+Ahora activar el bridge patra gestionarlo por OVS:
+
+ovs-vsctl add-br br0
+ovs-vsctl add-port br0 bond0
+
+Revisar:
+
+ovs-vsctl add-br br0
+
+root@crn-xen:~# ovs-vsctl show
+e459e336-a2d1-4473-a1d7-23c810e21856
+    Bridge "br0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+        Port "bond0"
+            Interface "bond0"
+    ovs_version: "2.0.1"
+root@crn-xen:~# 
+
+
+Se puede activar ahora con ifup br0 o reboot para asegurarnos que todo arranca automaticamente:
+
+Reboot and enjoy, happy hack!!
+
+------------------------
+

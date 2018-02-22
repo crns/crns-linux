@@ -1,0 +1,6 @@
+root@tape:~# date
+vie ene 17 09:53:21 CLST 2014
+root@tape:~# mt -f /dev/st0 erase ; date
+vie ene 17 12:51:46 CLST 2014
+root@tape:~# 
+

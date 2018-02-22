@@ -1,0 +1,175 @@
+debian-security-announce@lists.debian.org
+
+Instalar Debian 7 SQUEEZY en un Proliant DL380e Gen8 con Inteligent Smart Array B320i RAID Controller
+
+Se debe desactivar en BIOS la opcion de raid integrada y solo dejar HP AHCI SATA Controller, de este modo el raid se controlara por mdadm desde el
+hipervisor XEN en GNU/Linux quien suministrara los discos en RAID 5 para el almacenamiento de Openfiler.
+
+Se instala dejando un RAID 1 con dos discos -> particion para / una particion para la VM Openfiler y una particion de SWAP.
+Se crea un RAID 5 con los 6 discos restantes, este raid se asignará a Openfiler.
+
+
+
+OK, ahora actualización masiva de WHEEZY:
+
+
+Modificar /etc/apt/sources.list con el siguiente contenido:
+
+deb http://security.debian.org/ wheezy/updates main contrib non-free
+deb-src http://security.debian.org/ wheezy/updates main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ wheezy main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ wheezy main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ wheezy-updates main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ wheezy-updates main contrib non-free 
+
+
+Ahora:
+
+apt-get update
+apt-get upgrade
+
+root@deimos:~# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se actualizarán los siguientes paquetes:
+  acpi-support-base apt apt-utils at base-files bash bind9-host bsd-mailx ca-certificates cpio debian-archive-keyring dmsetup dnsutils dpkg e2fslibs
+  e2fsprogs exim4 exim4-base exim4-config exim4-daemon-light file gnupg gpgv grub-common grub-pc grub-pc-bin grub2-common host initscripts
+  krb5-locales libapt-inst1.5 libapt-pkg4.12 libbind9-80 libc-bin libc6 libcomerr2 libdevmapper1.02.1 libdns88 libevent-2.0-5 libexpat1 libfreetype6
+  libgcrypt11 libgnutls26 libgpgme11 libgssapi-krb5-2 libisc84 libisccc80 libisccfg82 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblwres80
+  libmagic1 libss2 libssl1.0.0 libtasn1-3 libxml2 linux-image-3.2.0-4-amd64 locales mime-support multiarch-support mutt openssh-client
+  openssh-server openssl perl perl-base perl-modules procmail python python-minimal python-reportbug python2.7 python2.7-minimal reportbug rsyslog
+  sysv-rc sysvinit sysvinit-utils tzdata wget whois
+83 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 79,2 MB de archivos.
+Se liberarán 2.447 kB después de esta operación.
+¿Desea continuar [S/n]?
+
+Ahora obtener los kernel instalados:
+
+dpkg -l | grep linux-image
+
+root@deimos:~# dpkg -l | grep linux-image
+ii  linux-image-3.2.0-4-amd64          3.2.65-1+deb7u2               amd64        Linux 3.2 for 64-bit PCs
+ii  linux-image-amd64                  3.2+46                        amd64        Linux for 64-bit PCs (meta-package)
+root@deimos:~#
+
+Entonces ejecutar apt-get install linux-image-2.6-amd64 que es el meta-paquete:
+
+root@deimos:~# apt-get install linux-image-2.6-amd64
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  linux-image-2.6-amd64
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 4.432 B de archivos.
+Se utilizarán 4.096 B de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main linux-image-2.6-amd64 amd64 3.2+46 [4.432 B]
+Descargados 4.432 B en 0seg. (40,1 kB/s)           
+Seleccionando el paquete linux-image-2.6-amd64 previamente no seleccionado.
+(Leyendo la base de datos ... 24496 ficheros o directorios instalados actualmente.)
+Desempaquetando linux-image-2.6-amd64 (de .../linux-image-2.6-amd64_3.2+46_amd64.deb) ...
+Configurando linux-image-2.6-amd64 (3.2+46) ...
+root@deimos:~# 
+
+Ahora actualizar el gestor de arranque:
+
+update-grub
+
+
+apt-get install firmware-linux-nonfree ifenslave ethtool
+
+root@deimos:~# apt-get install firmware-linux-nonfree ifenslave ethtool
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «ifenslave-2.6» en lugar de «ifenslave»
+Se instalarán los siguientes paquetes NUEVOS:
+  ethtool firmware-linux-nonfree ifenslave-2.6
+0 actualizados, 3 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 791 kB de archivos.
+Se utilizarán 1.965 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main ethtool amd64 1:3.4.2-1 [102 kB]
+Des:2 http://ftp.cl.debian.org/debian/ wheezy/non-free firmware-linux-nonfree all 0.36+wheezy.1 [668 kB]
+Des:3 http://ftp.cl.debian.org/debian/ wheezy/main ifenslave-2.6 amd64 1.1.0-20 [21,4 kB]
+Descargados 791 kB en 2seg. (275 kB/s)
+Seleccionando el paquete ethtool previamente no seleccionado.
+(Leyendo la base de datos ... 24499 ficheros o directorios instalados actualmente.)
+Desempaquetando ethtool (de .../ethtool_1%3a3.4.2-1_amd64.deb) ...
+Seleccionando el paquete firmware-linux-nonfree previamente no seleccionado.
+Desempaquetando firmware-linux-nonfree (de .../firmware-linux-nonfree_0.36+wheezy.1_all.deb) ...
+Seleccionando el paquete ifenslave-2.6 previamente no seleccionado.
+Desempaquetando ifenslave-2.6 (de .../ifenslave-2.6_1.1.0-20_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando ethtool (1:3.4.2-1) ...
+Configurando firmware-linux-nonfree (0.36+wheezy.1) ...
+update-initramfs: deferring update (trigger activated)
+Configurando ifenslave-2.6 (1.1.0-20) ...
+update-alternatives: utilizando /sbin/ifenslave-2.6 para proveer /sbin/ifenslave (ifenslave) en modo automático
+Procesando disparadores para initramfs-tools ...
+update-initramfs: Generating /boot/initrd.img-3.2.0-4-amd64
+root@deimos:~# 
+
+
+apt-get install firmware-linux-free
+
+root@deimos:~# apt-get install firmware-linux-free
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  firmware-linux-free
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 20,7 kB de archivos.
+Se utilizarán 90,1 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main firmware-linux-free all 3.2 [20,7 kB]
+Descargados 20,7 kB en 0seg. (101 kB/s)        
+Seleccionando el paquete firmware-linux-free previamente no seleccionado.
+(Leyendo la base de datos ... 24666 ficheros o directorios instalados actualmente.)
+Desempaquetando firmware-linux-free (de .../firmware-linux-free_3.2_all.deb) ...
+Configurando firmware-linux-free (3.2) ...
+update-initramfs: deferring update (trigger activated)
+Procesando disparadores para initramfs-tools ...
+update-initramfs: Generating /boot/initrd.img-3.2.0-4-amd64
+root@deimos:~# 
+
+egrep '(vmx|svm)' --color=always /proc/cpuinfo
+
+root@deimos:~# egrep '(vmx|svm)' --color=always /proc/cpuinfo
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+root@deimos:~#
+
+
+
+Verificar:
+
+root@deimos:~# ls -l /boot
+total 15856
+-rw-r--r-- 1 root root   129281 feb 22 02:16 config-3.2.0-4-amd64
+drwxr-xr-x 3 root root    12288 mar 20 17:00 grub
+-rw-r--r-- 1 root root 11130992 mar 20 17:03 initrd.img-3.2.0-4-amd64
+-rw-r--r-- 1 root root  2114446 feb 22 02:16 System.map-3.2.0-4-amd64
+-rw-r--r-- 1 root root  2841408 feb 22 02:05 vmlinuz-3.2.0-4-amd64
+root@deimos:~# 
+
+root@deimos:~# dpkg -l | grep linux-image
+ii  linux-image-2.6-amd64              3.2+46                        amd64        Linux for 64-bit PCs (dummy package)
+ii  linux-image-3.2.0-4-amd64          3.2.65-1+deb7u2               amd64        Linux 3.2 for 64-bit PCs
+ii  linux-image-amd64                  3.2+46                        amd64        Linux for 64-bit PCs (meta-package)
+root@deimos:~# 
+
+root@deimos:~# uname -a
+Linux deimos 3.2.0-4-amd64 #1 SMP Debian 3.2.65-1+deb7u2 x86_64 GNU/Linux
+root@deimos:~#
+
+
+Continua 2da parte...
+
+
+

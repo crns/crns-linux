@@ -1,0 +1,136 @@
+
+# Webmin: Correo Todos Sifim
+todos:
+nvaldes, X
+cvaldes, X
+gsoto, OK
+rcarreno, X
+sramirez, X
+dvaldes, X
+jcarreno, X
+pquezada, X
+mperez, OK
+mbaeza, OK
+rflores, X
+rveas, X
+mcastro, OK
+jsura, X
+zrojas, X
+lrojas, OK
+rtorres, OK
+jcastro, OK
+mcontreras, OK
+adiaz, OK
+osanita, OK
+jcaceres, OK
+parra, X
+asetien, OK
+gpaillao, OK
+hpinilla, OK
+rcastro, OK
+mvidal, OK
+svenegas, X
+ebustamante, OK
+fcampbell, X
+aoyarce, X
+mjimenez, X
+cgalvez, OK
+facuna, OK
+rmartorell, X
+cristian.acuna, OK
+mbaeza, OK
+drobles, X
+natalia.flores, X
+uan.alvarado, X
+mipsy.hernandez, OK
+natalia.flores@caschile.cl,
+jonnathan.oyarce, OK
+agonzalez, X
+amura, X
+asantibanez, OK
+fdiaz, OK
+freddy.alvarado, X
+hcollao, X
+giusseppe.fortunato, OK
+hector.canales, X
+jalvaradoc, X
+jmontecinos, X
+jorge.millaquir, OK
+jpenaloza, OK
+juan.lazo, X
+matias.toledo, OK
+melgueta, X
+raul.yanez, OK
+rmeza, OK
+elias.reinoso, OK
+hpfeiffer, X
+jose.contreras, OK
+luis.rosales, OK
+daniel.soto X
+
+# Webmin: Administradores SIFIM
+administradores:
+nvaldes, X
+sramirez, X
+dvaldes, X
+coliveros, X
+fcampbell, X
+aoyarce X
+
+# Webmin: Jefes de Proyectos SIFIM
+jefesproyecto: 
+cvaldes, X
+gsoto, OK
+rcarreno, X
+jcarreno, X
+mjimenez X
+
+# Webmin: Instructores de SIFIM
+instructores: 
+pquezada, X
+mperez, OK
+mbaeza, OK
+rflores, X
+rveas, X
+mcastro, OK
+jsura, X
+zrojas, X
+lrojas, OK
+rtorres, OK
+jcastro, OK
+mcontreras, OK
+adiaz, OK
+osanita, OK
+jcaceres, OK
+lparra, X
+asetien, OK
+gpaillao, OK
+hpinilla, OK
+rcastro, OK
+mvidal, OK
+svenegas, X
+ebustamante, OK
+cgalvez, OK
+facuna OK
+
+# Webmin: correoprueba
+correoprueba: 
+hans.pfeiffer@caschile.cl
+
+# Webmin: Soporte sifim
+soporte: 
+jonnathan.oyarce, OK
+matias.toledo, OK
+mperez, OK
+castro, X
+zrojas, X
+marcela.wiegand@caschile.cl X no corre
+
+# Webmin: Zona Centro
+soportezonacentro: 
+cristian.acuna, OK
+mbaeza, OK
+freddy.alvarado, X
+rtorres, OK
+giusseppe.fortunato, OK
+cgalvez OK

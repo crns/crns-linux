@@ -1,0 +1,44 @@
+// This is the primary configuration file for the BIND DNS server named.
+//
+// Please read /usr/share/doc/bind9/README.Debian.gz for information on the
+// structure of BIND configuration files in Debian, *BEFORE* you customize
+// this configuration file.
+//
+// If you are just adding zones, please do that in /etc/bind/named.conf.local
+
+include "/etc/bind/named.conf.options";
+
+// ACL rede interna
+acl red_interna {
+        127.0.0.0/8;
+        192.168.1.0/24;
+};
+
+view "internal" {
+        match-clients { red_interna; };      // Clientes que pueden realizar las peticiones a esta vista
+        recursion yes;                       // Permitimos la recursión
+	notify-source 192.168.1.8;           // La ip interna de nuestro propio servidor
+	transfer-source 192.168.1.8;         // La ip a utilizar como origen de las transferencias externas
+	query-source address 192.168.1.8;    // La ip a utilizar como origen de las consultas externa
+
+        include "/etc/bind/named.conf.default-zones";
+	// Zonas del la vista INTERNA
+	include "/etc/bind/named.conf.local.interno";
+};
+
+view "external" {
+        match-clients { !red_interna; any;}; // Clientes que pueden realizar las peticiones a esta vista
+        recursion no;                        // Denegamos la recursión
+        additional-from-auth no;             // http://www.zytrax.com/books/dns/ch7/queries.html
+        additional-from-cache no;            // http://www.zytrax.com/books/dns/ch7/queries.html
+	notify-source 192.168.1.8;           // La ip externa de nuestro propio servidor
+	transfer-source 192.168.1.8;         // La ip a utilizar como origen de las transferencias externas
+	query-source address 192.168.1.8;    // La ip a utilizar como origen de las consultas externa
+
+	// Zonas del vista EXTERNA
+	include "/etc/bind/named.conf.local.externo";
+
+};
+
+// Opciones de configuración adicionales
+//include "/etc/bind/named.conf.local";

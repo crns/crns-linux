@@ -1,0 +1,22 @@
+
+Remmplazar disco fail en raid 5 toy-storage
+
+root@toy-storage:~# cat /proc/partitions
+
+root@toy-storage:~# mdadm --detail /dev/md0 | more
+
+mdadm --manage /dev/md0 --remove /dev/sde1
+
+shutdown
+
+root@toy-storage:~# mdadm --detail /dev/md0 | more
+
+root@toy-storage:~# cat /proc/partitions
+
+root@toy-storage:~# sfdisk -d /dev/sdd | sfdisk /dev/sde
+
+root@toy-storage:~# cat /proc/partitions
+
+root@toy-storage:~# mdadm --manage /dev/md0 --add /dev/sde1
+
+root@toy-storage:~# mdadm --detail /dev/md

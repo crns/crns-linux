@@ -1,0 +1,39 @@
+Estado del Raid:
+
+cat /proc/mdstat
+
+Falla disco /dev/sde
+
+Remover la particion en disco con falla:
+
+ mdadm --manage /dev/md0 --remove /dev/sde1
+
+OK
+
+Shutdown y cambiar disco con falla por uno igual o superior, nunca de menor capacidad:
+
+Copiar equema de particiones al nuevo disco /dev/sde desde /dev/sdd:
+
+sfdisk -d /dev/sdd | sfdisk /dev/sde
+
+Agregar el disco al raid:
+
+mdadm --manage /dev/md0 --add /dev/sde1
+
+OK, se inicia automaticamente la resconstrucción, proceso que toma tiempo.
+
+Chequear con:
+
+mdadm --detail /dev/md0
+
+o con:
+
+cat /proc/mdstat
+
+ver el avance:
+
+watch cat /proc/mdstat 
+
+Referencia:
+
+http://www.patricioleon.cl/servicios/95-cambiar-un-disco-danado-en-un-raid-linux

@@ -1,0 +1,29 @@
+En el servidor SRV-DEDALO
+
+login como root
+cd
+mkdir migracion
+export UGIDLIMIT=500
+awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/passwd > /root/migracion/passwd.mig
+awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534)' /etc/group > /root/migracion/group.mig
+awk -v LIMIT=$UGIDLIMIT -F: '($3>=LIMIT) && ($3!=65534) {print $1}' /etc/passwd | tee - |egrep -f - /etc/shadow > /root/migracion/shadow.mig
+cp /etc/gshadow /root/migracion/gshadow.mig
+
+copiar directorio /root/migracion al destino
+
+----------------------
+En el servidor destino
+login root
+
+cat passwd.mig >> /etc/passwd
+cat group.mig >> /etc/group
+cat shadow.mig >> /etc/shadow
+cat gshadow.mig >> /etc/gshadow
+
+------------------------
+
+cat passwd.mig | awk '{ gsub(/sbin//nologin/, "bin/bash"); print }'
+
+
+
+

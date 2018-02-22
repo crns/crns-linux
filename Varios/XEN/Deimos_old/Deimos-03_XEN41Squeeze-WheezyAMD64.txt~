@@ -1,0 +1,194 @@
+
+Ahora instalar XEN 4.1
+
+apt-get autoremove
+
+root@deimos:~# apt-get autoremove
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+0 actualizados, 0 se instalarán, 0 para eliminar y 3 no actualizados.
+root@deimos:~#
+
+
+
+##apt-get install xen-linux-system xen-utils xenstore-utils xen-tools 
+
+##        install xen-linux-system-amd64
+
+apt-get install xen-linux-system xen-tools
+
+root@deimos:~# apt-get install xen-linux-system xen-tools
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «xen-linux-system-amd64» en lugar de «xen-linux-system»
+Se instalarán los siguientes paquetes extras:
+  debootstrap gawk libaio1 libboost-thread1.49.0 libconfig-inifiles-perl libcurl3-gnutls libelf1 libencode-locale-perl libexpect-perl libffi5
+  libfile-listing-perl libfile-slurp-perl libfont-afm-perl libglib2.0-0 libglib2.0-data libhtml-form-perl libhtml-format-perl libhtml-parser-perl
+  libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl
+  libio-pty-perl libio-socket-ip-perl libio-socket-ssl-perl libio-stty-perl libiscsi1 liblist-moreutils-perl liblua5.1-0 liblwp-mediatypes-perl
+  liblwp-protocol-https-perl libmailtools-perl libnet-http-perl libnet-ssleay-perl libnspr4 libnss3 librados2 librbd1 librpm3 librpmbuild3 librpmio3
+  librpmsign1 librtmp0 libsigsegv2 libsocket-perl libssh2-1 libterm-size-perl libtext-template-perl liburi-perl libwww-perl libwww-robotrules-perl
+  libxen-4.1 libxenstore3.0 qemu-keymaps qemu-utils rinse rpm rpm-common rpm2cpio shared-mime-info sharutils xen-hypervisor-4.1-amd64
+  xen-linux-system-3.2.0-4-amd64 xen-system-amd64 xen-utils-4.1 xen-utils-common xenstore-utils
+Paquetes sugeridos:
+  gawk-doc libdata-dump-perl libcrypt-ssleay-perl libauthen-ntlm-perl alien elfutils rpm-i18n xen-docs-4.1 reiserfsprogs xfsprogs cfengine2
+  btrfs-tools
+Paquetes recomendados:
+  xen-hypervisor-amd64 xen-hypervisor-i386 xen-hypervisor-i386-pae xen-utils xen-hypervisor-4.1
+Se instalarán los siguientes paquetes NUEVOS:
+  debootstrap gawk libaio1 libboost-thread1.49.0 libconfig-inifiles-perl libcurl3-gnutls libelf1 libencode-locale-perl libexpect-perl libffi5
+  libfile-listing-perl libfile-slurp-perl libfont-afm-perl libglib2.0-0 libglib2.0-data libhtml-form-perl libhtml-format-perl libhtml-parser-perl
+  libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl
+  libio-pty-perl libio-socket-ip-perl libio-socket-ssl-perl libio-stty-perl libiscsi1 liblist-moreutils-perl liblua5.1-0 liblwp-mediatypes-perl
+  liblwp-protocol-https-perl libmailtools-perl libnet-http-perl libnet-ssleay-perl libnspr4 libnss3 librados2 librbd1 librpm3 librpmbuild3 librpmio3
+  librpmsign1 librtmp0 libsigsegv2 libsocket-perl libssh2-1 libterm-size-perl libtext-template-perl liburi-perl libwww-perl libwww-robotrules-perl
+  libxen-4.1 libxenstore3.0 qemu-keymaps qemu-utils rinse rpm rpm-common rpm2cpio shared-mime-info sharutils xen-hypervisor-4.1-amd64
+  xen-linux-system-3.2.0-4-amd64 xen-linux-system-amd64 xen-system-amd64 xen-tools xen-utils-4.1 xen-utils-common xenstore-utils
+0 actualizados, 72 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 23,3 MB de archivos.
+Se utilizarán 60,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+
+-----
+Modificando el arraque:
+
+
+root@deimos:~# cd /etc/grub.d/
+root@deimos:/etc/grub.d# 
+
+root@deimos:/etc/grub.d# ls -l
+total 52
+-rwxr-xr-x 1 root root 6728 abr 28  2013 00_header
+-rwxr-xr-x 1 root root 5407 abr 28  2013 05_debian_theme
+-rwxr-xr-x 1 root root 5977 abr 28  2013 10_linux
+-rwxr-xr-x 1 root root 6335 abr 28  2013 20_linux_xen
+-rwxr-xr-x 1 root root 6522 abr 28  2013 30_os-prober
+-rwxr-xr-x 1 root root  214 abr 28  2013 40_custom
+-rwxr-xr-x 1 root root   95 abr 28  2013 41_custom
+-rw-r--r-- 1 root root  483 abr 28  2013 README
+root@deimos:/etc/grub.d# 
+
+
+Crear enlace simbolico al kernel XEN:
+
+root@deimos:/etc/grub.d# ln -s 20_linux_xen 09_linux_xen
+root@deimos:/etc/grub.d#
+
+Verificar:
+
+root@deimos:/etc/grub.d# ls -l
+total 52
+-rwxr-xr-x 1 root root 6728 abr 28  2013 00_header
+-rwxr-xr-x 1 root root 5407 abr 28  2013 05_debian_theme
+lrwxrwxrwx 1 root root   12 mar 29 16:49 09_linux_xen -> 20_linux_xen
+-rwxr-xr-x 1 root root 5977 abr 28  2013 10_linux
+-rwxr-xr-x 1 root root 6335 abr 28  2013 20_linux_xen
+-rwxr-xr-x 1 root root 6522 abr 28  2013 30_os-prober
+-rwxr-xr-x 1 root root  214 abr 28  2013 40_custom
+-rwxr-xr-x 1 root root   95 abr 28  2013 41_custom
+-rw-r--r-- 1 root root  483 abr 28  2013 README
+root@deimos:/etc/grub.d# 
+
+
+
+Actualizar el gestor de arranque:
+
+root@deimos:/etc/grub.d# update-grub
+Generating grub.cfg ...
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found Windows Server 2008 R2 (loader) on /dev/sdb1
+done
+root@deimos:/etc/grub.d#
+
+Y reboot
+
+Comprobar con xm dmesg
+
+...
+(XEN) Dom0 has maximum 4 VCPUs
+(XEN) Scrubbing Free RAM: .done.
+(XEN) Xen trace buffers: disabled
+(XEN) Std. Loglevel: Errors and warnings
+(XEN) Guest Loglevel: Nothing (Rate-limited: Errors and warnings)
+(XEN) Xen is relinquishing VGA console.
+(XEN) *** Serial input -> DOM0 (type 'CTRL-a' three times to switch input to Xen)
+(XEN) Freed 240kB init memory.
+(XEN) physdev.c:168: dom0: wrong map_pirq type 3
+root@crn-xen:~# 
+
+
+
+Ahora configurar XEN:
+
+Modificar /etc/xen/xend-config.sxp descomentando y cambiando la opcion:
+
+(xend-http-server yes) linea 60
+(xend-address '') line 106
+
+En la linea 170 insertar:
+
+(network-script 'network-bridge bridge=br0')
+
+Guardar y salir
+
+Crear directorio /etc/xen/auto
+
+mkdir /etc/xen/auto
+
+
+Reboot
+------
+
+
+#Hacer arrancable una máquina virtual ya creada:
+#
+#root@frodo:/etc/xen# ln -s /etc/xen/pippin.cfg /etc/xen/auto
+#
+#Crear o arrancar instancia de la máquina virtual:
+#
+#xm create /etc/xen/pippin.cfg
+
+
+*- Preparar XEN-TOOLS para crear máquinas Linux
+
+cd /etc/xen-tools
+
+nano xen-tools.conf
+
+
+lvm = vg0
+
+En la sección "Disk and Sizing options" personalizar:
+
+size   = 300Gb      # Disk image size.
+memory = 4Gb    # Memory size
+swap   = 1Gb    # Swap size
+
+En la seccion "Networking setup values", descomentar y personalizar:
+
+gateway    = 192.168.7.131
+netmask    = 255.255.255.0
+broadcast  = 192.168.7.255
+
+Buscar y comentar la sgte. linea:
+
+mirror = `xt-guess-suite-and-mirror --mirror`
+
+comentarla y agregar:
+
+mirror = http://ftp.cl.debian.org/debian/
+
+Lista las opciones básicas:
+
+
+Fin de esta etapa, ahora preparar e instalar Openfiler 2.33
+

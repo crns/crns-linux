@@ -1,0 +1,102 @@
+Crear en MASTER
+
+mysql>GRANT REPLICATION SLAVE ON *.* TO ‘xen_crn’@'192.168.7.29’ IDENTIFIED BY ‘xen29crn’;
+mysql>FLUSH PRIVILEGES;
+mysql>FLUSH TABLES;
+
+190.98.195.11
+
+(De forma altenativa:
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO replicante@esclavo.midominio.org IDENTIFIED BY 'contraseña';
+)
+
+Editar bajo [mysqld] en Archivo /etc/my.cnf
+
+    log-bin=mysql-bin  			#Nombre de los ficheros transmitidos entre servidores
+    server-id = 1      			#Id del servidor (Diferente nº que todos los esclavos)
+    
+    replicate-do-db = empresa           	#Base de datos a replicar
+    replicate-ignore-table = empresa.tabla1   	# Tabla1 a no replicar
+    replicate-ignore-table = empresa.tabla2   	# Tabla2 a no replicar
+    binlog-do-db=empresa                  	# Base de datos a crear logs únicamente
+
+Copiar la base de datos a los esclavos:
+
+      FLUSH TABLES WITH READ LOCK;
+      SYSTEM mysqldump -u root -p --opt world | mysql -h esclavo.midominio.org -u root -pcontraseña mundo
+      SHOW MASTER STATUS;
+      UNLOCK TABLES;
+
+Opcional : Obtener nuevamente status:
+mysql> show master status;    # anotar para usar en slave
+##### para alredonda ###
+mysql> show master status;
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000001 |    36155 | alredonda    |                  | 
++------------------+----------+--------------+------------------+
+1 row in set (0.00 sec)
+### termino alredonda ###
+
+---------------------------------------------------------------------------
+
+En el ESCLAVO
+
+( 1) Crear un usuario para la replicación:
+
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO replicante@esclavo.midominio.org IDENTIFIED BY 'contraseña';
+)
+
+
+Editar bajo [mysqld] del archivo /etc/my.cnf
+
+    server-id = 2      			#Id del servidor (Diferente nº del maestro y los esclavos)
+
+    replicate-do-db = empresa                   # Base de datos a replicar
+    replicate-ignore-table = empresa.tabla1   	# tabla1 a ignorar
+    replicate-ignore-table = empresa.tabla2     # tabla2 a ingnorar
+    binlog-do-db=empresa          		# Base de datos a crear logs únicamente
+
+
+mysql>CHANGE MASTER TO;
+
+    MASTER_HOST=’192.168.5.130′  (ip master)
+    MASTER_PASSWORD=’xxxx’
+    MASTER_LOG_FILE  = ‘obtenido en SHOW MASTER STATUS del master’
+    MASTER_LOG_POS   = ‘obtenido en SHOW MASTER STATUS del master’
+
+(alternativo:
+
+CHANGE MASTER TO MASTER_HOST = 'maestro.midominio.org', 
+ MASTER_USER = 'replicante',
+ MASTER_PASSWORD = 'contraseña', 
+ MASTER_LOG_FILE = 'maestro-bin.001',
+ MASTER_LOG_POS = 76;
+
+START SLAVE;
+)
+
+
+Se crean los log:
+/usr/local/mysql/data/master.info y 
+/usr/local/mysql/data/relay-log.info
+
+Iniciar en ESCLAVO la replicacion:
+
+mysql>START SLAVE ;
+
+PRESTO
+
+Ver log en cada maquina:
+    /usr/local/mysql/data/Servidor-Master.err ##MASTER
+    /usr/local/mysql/data/Servidor-Esclavo.err ##ESCLAVO
+
+
+Utilidades del Servidor Maestro
+Mysql>SHOW MASTER STATUS;
+Mysql> SHOW PROCESSLISTG;
+
+Utilidades del Servidor Esclavo
+Mysql> SHOW SLAVE STATUS;
+Mysql> SHOW PROCESSLISTG;

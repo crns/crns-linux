@@ -1,0 +1,55 @@
+
+
+INSERT INTO `mailserver`.`virtual_users` (
+  `id` ,
+  `domain_id` ,
+  `password` ,
+  `email`
+)
+VALUES (
+  '3', '2', MD5( 'jose' ) , 'jvalenzuela@cas-chile.cl'
+);
+------------------------
+INSERT INTO virtual_users (id, domain_id, password, email)
+VALUES (2, 2, MD5( 'ad0811az' ) , 'adiaz@sifim.cl'),
+(3, 2, MD5( 'cr1169os' ) , 'mcampos@sifim.cl'),
+(4, 2, MD5( 'as0911en' ) , 'asetien@sifim.cl'),
+(5, 2, MD5( 'as1011ez' ) , 'asantibanez@sifim.cl'),
+(6, 2, MD5( 'cl1108ez' ) , 'claudio.valdez@sifim.cl'),
+(7, 2, MD5( 'cr1109na' ) , 'cristian.acuna@sifim.cl'),
+(8, 2, MD5( 'cg1110ez' ) , 'cgalvez@sifim.cl'),
+(9, 2, MD5( 'el1211so' ) , 'elias.reinoso@sifim.cl'),
+(10, 2, MD5( 'eb1311te' ) , 'ebustamante@sifim.cl'),
+(11, 2, MD5( 'fa1112na' ) , 'facuna@sifim.cl'),
+(12, 2, MD5( 'fd1113az' ) , 'fdiaz@sifim.cl'),
+(13, 2, MD5( 'gs1114to' ) , 'gsoto@sifim.cl'),
+(14, 2, MD5( 'gp1115ao' ) , 'gpaillao@sifim.cl'),
+(15, 2, MD5( 'gi1116pe' ) , 'giusseppe.fortunato@sifim.cl'),
+(16, 2, MD5( 'he1117ao' ) , 'hernancollao@sifim.cl'),
+(17, 2, MD5( 'hp1118la' ) , 'hpinilla@sifim.cl'),
+(18, 2, MD5( 'jc1119es' ) , 'jcaceres@sifim.cl'),
+(19, 2, MD5( 'jc1120ro' ) , 'jcastro@sifim.cl'),
+(20, 2, MD5( 'jo1121ce' ) , 'jonnathan.oyarce@sifim.cl'),
+(21, 2, MD5( 'jo1122ir' ) , 'jorge.millaquir@sifim.cl'),
+(22, 2, MD5( 'jo1123as' ) , 'jose.contreras@sifim.cl'),
+(23, 2, MD5( 'ju1124no' ) , 'juan.carreno@sifim.cl'),
+(24, 2, MD5( 'ju1125do' ) , 'juan.alvarado@sifim.cl'),
+(25, 2, MD5( 'jp1126za' ) , 'jpenaloza@sifim.cl'),
+(26, 2, MD5( 'lr1127as' ) , 'lrojas@sifim.cl'),
+(27, 2, MD5( 'lu1128es' ) , 'luis.rosales@sifim.cl'),
+(28, 2, MD5( 'lu1129az' ) , 'luis.diaz@sifim.cl'),
+(29, 2, MD5( 'mc1130ro' ) , 'mcastro@sifim.cl'),
+(30, 2, MD5( 'mb1131za' ) , 'mbaeza@sifim.cl'),
+(31, 2, MD5( 'mv1131al' ) , 'mvidal@sifim.cl'),
+(32, 2, MD5( 'ma1132do' ) , 'matias.toledo@sifim.cl'),
+(33, 2, MD5( 'mp1133ez' ) , 'mperez@sifim.cl'),
+(34, 2, MD5( 'mc1134as' ) , 'mcontreras@sifim.cl'),
+(35, 2, MD5( 'mi3511ez' ) , 'mipsy.hernandez@sifim.cl'),
+(36, 2, MD5( 'na3611ni' ) , 'nadia.luoni@sifim.cl'),
+(37, 2, MD5( 'os3711ta' ) , 'osanita@sifim.cl'),
+(38, 2, MD5( 'ra1138ez' ) , 'raul.yanez@sifim.cl'),
+(39, 2, MD5( 'rm1139za' ) , 'rmeza@sifim.cl'),
+(40, 2, MD5( 'rc1140ro' ) , 'rcastro@sifim.cl'),
+(41, 2, MD5( 'rt1141es' ) , 'rtorres@sifim.cl'),
+(42, 2, MD5( 'rc1142no' ) , 'r.carreno@sifim.cl'),
+(43, 2, MD5( 'zo1143as' ) , 'zoltan.rojas@sifim.cl');

@@ -1,0 +1,23 @@
+Extraer audio a mp3 desde mp4:
+
+ffmpeg -i video.mp4 -b:a 192K -vn music.mp3
+
+Para mayor calidad probar 320k.
+
+
+Ejemplo de archivo mp4 bajado desde youtube:
+
+ffmpeg -i Anthrax\ -\ I\'m\ The\ Man\ \(Def\ Uncensored\ Version\).mp4 -b:a 320K -vn Anthrax\ -\ I\'m\ The\ Man\ \(Def\ Uncensored\ Version\).mp3
+
+
+
+Hinting MP4 media for streaming with DSS:
+
+ffmpeg -i cable_issue.avi -vcodec mpeg4 -b 125 -rc_eq 1 -g 60 -r 15 -s 640x360 -y cable_issue.mp4
+
+
+
+Convertir Flv a mp4:
+
+ffmpeg -i Concejo\ 27-10-2015.flv -strict -2 -ar 22050 Concejo\ 27-10-2015.mp4
+

@@ -1,0 +1,22 @@
+Systemd
+
+A considerar:
+
+1.- Systemd bootea hacia el destino dado por " default.target " . Esto es típicamente un enlace simbólico al archivo de destino real.
+
+2.- Systemd mantiene su targets en /lib/systemd/system y /etc/systemd/system. Un archivo en /etc/systemd/system tiene prioridad sobre las que se entregan con el sistema operativo en /lib/systemd/system -- la intención es que /etc/systemd es utilizado por los administradores de sistemas y /lib/systemd es usado por las distribuciones.
+
+
+Debian - bootea de fabrica hacia el target gráfico. Se puede ver esto por sí mismo:
+
+$ ls -l /etc/systemd/system/default.target
+... No such file or directory
+
+$ ls -l /lib/systemd/system/default.target
+... /lib/systemd/system/default.target -> graphical.target
+
+
+Así que para arrancar hacia el target multiusuario todo lo que necesita hacer es poner su propio target:
+
+$ cd /etc/systemd/system/
+$ sudo ln -s /lib/systemd/system/multi-user.target default.target

@@ -1,0 +1,313 @@
+Instalar Debian 8 JESSIE en un Proliant DL380e Gen8
+
+Es server Streaming de Ñuñoa
+
+Ahora Morgul.
+
+Editar /etc/apt/sources y solo dejar lo siguiente:
+
+deb http://security.debian.org/ jessie/updates main contrib non-free
+deb-src http://security.debian.org/ jessie/updates main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ jessie main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ jessie main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ jessie-updates main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ jessie-updates main contrib non-free 
+
+OK, ahora actualización masiva de JESSIE
+
+apt-get update
+apt-get upgrade
+
+
+egrep '(vmx|svm)' --color=always /proc/cpuinfo
+
+root@morgul:~# egrep '(vmx|svm)' --color=always /proc/cpuinfo
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms
+root@morgul:~# 
+
+root@morgul:~# uname -a
+Linux morgul 3.16.0-4-amd64 #1 SMP Debian 3.16.7-ckt11-1 (2015-05-24) x86_64 GNU/Linux
+root@morgul:~# 
+
+apt-get install firmware-linux-nonfree firmware-linux-free ifenslave ethtool 
+
+root@morgul:~# apt-get install bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  bridge-utils
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 32,8 kB de archivos.
+Se utilizarán 146 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ jessie/main bridge-utils amd64 1.5-9 [32,8 kB]
+Descargados 32,8 kB en 0s (367 kB/s)    
+Seleccionando el paquete bridge-utils previamente no seleccionado.
+(Leyendo la base de datos ... 29183 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../bridge-utils_1.5-9_amd64.deb ...
+Desempaquetando bridge-utils (1.5-9) ...
+Procesando disparadores para man-db (2.7.0.2-5) ...
+Configurando bridge-utils (1.5-9) ...
+root@morgul:~# 
+
+---------------------------------------
+Configura la red sin OpenVSwitch
+
+Preparar Bonding
+
+editar/agregar /etc/modules
+
+bonding
+
+Crear archivo /etc/modprobe.d/bonding.conf
+
+options bonding mode=4 miimon=100 downdelay=200 updelay=200
+
+
+editar /etc/network/interfaces
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet manual
+	bond-master bond0
+
+auto eth1
+iface eth1 inet manual
+	bond-master bond0
+
+auto bond0
+iface bond0 inet static
+#        hwaddress ether 90:e2:ba:47:d0:04
+        up /sbin/ifenslave bond0 eth0 eth1
+        down /sbin/ifenslave -d bond0 eth0 eth1
+
+auto br0
+iface br0 inet static
+	address 192.168.7.157
+	netmask 255.255.255.0
+	gateway 192.168.7.1
+        pre-up brctl addbr br0
+        pre-up brctl addif br0 bond0
+        pre-up ifconfig bond0 up
+        up ifconfig br0 up
+        bridge_stp off       # disable Spanning Tree Protocol
+        bridge_waitport 0    # no delay before a port becomes available
+        bridge_fd 0          # no forwarding delay
+        bridge_maxwait 0     # ??
+        down ifconfig br0 down
+        post-down ifconfig bond0 down
+        post-down brctl delif br0 bond00
+        post-down brctl delbr br0
+
+
+
+reboot y comprobar que todo esta OK
+
+Comprobar Bond0:
+
+......
+
+root@morgul:~# cat /proc/net/bonding/bond0 
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+
+Bonding Mode: IEEE 802.3ad Dynamic link aggregation
+Transmit Hash Policy: layer2 (0)
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 200
+Down Delay (ms): 200
+
+802.3ad info
+LACP rate: slow
+Min links: 0
+Aggregator selection policy (ad_select): stable
+Active Aggregator Info:
+	Aggregator ID: 2
+	Number of ports: 2
+	Actor Key: 17
+	Partner Key: 1
+	Partner Mac Address: 38:ed:18:e5:11:80
+
+Slave Interface: eth0
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: a4:5d:36:11:1f:1c
+Aggregator ID: 2
+Slave queue ID: 0
+
+Slave Interface: eth1
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: a4:5d:36:11:1f:1d
+Aggregator ID: 2
+Slave queue ID: 0
+root@morgul:~# 
+
+........
+
+root@morgul:/etc/modprobe.d# ip l l
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc mq master bond0 state UP mode DEFAULT group default qlen 1000
+    link/ether a4:5d:36:11:1f:1c brd ff:ff:ff:ff:ff:ff
+3: eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc mq master bond0 state UP mode DEFAULT group default qlen 1000
+    link/ether a4:5d:36:11:1f:1c brd ff:ff:ff:ff:ff:ff
+4: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 state UP mode DEFAULT group default 
+    link/ether a4:5d:36:11:1f:1c brd ff:ff:ff:ff:ff:ff
+5: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether a4:5d:36:11:1f:1c brd ff:ff:ff:ff:ff:ff
+root@morgul:/etc/modprobe.d# 
+
+
+verificar bridge
+
+brctl show
+
+root@morgul:~# brctl show
+bridge name	bridge id		STP enabled	interfaces
+br0		8000.a45d36111f1c	no		bond0
+root@morgul:~#
+
+Lista la configuración fisica ahora instalar configurar Hypervisor:
+____________________________________________________
+
+Lo siguiente no funciona con XEN-4.4 que no reconoce la br0
+
+Configurar la Red (Instalando OpenVSwitch)
+
+Verificar:
+
+apt-cache search openvswitch
+
+root@morgul:~# apt-cache search openvswitch
+neutron-common - OpenStack virtual network service - common files
+neutron-plugin-openvswitch-agent - OpenStack virtual network service - Open vSwitch agent
+quantum-plugin-openvswitch - transitional dummy package for upgrading quantum-plugin-openvswitch
+quantum-plugin-openvswitch-agent - transitional dummy package for upgrading quantum-plugin-openvswitch-agent
+openstack-proxy-node - Metapackage to install an Openstack proxy node
+openvswitch-common - Open vSwitch common components
+openvswitch-dbg - Debug symbols for Open vSwitch packages
+openvswitch-ipsec - Open vSwitch GRE-over-IPsec support
+openvswitch-pki - Open vSwitch public key infrastructure dependency package
+openvswitch-switch - Open vSwitch switch implementations
+openvswitch-test - Open vSwitch test package
+openvswitch-vtep - Open vSwitch VTEP utilities
+python-openvswitch - Python bindings for Open vSwitch
+root@morgul:~#
+
+
+Instalamos openvswitch
+
+
+
+
+apt-get install openvswitch-switch openvswitch-common
+
+root@morgul:~# apt-get install openvswitch-switch openvswitch-common
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libatomic1 uuid-runtime
+Se instalarán los siguientes paquetes NUEVOS:
+  libatomic1 openvswitch-common openvswitch-switch uuid-runtime
+0 actualizados, 4 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.605 kB de archivos.
+Se utilizarán 7.300 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+root@morgul:~# modprobe openvswitch
+root@morgul:~#
+
+root@morgul:~# lsmod | grep op
+openvswitch            63932  0 
+gre                    12777  1 openvswitch
+vxlan                  35053  1 openvswitch
+libcrc32c              12426  2 xfs,openvswitch
+root@morgul:~#
+
+root@morgul:~# /etc/init.d/openvswitch-switch restart
+[ ok ] Restarting openvswitch-switch (via systemctl): openvswitch-switch.service.
+root@morgul:~#
+
+root@morgul:~# /etc/init.d/openvswitch-switch status
+* openvswitch-switch.service - LSB: Open vSwitch switch
+   Loaded: loaded (/etc/init.d/openvswitch-switch)
+   Active: active (running) since Tue 2015-11-03 08:33:08 CLT; 27s ago
+  Process: 46896 ExecStop=/etc/init.d/openvswitch-switch stop (code=exited, status=0/SUCCESS)
+  Process: 46917 ExecStart=/etc/init.d/openvswitch-switch start (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/openvswitch-switch.service
+           |-46953 ovsdb-server: monitoring pid 46954 (healthy)
+           |-46954 ovsdb-server /etc/openvswitch/conf.db -vconsole:emer -vsyslog:err -vfile:info --remote=punix:/var/run/openvswitch/db.sock --priv...
+           |-46963 ovs-vswitchd: monitoring pid 46964 (healthy)
+           `-46964 ovs-vswitchd unix:/var/run/openvswitch/db.sock -vconsole:emer -vsyslog:err -vfile:info --mlockall --no-chdir --log-file=/var/log...
+
+Nov 03 08:33:08 morgul openvswitch-switch[46917]: Starting ovsdb-server.
+Nov 03 08:33:08 morgul ovs-vsctl[46955]: ovs|00001|vsctl|INFO|Called as ovs-vsctl --no-wait -- init -- set Open_vSwitch . db-version=7.6.0
+Nov 03 08:33:08 morgul ovs-vsctl[46960]: ovs|00001|vsctl|INFO|Called as ovs-vsctl --no-wait set Open_vSwitch . ovs-version=2.3.0 "external-...essie\""
+Nov 03 08:33:08 morgul openvswitch-switch[46917]: Configuring Open vSwitch system IDs.
+Nov 03 08:33:08 morgul openvswitch-switch[46917]: Starting ovs-vswitchd.
+Nov 03 08:33:08 morgul openvswitch-switch[46917]: Enabling remote OVSDB managers.
+Hint: Some lines were ellipsized, use -l to show in full.
+root@morgul:~#
+
+Editar /etc/network/interfaces
+
+allow-br0 eth0
+iface eth0 inet manual
+        #  bond-master bond0
+        ovs_bridge br0
+        ovs_type OVSPort
+
+allow-br0 eth1
+iface eth1 inet manual
+        #  bond-master bond0
+        ovs_bridge br0
+        ovs_type OVSPort
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+        address 192.168.7.157
+        netmask 255.255.255.0
+        gateway 192.168.7.1
+        ovs_type OVSBridge
+        ovs_ports bond0
+
+allow-br0 bond0
+iface bond0 inet manual
+        ovs_bridge br0
+        ovs_type OVSBond
+        ovs_bonds eth0 eth1
+        ovs_options bond_mode=balance-tcp lacp=active other_config:lacp-time=fast
+
+
+
+Editar /etc/rc.local
+
+/bin/sleep 60
+/usr/bin/ovs-vsctl add-bond br0 bond0 eth0 eth1 
+/usr/bin/ovs-vsctl set port bond0 bond_mode=balance-tcp lacp=active bond_updelay=200 bond_downdelay=200 other_config:lacp-time=fast
+
+
+
+OK
+
+Comandos ovs:
+
+ovs-vsctl show
+
+ovs-appctl bond/show bond0
+
+ovs-appctl lacp/show bond0

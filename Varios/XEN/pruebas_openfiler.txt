@@ -1,0 +1,62 @@
+		'phy:/dev/vg0/vdeimos-root,hda,w',
+		'phy:/dev/vg0/vdeimos-swap,hdb,w',
+		'phy:/dev/md127,hdc,w',
+		'file:/xen-isos/openfiler-2.3-x86_64-disc1.iso,hdd:cdrom,r'
+
+
+
+/dev/vg0/openfiler-root
+/dev/vg0/openfiler-swap
+
+/xen-isos/bootopenfiler/initrd.img
+/xen-isos/bootopenfiler/vmlinuz
+/xen-isos/openfileresa-2.99.1-x86_64-disc1.iso
+
+vif = [
+                'bridge=br0, mac=5c:d9:98:bc:46:4d, model=e1000',
+                'bridge=br0, mac=5c:d9:98:bc:46:4e, model=e1000',
+]
+
+
+/etc/xen/openfiler.cfg
+---
+# Openfiler 2.99 Linux PV DomU
+
+# Kernel paths for install
+kernel = "/xen-isos/bootopenfiler/vmlinuz"
+ramdisk = "/xen-isos/bootopenfiler/initrd.img"
+extra="initrd=initrd.img BOOT_IMAGE=vmlinuz text openfiler_dev=xvdc:iso9660 modules=loop,squashfs,sd-mod,usb-storage console=hvc0"
+
+# Path to HDD and iso file
+disk = [
+	'phy:/dev/vg0/openfiler-root,xvda,w',
+	'phy:/dev/vg0/openfiler-swap,xvdb,w',
+        'format=raw, vdev=xvdc, access=r, devtype=cdrom, target=/xen-isos/openfileresa-2.99.1-x86_64-disc1.iso'
+       ]
+
+# Network configuration
+###vif = ['bridge=br0']
+vif = [
+                'bridge=br0, mac=5c:d9:98:bc:46:4d, model=e1000',
+                'bridge=br0, mac=5c:d9:98:bc:46:4e, model=e1000',
+]
+
+# DomU settings
+memory = 512
+name = "openfiler"
+vcpus = 1
+maxvcpus = 1
+
+
+---
+
+
+xl create -f /etc/xen/openfiler.cfg -c
+
+----
+/opt/xenboot/openfiler/initrd-2.6.32-71.18.1.el6-0.20.smp.gcc4.1.x86_64.img
+/opt/xenboot/openfiler/vmlinuz-2.6.32-71.18.1.el6-0.20.smp.gcc4.1.x86_64
+
+
+
+

@@ -1,0 +1,60 @@
+Desmontar disco del filesystem:
+
+umount
+
+Detener LVM2:
+
+lvdisplay
+
+vgchange -a n cas_vg
+
+Detener raid:
+
+cat /proc/mdstat
+
+mdadm --stop /dev/md127
+
+###Cambiar discos (salen 2 entran 4)
+
+Ensamblar RAID5:
+
+mdadm --assemble --scan
+
+cat /proc/mdstat
+
+mdadm --readwrite /dev/md127
+
+mdadm --detail --scan > /etc/mdadm/mdadm.conf
+
+##Activar LVM2
+
+lvdisplay o pvdisplay para buscar volumen LVM:
+
+lvdisplay
+
+vgchange -ay [volumen_logico]
+
+lvdisplay (para verificar que volumen este disponible)
+
+Montar Raid en sistema de archivos:
+
+mount /dev/cas_vg/cas_sto /var/samba
+
+Verificar:
+
+df -h
+cat /proc/partitions
+cat /proc/mdstat
+
+##Configurar montaje automático
+
+Obtener UUID:
+
+root@cas-storage:~# blkid /dev/mapper/cas_vg-cas_sto
+/dev/mapper/cas_vg-cas_sto: UUID="6d8c07b3-941a-44e9-9977-544228426146" TYPE="ext4" 
+root@cas-storage:~#
+
+Editar /etc/fstab y editar el UUID del punto de montaje del raid en el filesystem
+
+FIN enjoy
+

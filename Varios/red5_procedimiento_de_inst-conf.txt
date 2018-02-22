@@ -1,0 +1,539 @@
+Despues de instalar, el primer reboot:
+
+
+root@denethor:~# cd /etc/apt
+root@denethor:/etc/apt# cp sources.list ~/sources.list.orig
+root@denethor:/etc/apt# scp root@192.168.10.1:/etc/apt/sources.list ./
+The authenticity of host '192.168.10.1 (192.168.10.1)' can't be established.
+RSA key fingerprint is e1:42:05:37:b6:ab:20:cf:14:d9:08:ca:65:d7:ae:99.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.10.1' (RSA) to the list of known hosts.
+root@192.168.10.1's password: 
+Permission denied, please try again.
+root@192.168.10.1's password: 
+sources.list                                                                                                      100%  801     0.8KB/s   00:00    
+root@denethor:/etc/apt# apt-get update
+
+
+root@denethor:/etc/apt# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se actualizarán los siguientes paquetes:
+  bind9-host dnsutils host libbind9-60 libdns69 libisc62 libisccc60 libisccfg62 liblwres60 libxml2 linux-base linux-image-2.6.32-5-amd64 perl
+  perl-base perl-modules
+15 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 40,1 MB de archivos.
+Se utilizarán 901 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+root@denethor:/etc/apt# reboot
+
+-----------------
+root@denethor:~# ethtool eth0
+-su: ethtool: no se encontró la orden
+root@denethor:~# apt-get install ethtool
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  ethtool
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 76,2 kB de archivos.
+Se utilizarán 213 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/main ethtool amd64 1:2.6.34-3 [76,2 kB]
+Descargados 76,2 kB en 0seg. (390 kB/s)
+Seleccionando el paquete ethtool previamente no seleccionado.
+(Leyendo la base de datos ... 21953 ficheros o directorios instalados actualmente.)
+Desempaquetando ethtool (de .../ethtool_1%3a2.6.34-3_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando ethtool (1:2.6.34-3) ...
+root@denethor:~# 
+
+
+
+Se instala ifenslave
+root@denethor:~# apt-get install ifenslave
+
+
+Se modifica /etc/network/interfaces
+
+auto lo
+iface lo inet loopback
+
+#
+# Configuracion para bonding channel
+# Opciones del bonding en /etc/modprobe.d/bonding.conf
+#
+auto bond0
+iface bond0 inet static
+        hwaddress ether 6C:3B:E5:51:7C:A0
+        address 190.153.214.149
+        netmask 255.255.255.248
+        network 190.153.214.144
+        broadcast 190.153.214.151
+        gateway 190.153.214.145
+        up /sbin/ifenslave bond0 eth0 eth1
+        down /sbin/ifenslave -d bond0 eth0 eth1
+
+#
+# Red de gestión - gerencia técnica
+#
+auto bond0:0
+iface bond0:0 inet static
+        address 192.168.10.252
+        netmask 255.255.255.0
+        network 192.168.10.0
+        broadcast 192.168.10.255
+
+# The primary network interface
+#allow-hotplug eth0
+#iface eth0 inet static
+#       address 192.168.10.252
+#       netmask 255.255.255.0
+#       network 192.168.10.0
+#       broadcast 192.168.10.255
+#       gateway 192.168.10.1
+#       # dns-* options are implemented by the resolvconf package, if installed
+#       dns-nameservers 200.75.0.4 200.75.0.5
+#       dns-search caschilevirtual.cl
+
+-----------------------
+Se crea archivo /etc/modprobe.d/bonding.conf
+
+alias bond0 bonding
+options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=2
+
+###para usar con 802.3ad en switch 3Com
+###     options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=2
+
+____________
+Se arranca servidor y se verifica correcto funcionamiento de la interfaz bonding
+
+Reboot
+2:25 ping
+3:40 conexion ssh
+
+---------------------
+Configuracion firewall con iptables, crear archivo /etc/network/if-pre-up.d/iptables
+
+#!/bin/bash
+/sbin/iptables-restore < /etc/iptables.rules/iptables.up.rules
+
+-----------
+Crear archivo /etc/iptables.rules/iptables.crn.rules
+
+*filter
+-A INPUT -i bond0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i bond0 -s 192.168.10.0/24 -m state --state NEW -j ACCEPT
+-A INPUT -i bond0 -s 190.98.195.11/32 -m state --state NEW -j ACCEPT
+-A INPUT -i bond0 -d 190.153.214.149/32 -m state --state NEW -p TCP --dport 1935 -j ACCEPT 
+-A INPUT -i bond0 -m state --state NEW -j DROP
+COMMIT
+
+---------------
+Probar configuración
+cd /etc/iptables.rules
+# iptables-restore < iptables.crn.rules
+
+Aplicar configuración iptables
+
+# iptables-save > iptables.up.rules
+
+Se comprueba que configuración se aplica en el arranque de la máquina OK
+
+--------------
+TCP-WRAPPERS
+
+Modificar /etc/hosts.allow y agregar al final
+ALL :  127. 192.168.10. 190.98.195.11
+
+Editar /etc/hosts.deny y agregar al final
+ALL : PARANOID
+
+--------------------
+Optimizaciones
+
+Editar /etc/sysctl.conf y agregar al final
+
+##CRN##
+##Deshabilitar ipv6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.bond0.disable_ipv6 = 1
+net.ipv6.conf.eth0.disable_ipv6 = 1
+net.ipv6.conf.eth1.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+# Disable response to broadcasts. 
+# You don't want yourself becoming a Smurf amplifier. 
+net.ipv4.icmp_echo_ignore_broadcasts = 1 
+# Filter packets not meant for this network. 
+net.ipv4.conf.bond0.rp_filter=1
+net.ipv4.conf.eth0.rp_filter=1 
+net.ipv4.conf.eth1.rp_filter=1
+net.ipv4.conf.lo.rp_filter=1 
+net.ipv4.conf.default.rp_filter=1 
+net.ipv4.conf.all.rp_filter=1 
+net.core.rmem_max = 16777216 
+net.core.wmem_max = 16777216 
+# increase Linux autotuning TCP buffer limits 
+# min, default, and max number of bytes to use 
+net.ipv4.tcp_rmem = 4096 10000000 16777216 
+net.ipv4.tcp_wmem = 4096 65536 16777216 
+# Disabling the following parameters will prevent a hacker 
+# from using a spoofing attack against the IP address of the server. 
+net.ipv4.conf.bond0.accept_source_route=0
+net.ipv4.conf.eth0.accept_source_route=0
+net.ipv4.conf.eth1.accept_source_route=0 
+net.ipv4.conf.lo.accept_source_route=0 
+net.ipv4.conf.default.accept_source_route=0 
+net.ipv4.conf.all.accept_source_route=0 
+# These commands configure the server to ignore redirects from 
+# machines that are listed as gateways. Redirects can be used to 
+# perform attacks, so we only want to allow them from trusted sources. 
+net.ipv4.conf.bond0.secure_redirects=1
+net.ipv4.conf.eth0.secure_redirects=1
+net.ipv4.conf.eth1.secure_redirects=1 
+net.ipv4.conf.lo.secure_redirects=1 
+net.ipv4.conf.default.secure_redirects=1 
+net.ipv4.conf.all.secure_redirects=1 
+# Don't allow ICMP redirects 
+net.ipv4.conf.bond0.accept_redirects=0
+net.ipv4.conf.eth0.accept_redirects=0
+net.ipv4.conf.eth1.accept_redirects=0 
+net.ipv4.conf.lo.accept_redirects=0 
+net.ipv4.conf.default.accept_redirects=0 
+net.ipv4.conf.all.accept_redirects=0 
+# If the server does not act as a router, it does not need to 
+# send redirects. 
+net.ipv4.conf.bond0.send_redirects=0
+net.ipv4.conf.eth0.send_redirects=0
+net.ipv4.conf.eth1.send_redirects=0 
+net.ipv4.conf.lo.send_redirects=0 
+net.ipv4.conf.default.send_redirects=0 
+net.ipv4.conf.all.send_redirects=0 
+# For servers that receive many connections at the same time, the 
+# TIME-WAIT sockets for new connections can be reused. This is useful 
+# in Web servers, seems to be good for Flash servers as well. 
+net.ipv4.tcp_tw_reuse=1 
+net.ipv4.tcp_fin_timeout=30 
+# Move keepalive from 2hrs to 30 min. You may want to tune this up or down depending on your implementation
+net.ipv4.tcp_keepalive_time=1800 
+# Help protect from denial-of-service (syn-flood) attack. 
+net.ipv4.tcp_max_syn_backlog=4096
+
+----
+Aplicar los cambios y optimizaciones del kernel y pila TCP con:
+# sysctl -p
+----------------
+Reboot y probar
+--------------
+OK
+
+Editar /etc/ssh/sshd_config y cambiar PermitRootLogin yes a
+
+PermitRootLogin no
+
+y bajo #Banner /etc/issue.net agregar
+
+DebianBanner no
+
+Reiniciar sshd
+/etc/init.d/ssh restart
+
+-----------------------------
+Ahora instalar RED5
+
+# Una vez más actualizamos las apt:
+apt-get update
+ 
+# Instalamos Subversion:
+apt-get -y install subversion
+
+root@denethor:~# apt-get -y install subversion
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  ca-certificates libapr1 libaprutil1 libneon27-gnutls libserf-0-0 libsvn1 openssl
+Paquetes sugeridos:
+  subversion-tools db4.8-util
+Se instalarán los siguientes paquetes NUEVOS:
+  ca-certificates libapr1 libaprutil1 libneon27-gnutls libserf-0-0 libsvn1 openssl subversion
+0 actualizados, 8 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 3867 kB de archivos.
+Se utilizarán 10,8 MB de espacio de disco adicional después de esta operación.
+
+
+# Instalamos los paquetes necesarios para compilar:
+apt-get -y install dpkg-dev debhelper dh-make devscripts fakeroot
+
+root@denethor:~# apt-get -y install dpkg-dev debhelper dh-make devscripts fakeroot
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  autopoint binutils build-essential bzip2 cpp cpp-4.4 dctrl-tools debian-keyring diffstat dput equivs g++ g++-4.4 gcc gcc-4.4 gettext git
+  html2text intltool-debian libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl libapt-pkg-perl libauthen-sasl-perl
+  libc-dev-bin libc6-dev libclass-accessor-perl libclass-inspector-perl libcommon-sense-perl libconvert-binhex-perl libcroco3 libcrypt-ssleay-perl
+  libcurl3-gnutls libdevel-symdump-perl libdpkg-perl liberror-perl libfcgi-perl libfont-afm-perl libglib2.0-0 libglib2.0-data libgmp3c2 libgomp1
+  libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-template-perl libhtml-tree-perl libio-pty-perl libio-socket-ssl-perl
+  libio-string-perl libio-stringy-perl libipc-run-perl libjson-perl libjson-xs-perl libmail-sendmail-perl libmailtools-perl libmime-tools-perl
+  libmpfr4 libnet-libidn-perl libnet-ssleay-perl libossp-uuid-perl libossp-uuid16 libparse-debcontrol-perl libparse-debianchangelog-perl
+  libpod-coverage-perl libsoap-lite-perl libstdc++6-4.4-dev libsub-name-perl libsys-hostname-long-perl libtask-weaken-perl libterm-size-perl
+  libtest-pod-perl libtie-ixhash-perl libtimedate-perl libunistring0 liburi-perl libwww-perl libxml-namespacesupport-perl libxml-parser-perl
+  libxml-sax-expat-perl libxml-sax-perl libxml-simple-perl libyaml-syck-perl lintian linux-libc-dev lsb-release lzma make manpages-dev patchutils
+  po-debconf rsync shared-mime-info strace unzip wdiff
+Paquetes sugeridos:
+  binutils-doc bzip2-doc cpp-doc gcc-4.4-locales debtags cvs-buildpackage devscripts-el gnuplot libfile-desktopentry-perl libnet-smtp-ssl-perl
+  svn-buildpackage mini-dinstall yaclc g++-multilib g++-4.4-multilib gcc-4.4-doc libstdc++6-4.4-dbg gcc-multilib autoconf automake1.9 libtool flex
+  bison gdb gcc-doc gcc-4.4-multilib libmudflap0-4.4-dev libgcc1-dbg libgomp1-dbg libmudflap0-dbg libcloog-ppl0 libppl-c2 libppl7 gettext-doc
+  git-doc git-arch git-cvs git-svn git-email git-daemon-run git-gui gitk gitweb libdigest-hmac-perl libgssapi-perl glibc-doc libdata-dump-perl
+  libipc-sharedcache-perl libio-socket-inet6-perl uuid libapache2-mod-perl2 libnet-jabber-perl libmime-lite-perl libstdc++6-4.4-doc
+  binutils-multiarch libtext-template-perl lsb make-doc libmail-box-perl zip
+Paquetes recomendados:
+  debian-maintainers
+Se instalarán los siguientes paquetes NUEVOS:
+  autopoint binutils build-essential bzip2 cpp cpp-4.4 dctrl-tools debhelper debian-keyring devscripts dh-make diffstat dpkg-dev dput equivs
+  fakeroot g++ g++-4.4 gcc gcc-4.4 gettext git html2text intltool-debian libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl
+  libapt-pkg-perl libauthen-sasl-perl libc-dev-bin libc6-dev libclass-accessor-perl libclass-inspector-perl libcommon-sense-perl
+  libconvert-binhex-perl libcroco3 libcrypt-ssleay-perl libcurl3-gnutls libdevel-symdump-perl libdpkg-perl liberror-perl libfcgi-perl
+  libfont-afm-perl libglib2.0-0 libglib2.0-data libgmp3c2 libgomp1 libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl
+  libhtml-template-perl libhtml-tree-perl libio-pty-perl libio-socket-ssl-perl libio-string-perl libio-stringy-perl libipc-run-perl libjson-perl
+  libjson-xs-perl libmail-sendmail-perl libmailtools-perl libmime-tools-perl libmpfr4 libnet-libidn-perl libnet-ssleay-perl libossp-uuid-perl
+  libossp-uuid16 libparse-debcontrol-perl libparse-debianchangelog-perl libpod-coverage-perl libsoap-lite-perl libstdc++6-4.4-dev libsub-name-perl
+  libsys-hostname-long-perl libtask-weaken-perl libterm-size-perl libtest-pod-perl libtie-ixhash-perl libtimedate-perl libunistring0 liburi-perl
+  libwww-perl libxml-namespacesupport-perl libxml-parser-perl libxml-sax-expat-perl libxml-sax-perl libxml-simple-perl libyaml-syck-perl lintian
+  linux-libc-dev lsb-release lzma make manpages-dev patchutils po-debconf rsync shared-mime-info strace unzip wdiff
+0 actualizados, 101 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 75,7 MB de archivos.
+Se utilizarán 166 MB de espacio de disco adicional después de esta operación.
+
+
+# Instalamos Java y aceptamos la licencia sun:
+apt-get -y install java-package
+
+root@denethor:~# apt-get -y install java-package
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+E: No se ha podido localizar el paquete java-package
+root@denethor:~# 
+
+apt-get -y install sun-java6-jre
+
+root@denethor:~# apt-get -y install sun-java6-jre
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  avahi-daemon dbus gsfonts gsfonts-x11 java-common libasound2 libavahi-common-data libavahi-common3 libavahi-core7 libdaemon0 libdbus-1-3
+  libfontenc1 libice6 libltdl7 libnss-mdns libsm6 libxfont1 libxi6 libxt6 libxtst6 odbcinst odbcinst1debian2 sun-java6-bin unixodbc x11-common
+  xfonts-encodings xfonts-utils
+Paquetes sugeridos:
+  avahi-autoipd dbus-x11 default-jre libasound2-plugins binfmt-support sun-java6-plugin ia32-sun-java6-plugin sun-java6-fonts ttf-baekmuk
+  ttf-unfonts ttf-unfonts-core ttf-kochi-gothic ttf-sazanami-gothic ttf-kochi-mincho ttf-sazanami-mincho ttf-arphic-uming libmyodbc
+  odbc-postgresql tdsodbc unixodbc-bin
+Se instalarán los siguientes paquetes NUEVOS:
+  avahi-daemon dbus gsfonts gsfonts-x11 java-common libasound2 libavahi-common-data libavahi-common3 libavahi-core7 libdaemon0 libdbus-1-3
+  libfontenc1 libice6 libltdl7 libnss-mdns libsm6 libxfont1 libxi6 libxt6 libxtst6 odbcinst odbcinst1debian2 sun-java6-bin sun-java6-jre unixodbc
+  x11-common xfonts-encodings xfonts-utils
+0 actualizados, 28 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 42,0 MB de archivos.
+
+apt-get -y install sun-java6-jdk
+
+root@denethor:~# apt-get -y install sun-java6-jdk
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Paquetes sugeridos:
+  sun-java6-demo openjdk-6-doc sun-java6-source
+Se instalarán los siguientes paquetes NUEVOS:
+  sun-java6-jdk
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 20,4 MB de archivos.
+Se utilizarán 63,0 MB de espacio de disco adicional después de esta operación.
+...
+sun-dlj-v1-1 license has already been accepted
+Configurando sun-java6-jdk (6.26-0squeeze1) ...
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/HtmlConverter para proveer /usr/bin/HtmlConverter (HtmlConverter) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/appletviewer para proveer /usr/bin/appletviewer (appletviewer) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/apt para proveer /usr/bin/apt (apt) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/extcheck para proveer /usr/bin/extcheck (extcheck) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/idlj para proveer /usr/bin/idlj (idlj) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jar para proveer /usr/bin/jar (jar) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jarsigner para proveer /usr/bin/jarsigner (jarsigner) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javac para proveer /usr/bin/javac (javac) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javadoc para proveer /usr/bin/javadoc (javadoc) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javah para proveer /usr/bin/javah (javah) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javap para proveer /usr/bin/javap (javap) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jconsole para proveer /usr/bin/jconsole (jconsole) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jdb para proveer /usr/bin/jdb (jdb) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jhat para proveer /usr/bin/jhat (jhat) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jinfo para proveer /usr/bin/jinfo (jinfo) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jmap para proveer /usr/bin/jmap (jmap) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jps para proveer /usr/bin/jps (jps) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jrunscript para proveer /usr/bin/jrunscript (jrunscript) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jsadebugd para proveer /usr/bin/jsadebugd (jsadebugd) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jstack para proveer /usr/bin/jstack (jstack) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jstat para proveer /usr/bin/jstat (jstat) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jstatd para proveer /usr/bin/jstatd (jstatd) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/native2ascii para proveer /usr/bin/native2ascii (native2ascii) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/rmic para proveer /usr/bin/rmic (rmic) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/schemagen para proveer /usr/bin/schemagen (schemagen) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/serialver para proveer /usr/bin/serialver (serialver) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/wsgen para proveer /usr/bin/wsgen (wsgen) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/wsimport para proveer /usr/bin/wsimport (wsimport) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/xjc para proveer /usr/bin/xjc (xjc) en modo automático.
+
+
+java -version
+
+root@denethor:~# java -version
+java version "1.6.0_26"
+Java(TM) SE Runtime Environment (build 1.6.0_26-b03)
+Java HotSpot(TM) 64-Bit Server VM (build 20.1-b02, mixed mode)
+root@denethor:~# 
+
+
+########
+En Wheezy se instala Java asi:
+
+Agregar la siguiente source (truco) a /etc/apt/sources deb http://ftp.pl.debian.org/debian/ squeeze non-free
+## deb http://ftp.cl.debian.org/debian squeeze  non-free
+
+apt-get update
+
+Verificar si el pqte esta:
+
+root@streaming:~# apt-cache search sun-java
+ia32-sun-java6-bin - Sun Java(TM) Runtime Environment (JRE) 6 (32-bit)
+sun-java6-bin - Sun Java(TM) Runtime Environment (JRE) 6 (architecture dependent files)
+sun-java6-demo - Sun Java(TM) Development Kit (JDK) 6 demos and examples
+sun-java6-fonts - Lucida TrueType fonts (from the Sun JRE)
+sun-java6-javadb - Java(TM) DB, Sun Microsystems' distribution of Apache Derby
+sun-java6-jdk - Sun Java(TM) Development Kit (JDK) 6
+sun-java6-jre - Sun Java(TM) Runtime Environment (JRE) 6 (architecture independent files)
+sun-java6-plugin - The Java(TM) Plug-in, Java SE 6
+sun-java6-source - Sun Java(TM) Development Kit (JDK) 6 source files
+root@streaming:~# 
+
+Y sigue la instalación:
+
+apt-get -y install sun-java6-jre
+
+root@denethor:~# apt-get -y install sun-java6-jre
+...
+apt-get -y install sun-java6-jdk
+
+root@denethor:~# apt-get -y install sun-java6-jdk
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Paquetes sugeridos:
+  sun-java6-demo openjdk-6-doc sun-java6-source
+Se instalarán los siguientes paquetes NUEVOS:
+  sun-java6-jdk
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 20,4 MB de archivos.
+Se utilizarán 63,0 MB de espacio de disco adicional después de esta operación.
+...
+sun-dlj-v1-1 license has already been accepted
+Configurando sun-java6-jdk (6.26-0squeeze1) ...
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/HtmlConverter para proveer /usr/bin/HtmlConverter (HtmlConverter) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/appletviewer para proveer /usr/bin/appletviewer (appletviewer) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/apt para proveer /usr/bin/apt (apt) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/extcheck para proveer /usr/bin/extcheck (extcheck) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/idlj para proveer /usr/bin/idlj (idlj) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jar para proveer /usr/bin/jar (jar) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jarsigner para proveer /usr/bin/jarsigner (jarsigner) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javac para proveer /usr/bin/javac (javac) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javadoc para proveer /usr/bin/javadoc (javadoc) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javah para proveer /usr/bin/javah (javah) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/javap para proveer /usr/bin/javap (javap) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jconsole para proveer /usr/bin/jconsole (jconsole) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jdb para proveer /usr/bin/jdb (jdb) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jhat para proveer /usr/bin/jhat (jhat) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jinfo para proveer /usr/bin/jinfo (jinfo) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jmap para proveer /usr/bin/jmap (jmap) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jps para proveer /usr/bin/jps (jps) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jrunscript para proveer /usr/bin/jrunscript (jrunscript) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jsadebugd para proveer /usr/bin/jsadebugd (jsadebugd) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jstack para proveer /usr/bin/jstack (jstack) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jstat para proveer /usr/bin/jstat (jstat) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/jstatd para proveer /usr/bin/jstatd (jstatd) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/native2ascii para proveer /usr/bin/native2ascii (native2ascii) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/rmic para proveer /usr/bin/rmic (rmic) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/schemagen para proveer /usr/bin/schemagen (schemagen) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/serialver para proveer /usr/bin/serialver (serialver) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/wsgen para proveer /usr/bin/wsgen (wsgen) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/wsimport para proveer /usr/bin/wsimport (wsimport) en modo automático.
+update-alternatives: utilizando /usr/lib/jvm/java-6-sun/bin/xjc para proveer /usr/bin/xjc (xjc) en modo automático.
+
+
+java -version
+
+root@streaming:~# java -version
+java version "1.6.0_26"
+Java(TM) SE Runtime Environment (build 1.6.0_26-b03)
+Java HotSpot(TM) 64-Bit Server VM (build 20.1-b02, mixed mode)
+root@streaming:~# 
+
+-----
+Seguir Instalando RED5
+
+
+
+# cd
+# mkdir red5-a
+
+
+# Instalamos Apache Ant (http://ant.apache.org/):
+
+wget http://www.apache.org/dist/ant/binaries/apache-ant-1.8.4-bin.tar.gz
+
+tar zxvf apache-ant-1.8.4-bin.tar.gz
+
+mv apache-ant-1.8.4 /usr/local/ant 
+
+export ANT_HOME=/usr/local/ant
+
+/usr/local/ant/bin/ant -version
+
+root@denethor:~/red5-a# /usr/local/ant/bin/ant -version
+Apache Ant(TM) version 1.8.4 compiled on May 22 2012
+root@denethor:~/red5-a# 
+
+# Descargamos la última versión de Red5:
+svn co http://red5.googlecode.com/svn/java/server/trunk red5-trunk
+
+Revisión obtenida: 4618
+
+# Ejecutamos Ant para compilar Red5:
+cd red5-trunk
+/usr/local/ant/bin/ant
+
+
+......
+
+
+......
+
+mkdir /var/log/red5
+mv log /var/log/red5/
+ln -s /var/log/red5/log/ ./
+
+cd 
+ln -s /usr/local/red5/webapps/oflaDemo/streams ./
+
+root@streaming:~# ls -l
+total 12
+drwxr-xr-x  3 root root 4096 ene  6 08:47 red5
+drwxr-xr-x 12 root root 4096 ene  6 09:37 red5-b
+-rw-r--r--  1 root root  659 dic  4 15:53 sources.list
+lrwxrwxrwx  1 root root   40 ene  6 11:38 streams -> /usr/local/red5/webapps/oflaDemo/streams
+root@streaming:~# 
+
+
+

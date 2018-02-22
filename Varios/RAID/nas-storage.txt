@@ -1,0 +1,1 @@
+nas-storage: \\servicio@servicio1632:stecnico

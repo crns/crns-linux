@@ -1,0 +1,39 @@
+
+
+MySQL -> root@crn1207os
+
+GRANT SELECT ON mailserver.* TO 'mailuser'@'127.0.0.1' IDENTIFIED BY 'cronos23';
+
+$dbuser='roundcube';
+$dbpass='hWqzUSBZ2GC7';
+$basepath='';
+$dbname='roundcube';
+$dbserver='';
+$dbport='';
+$dbtype='mysql';
+
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mailserver         |
+| mysql              |
+| roundcube          |
++--------------------+
+
+
+
+Database changed
+mysql> select user,password from user;
++------------------+-------------------------------------------+
+| user             | password                                  |
++------------------+-------------------------------------------+
+| root             | *E17C1E47E0E8673CD901DEBE87281C321F310D0B |
+| root             | *E17C1E47E0E8673CD901DEBE87281C321F310D0B |
+| root             | *E17C1E47E0E8673CD901DEBE87281C321F310D0B |
+| debian-sys-maint | *3E4CDA1609F5B8D9997FD2F2C796BAF544F5863B |
+| roundcube        | *12483C5FC0C82A21A31CE7CCC6FB89D454F4BE21 |
+| mailuser         | *4863C8F82FD3A76CEE878F847BF5E195FD8B9471 |
++------------------+-------------------------------------------+

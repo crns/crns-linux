@@ -1,0 +1,97 @@
+root@debian:~/nagios/nrpe-2.12# aptitude install build-essential
+Se instalarán los siguiente paquetes NUEVOS:      
+  binutils{a} build-essential dpkg-dev{a} fakeroot{a} g++{a} g++-4.4{a} gcc{a} gcc-4.4{a} libalgorithm-diff-perl{a} libalgorithm-diff-xs-perl{a} 
+  libalgorithm-merge-perl{a} libc-dev-bin{a} libc6-dev{a} libdpkg-perl{a} libgomp1{a} libstdc++6-4.4-dev{a} linux-libc-dev{a} make{a} 
+  manpages-dev{a} 
+0 paquetes actualizados, 19 nuevos instalados, 0 para eliminar y 1 sin actualizar.
+Necesito descargar 22,9 MB de ficheros. Después de desempaquetar se usarán 69,5 MB.
+¿Quiere continuar? [Y/n/?] 
+
+
+root@debian:~/nagios/nrpe-2.12# aptitude install xinetd
+Se instalarán los siguiente paquetes NUEVOS:     
+  xinetd 
+0 paquetes actualizados, 1 nuevos instalados, 0 para eliminar y 1 sin actualizar.
+Necesito descargar 136 kB de ficheros. Después de desempaquetar se usarán 311 kB.
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/main xinetd i386 1:2.3.14-7 [136 kB]
+Descargados 136 kB en 0seg. (1329 kB/s).
+Seleccionando el paquete xinetd previamente no seleccionado.
+(Leyendo la base de datos ... 61194 ficheros o directorios instalados actualmente.)
+Desempaquetando xinetd (de .../xinetd_1%3a2.3.14-7_i386.deb) ...
+Procesando disparadores para man-db ...
+Configurando xinetd (1:2.3.14-7) ...
+Stopping internet superserver: xinetd.
+Starting internet superserver: xinetd.
+                                                  
+root@debian:~/nagios/nrpe-2.12# 
+
+root@debian:~/nagios/nrpe-2.12# aptitude install libcurl3-openssl-dev
+Nota: seleccionando "libcurl4-openssl-dev" en vez de
+      el paquete virtual "libcurl3-openssl-dev"
+Se instalarán los siguiente paquetes NUEVOS:
+  ca-certificates{a} comerr-dev{a} krb5-multidev{a} libcurl3{a} libcurl4-openssl-dev libidn11-dev{a} libkrb5-dev{a} libldap2-dev{a} libssh2-1{a} 
+  libssh2-1-dev{a} libssl-dev{a} pkg-config{a} zlib1g-dev{a} 
+0 paquetes actualizados, 13 nuevos instalados, 0 para eliminar y 1 sin actualizar.
+Necesito descargar 6056 kB de ficheros. Después de desempaquetar se usarán 16,4 MB.
+¿Quiere continuar? [Y/n/?] 
+
+
+root@debian:~/nagios/nrpe-2.12# make install-plugin
+cd ./src/ && make install-plugin
+make[1]: se ingresa al directorio `/root/nagios/nrpe-2.12/src'
+/usr/bin/install -c -m 775 -o nagios -g nagios -d /usr/local/nagios/libexec
+/usr/bin/install -c -m 775 -o nagios -g nagios check_nrpe /usr/local/nagios/libexec
+make[1]: se sale del directorio `/root/nagios/nrpe-2.12/src'
+root@debian:~/nagios/nrpe-2.12#
+
+
+root@debian:~/nagios/nrpe-2.12# make install-daemon
+cd ./src/ && make install-daemon
+make[1]: se ingresa al directorio `/root/nagios/nrpe-2.12/src'
+/usr/bin/install -c -m 775 -o nagios -g nagios -d /usr/local/nagios/bin
+/usr/bin/install -c -m 775 -o nagios -g nagios nrpe /usr/local/nagios/bin
+make[1]: se sale del directorio `/root/nagios/nrpe-2.12/src'
+root@debian:~/nagios/nrpe-2.12# 
+
+-------
+find / -type f -newer /root/referencia.txt | more
+
+
+/usr/local/nagios/libexec/check_nrpe
+/usr/local/nagios/bin/nrpe
+-------
+
+root@debian:~/nagios/nrpe-2.12# make install-daemon-config
+/usr/bin/install -c -m 775 -o nagios -g nagios -d /usr/local/nagios/etc
+/usr/bin/install -c -m 644 -o nagios -g nagios sample-config/nrpe.cfg /usr/local/nagios/etc
+root@debian:~/nagios/nrpe-2.12# 
+
+find / -type f -newer /root/referencia.txt | more
+
+/usr/local/nagios/libexec/check_nrpe
+/usr/local/nagios/etc/nrpe.cfg
+/usr/local/nagios/bin/nrpe
+
+--------------------------
+
+root@debian:~/nagios/nrpe-2.12# make install-xinetd
+/usr/bin/install -c -m 644 sample-config/nrpe.xinetd /etc/xinetd.d/nrpe 
+root@debian:~/nagios/nrpe-2.12# 
+
+
+find / -type f -newer /root/referencia.txt | more
+
+/etc/xinetd.d/nrpe
+/usr/local/nagios/libexec/check_nrpe
+/usr/local/nagios/etc/nrpe.cfg
+/usr/local/nagios/bin/nrpe
+
+
+--------------------------
+Listo
+
+
+
+
+
+

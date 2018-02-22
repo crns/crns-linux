@@ -1,0 +1,8 @@
+Bacula: Es una colección de herramientas de respaldo, capaces de cubrir las necesidades de respaldo de equipos bajo redes IP. Se basa en una arquitectura Cliente-servidor que resulta eficaz y fácil de manejar, dada la amplia gama de funciones y características que brinda; copiar y restaurar ficheros dañados o perdidos. 
+
+
+Las copias full de seguridad se denominan así por que realizan un backup completo al sistema y toda su configuracion y sus datos.
+
+Las copias incrementales se efectúan conjuntas a una copia de seguridad total del sistema. En una copia incremental del sistema solo se realiza una copia de los archivos modificados respecto a la ultima copia incremental realizada.
+
+Las copias diferencial hacen un backup de los datos que hallan sido modificado desde la ultima copia completa.

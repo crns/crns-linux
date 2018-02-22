@@ -1,0 +1,13 @@
+Estado del Raid:
+
+cat /proc/mdstat
+
+Falla disco /dev/sde
+
+Remover la particion en disco con falla:
+
+ mdadm --manage /dev/md0 --remove /dev/sde1
+
+OK
+
+Shutdown y cambiar disco con falla por uno igual o superior, nunca de menor capacidad:

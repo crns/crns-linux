@@ -1,0 +1,55 @@
+xen-create-image --dist=wheezy --lvm=vg0 --hostname=celeborn --ip=192.168.10.162 --mac=5c:d9:98:bc:46:4a --gateway=192.168.10.1 --netmask=255.255.255.0 --vcpus=2 --memory=1Gb --size=100Gb --swap=1G
+
+General Information
+--------------------
+Hostname       :  celeborn
+Distribution   :  wheezy
+Mirror         :  http://ftp.cl.debian.org/debian/
+Partitions     :  swap            1G    (swap)
+                  /               100Gb (ext3)
+Image type     :  full
+Memory size    :  1Gb
+Kernel path    :  /xen/boot/vmlinuz-3.16.0-4-amd64
+Initrd path    :  /xen/boot/initrd.img-3.16.0-4-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.10.162 [MAC: 5c:d9:98:bc:46:4a]
+Netmask        : 255.255.255.0
+Gateway        : 192.168.10.1
+
+
+Creating swap on /dev/vg0/celeborn-swap
+Done
+
+Creating ext3 filesystem on /dev/vg0/celeborn-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/celeborn.log
+
+Installation Summary
+---------------------
+Hostname        :  celeborn
+Distribution    :  wheezy
+MAC Address     :  5c:d9:98:bc:46:4a
+IP Address(es)  :  192.168.10.162 
+RSA Fingerprint :  2e:70:e4:97:73:5d:12:a8:76:5c:ae:35:b2:69:33:65
+Root Password   :  gsWXXNcvqY6nLF2pLhHAGX9
+

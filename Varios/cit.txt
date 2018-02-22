@@ -1,0 +1,146 @@
+user: cit
+pass: ci1626it
+
+sudo nano /etc/login.defs
+umask 002
+
+Reiniciar sesión:
+
+nano /etc/hosts
+192.168.10.125	cit.caschile.local	cit
+
+
+export JW_SERVER=cit.caschile.local # Name of linux box
+export JW_PRJ_ROOT=/home/cit/html_site/jobsworth # Full path to jobsworth clone
+export JW_WWWROOT=${JW_PRJ_ROOT}/public # Name of www folder (called ‘public’ by default)
+export MYUSER=cit # (optional) user allowed to edit/own files (default is user installing)
+export WEB=www-data # Apache user
+
+Instalar dependencias
+
+sudo apt-get install openjdk-6-jre mysql-server apache2 git-core imagemagick gcc libc6-dev g++ zip build-essential bison openssl libreadline6 libreadline6-dev curl zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev autoconf libcurl4-openssl-dev apache2-prefork-dev libcurl4-openssl-dev libaprutil1-dev libapr1-dev libxslt-dev libxml2-dev ncurses-dev automake libtool subversion
+
+apt-get install libapache2-mod-php5 php5 php-pear php5-xcache
+
+mysql@root cit1626cit
+
+curl -L get.rvm.io | bash -s stable
+
+source /etc/profile.d/rvm.sh
+
+gpasswd -a cit rvm
+gpasswd -a cit mcampos
+gpasswd -a cit root
+
+usermod -a -G rvm $USER
+usermod -a -G rvm $MYUSER
+
+source /etc/profile.d/rvm.sh
+
+rvm pkg install readline --verify-downloads 1
+rvm reinstall all --force
+rvm pkg install iconv
+rvm install 1.9.3 --with-iconv-dir=$HOME/.rvm/us
+rvm --default use 1.9.3
+rvm all do gem install bundler
+rvm all do gem install passenger
+
+
+<VirtualHost *:80>
+
+	ServerName cit.caschile.local
+	ServerAlias *.cit.caschile.local
+	DocumentRoot /home/cit/html_site/jobsworth/public
+	# DirectoryIndex index.php index.htm index.html
+
+	RailsEnv production
+	PassengerHighPerformance on
+
+        <Directory "/home/cit/html_site/jobsworth">
+                AllowOverride All
+                Options -MultiViews
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/cit.caschile.local-error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/cit.caschile.local-access.log combined
+
+</VirtualHost>
+
+---------------------------------
+rvm all do passenger-install-apache2-module
+
+The Apache 2 module was successfully installed.
+
+Please edit your Apache configuration file, and add these lines:
+
+   LoadModule passenger_module /usr/local/rvm/gems/ruby-1.9.3-p327/gems/passenger-3.0.18/ext/apache2/mod_passenger.so
+   PassengerRoot /usr/local/rvm/gems/ruby-1.9.3-p327/gems/passenger-3.0.18
+   PassengerRuby /usr/local/rvm/wrappers/ruby-1.9.3-p327/ruby
+
+After you restart Apache, you are ready to deploy any number of Ruby on Rails
+applications on Apache, without any further Ruby on Rails-specific
+configuration!
+
+Press ENTER to continue.
+
+---------------------------------------
+Deploying a Ruby on Rails application: an example
+
+Suppose you have a Rails application in /somewhere. Add a virtual host to your
+Apache configuration file and set its DocumentRoot to /somewhere/public:
+
+   <VirtualHost *:80>
+      ServerName www.yourhost.com
+      # !!! Be sure to point DocumentRoot to 'public'!
+      DocumentRoot /somewhere/public    
+      <Directory /somewhere/public>
+         # This relaxes Apache security settings.
+         AllowOverride all
+         # MultiViews must be turned off.
+         Options -MultiViews
+      </Directory>
+   </VirtualHost>
+
+And that's it! You may also want to check the Users Guide for security and
+optimization tips, troubleshooting and other useful information:
+
+  /usr/local/rvm/gems/ruby-1.9.3-p327/gems/passenger-3.0.18/doc/Users guide Apache.html
+
+Enjoy Phusion Passenger, a product of Phusion (www.phusion.nl) :-)
+https://www.phusionpassenger.com
+
+Phusion Passenger is a trademark of Hongli Lai & Ninh Bui.
+
+--------------------------------------
+git clone git://github.com/ari/jobsworth.git ${JW_PRJ_ROOT}
+cd ${JW_PRJ_ROOT}
+#git checkout -b Release_0_99_3_1 CLOCKINGT version, maybe?
+git checkout -b origin/v1.2
+rvm all do bundle install
+
+-------------------- 
+
+a2ensite ${JW_SERVER}
+service apache2 reload
+
+chown -R $MYUSER:$WEB “${JW_PRJ_ROOT}”
+chmod -R a+rwX “${JW_PRJ_ROOT}”
+
+#mysql and create db+user
+mysql -h localhost -u root -p
+CREATE DATABASE jobsworth DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE USER jobsworth;
+GRANT ALL ON jobsworth.* TO 'jobsworth'@'localhost' IDENTIFIED BY 'job1626sworth';
+
+cp config/database.example.yml config/database.yml
+nano /var/www/jobsworth/database.yml
+
+configuracion correo
+
+bundle exec lib/setup.rb
+

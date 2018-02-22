@@ -1,0 +1,74 @@
+
+Se elimino este DNS del dominio e-com.cl
+
+200.27.185.46 ns.e-com.cl
+
+
+
+PTR's en GTD:
+
+mail.direcciondetransito.cl	190.98.197.124 		
+mail.e-com.cl			200.75.23.70 		
+correo.caschile.cl		200.75.23.83
+
+	
+--------------------------------
+
+Migrating from a Wheezy to a Jessie mail server
+
+Migrate the database
+
+Now you need to copy the database that contains the control data about your email domains and accounts. On the (old) Wheezy server log in as root and backup the mailserver database. That is as easy as running
+
+    mysqldump mailserver > mailserver.sql
+
+Copy that file to the new server (using scp) and import it there:
+
+    mysql mailserver < mailserver.sql
+
+Fix the database schema
+
+Do you remember that we are using more secure passwords from now on? So the database field that stores your passwords is not long enough for the new hashes. This command makes the field longer. Run it on your new server:
+
+    mysql mailserver -e 'alter table virtual_users modify password varchar(150) NOT NULL'
+
+And as your database contains just MD5 hashes but the new default schema is SHA256 we need to prepend every password with “{PLAIN-MD5}” so that Dovecot knows which hashing algorithm we mean. Run this command on your new server:
+
+    mysql mailserver -e "update virtual_users set password=concat('{PLAIN-MD5}',password);"
+
+Migrate the emails
+
+Fortunately Dovecot uses the maildir format that stores emails as plain files on disk. Use rsync to copy over the mails from the old mail server:
+
+    rsync -va /var/vmail/ newserver:/var/vmail/
+
+(Note the trailing slashes. Type them exactly as above or you will end up in wrong places.)
+
+There is no need to shut down Dovecot on your live Wheezy server. Copying the files while Dovecot is running will not break anything. While the rsync runs only few files will change. So you keep the downtime low.
+
+Once the rsync is done you need to shut down Dovecot. You told your users about the downtime, right? Okay. Let’s synchronize again. rsync will only copy those files that have changed which makes it much faster than the first sync:
+
+    rsync -va --delete /var/vmail/ newserver:/var/vmail/
+
+(The “–delete” option makes sure that files that have been removed from the old server will also be deleted from the new server.)
+Switch the DNS records
+
+For all your domains you will have to change the DNS “MX” records to point to your new server. If possible you could lower the TTL (time-to-live) in advance to make the switch work faster.
+Enable soft_bounce
+
+Accidents happen. And you don’t want to lose emails. So run this command to enable your safety net on the new server:
+
+    postconf soft_bounce=yes
+
+Now Postfix will keep emails in the queue that it would normally bounce back. Start Postfix and Dovecot on the new server again. And watch your /var/log/mail.log and run “mailq” from time to time to see what emails get stuck in the queue. If you are certain that emails can be removed then use “postsuper -d QUEUE-ID”.
+
+Once you have a good feeling that emails are properly received and sent you can switch off the soft_bounce mode again:
+
+    postconf soft_bounce=no
+
+Open the gates
+
+Now start Postfix on the new server. It may take a while until everyone in the world respects the new MX record and sends email to the new server.
+Shut down the old server
+
+If possible do a final backup of the old server. Then when you have a good feeling about the new server and users seem to be happy you can dismiss the old system after a few days.

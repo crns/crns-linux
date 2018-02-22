@@ -1,0 +1,247 @@
+apt-get install vlan
+
+root@meneldor:~# apt-get install vlan
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  vlan
+0 actualizados, 1 se instalarán, 0 para eliminar y 10 no actualizados.
+Necesito descargar 40,2 kB de archivos.
+Se utilizarán 180 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main vlan amd64 1.9-3 [40,2 kB]
+Descargados 40,2 kB en 0seg. (876 kB/s)
+Seleccionando el paquete vlan previamente no seleccionado.
+(Leyendo la base de datos ... 24718 ficheros o directorios instalados actualmente.)
+Desempaquetando vlan (de .../archives/vlan_1.9-3_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando vlan (1.9-3) ...
+root@meneldor:~# 
+
+Agregar en /etc/modules
+
+8021q
+
+
+modprobe 8021q
+
+dmesg
+
+[1101382.678953] 8021q: 802.1Q VLAN Support v1.8
+[1101382.678963] 8021q: adding VLAN 0 to HW filter on device eth1
+[1101382.678966] 8021q: adding VLAN 0 to HW filter on device eth2
+[1101382.678968] 8021q: adding VLAN 0 to HW filter on device eth3
+[1101382.678970] 8021q: adding VLAN 0 to HW filter on device eth4
+[1101382.678972] 8021q: adding VLAN 0 to HW filter on device bond0
+[1101382.678976] 8021q: adding VLAN 0 to HW filter on device bond1
+root@meneldor:~# 
+
+
+
+editar /etc/network/interfaces
+
+root@meneldor:~# cat /etc/network/interfaces 
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+	address 192.168.13.1
+	netmask 255.255.255.0
+	network 192.168.13.0
+	broadcast 192.168.13.255
+	gateway 192.168.13.254
+	# dns-* options are implemented by the resolvconf package, if installed
+	dns-nameservers 200.75.0.4 200.75.0.5
+	dns-search caschile.cl
+
+auto bond0
+iface bond0 inet static
+#        pre-up modprobe bonding
+        hwaddress ether 90:e2:ba:47:d0:04
+        address 192.168.7.170
+        netmask 255.255.255.0
+        network 192.168.7.0
+        broadcast 192.168.7.255
+        up /sbin/ifenslave bond0 eth1 eth3
+        down /sbin/ifenslave -d bond0 eth1 eth3
+
+auto bond1
+iface bond1 inet static
+#        pre-up modprobe bonding
+        hwaddress ether 90:e2:ba:47:d0:06
+        address 192.168.13.1
+        netmask 255.255.255.0
+        network 192.168.13.0
+        broadcast 192.168.13.255
+        up /sbin/ifenslave bond1 eth2 eth4
+        down /sbin/ifenslave -d bond1 eth2 eth4
+
+auto bond1:0
+iface bond1:0 inet static
+	address 192.168.6.170
+	netmask 255.255.255.0
+	network 192.168.6.0
+	broadcast 192.168.6.255
+
+auto bond1:1
+iface bond1:1 inet static
+        address 192.168.9.170
+        netmask 255.255.255.0
+        network 192.168.9.0
+        broadcast 192.168.9.255
+
+auto bond1:2
+iface bond1:2 inet static
+        address 192.168.10.170
+        netmask 255.255.255.0
+        network 192.168.10.0
+        broadcast 192.168.10.255
+
+auto bond1:3
+iface bond1:3 inet static
+        address 192.168.11.170
+        netmask 255.255.255.0
+        network 192.168.11.0
+        broadcast 192.168.11.255
+
+auto bond1:4
+iface bond1:4 inet static
+        address 192.168.12.170
+        netmask 255.255.255.0
+        network 192.168.12.0
+        broadcast 192.168.12.255
+
+auto bond1:5
+iface bond1:5 inet static
+        address 192.168.13.170
+        netmask 255.255.255.0
+        network 192.168.13.0
+        broadcast 192.168.13.255
+
+auto bond1:6
+iface bond1:6 inet static
+        address 192.168.14.170
+        netmask 255.255.255.0
+        network 192.168.14.0
+        broadcast 192.168.14.255
+
+auto bond1:7
+iface bond1:7 inet static
+        address 192.168.15.170
+        netmask 255.255.255.0
+        network 192.168.15.0
+        broadcast 192.168.15.255
+root@meneldor:~# 
+
+
+
+
+Pasar a:
+
+root@meneldor:~# cat /etc/network/interfaces 
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+	address 192.168.13.2
+	netmask 255.255.255.0
+	network 192.168.13.0
+	broadcast 192.168.13.255
+	gateway 192.168.13.254
+	# dns-* options are implemented by the resolvconf package, if installed
+	dns-nameservers 200.75.0.4 200.75.0.5
+	dns-search caschile.cl
+
+auto bond0
+iface bond0 inet static
+#        pre-up modprobe bonding
+        hwaddress ether 90:e2:ba:47:d0:04
+        address 192.168.7.170
+        netmask 255.255.255.0
+        network 192.168.7.0
+        broadcast 192.168.7.255
+        up /sbin/ifenslave bond0 eth1 eth3
+        down /sbin/ifenslave -d bond0 eth1 eth3
+
+auto bond1
+iface bond1 inet static
+#        pre-up modprobe bonding
+        hwaddress ether 90:e2:ba:47:d0:06
+        address 192.168.13.1
+        netmask 255.255.255.0
+        network 192.168.13.0
+        broadcast 192.168.13.255
+        up /sbin/ifenslave bond1 eth2 eth4
+        down /sbin/ifenslave -d bond1 eth2 eth4
+
+
+### Aqui comienzan las VLAN's ###
+
+auto bond1.101
+iface bond1.101 inet static
+	address 192.168.6.170
+	netmask 255.255.255.0
+	network 192.168.6.0
+	broadcast 192.168.6.255
+
+auto bond1.102
+iface bond1.102 inet static
+        address 192.168.9.170
+        netmask 255.255.255.0
+        network 192.168.9.0
+        broadcast 192.168.9.255
+
+auto bond1.103
+iface bond1.103 inet static
+        address 192.168.10.170
+        netmask 255.255.255.0
+        network 192.168.10.0
+        broadcast 192.168.10.255
+
+auto bond1.104
+iface bond1.104 inet static
+        address 192.168.11.170
+        netmask 255.255.255.0
+        network 192.168.11.0
+        broadcast 192.168.11.255
+
+auto bond1.105
+iface bond1.105inet static
+        address 192.168.12.170
+        netmask 255.255.255.0
+        network 192.168.12.0
+        broadcast 192.168.12.255
+
+auto bond1.106
+iface bond1.106 inet static
+        address 192.168.13.170
+        netmask 255.255.255.0
+        network 192.168.13.0
+        broadcast 192.168.13.255
+
+auto bond1.107
+iface bond1.107 inet static
+        address 192.168.14.170
+        netmask 255.255.255.0
+        network 192.168.14.0
+        broadcast 192.168.14.255
+
+auto bond1.108
+iface bond1.108 inet static
+        address 192.168.15.170
+        netmask 255.255.255.0
+        network 192.168.15.0
+        broadcast 192.168.15.255
+root@meneldor:~# 

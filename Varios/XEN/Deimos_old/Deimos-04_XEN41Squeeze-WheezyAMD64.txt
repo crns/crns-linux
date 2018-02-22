@@ -1,0 +1,234 @@
+Estado de los discos en Deimos:
+
+root@deimos:~# cat /proc/partitions 
+major minor  #blocks  name
+
+   8       48  976762584 sdd
+   8       49  976760832 sdd1
+   8       32  976762584 sdc
+   8       33  976760832 sdc1
+   8       16  976762584 sdb
+   8       17  976760832 sdb1
+   8        0  976762584 sda
+   8        1  976760832 sda1
+   8       96  976762584 sdg
+   8       97  976760832 sdg1
+   8       80  976762584 sdf
+   8       81  976760832 sdf1
+   8       64  976762584 sde
+   8       65  976760832 sde1
+   8      112  976762584 sdh
+   8      113  976760832 sdh1
+   8      128     262144 sdi
+   8      129     257008 sdi1
+   9        0  976629568 md0
+ 259        0  683592704 md0p1
+ 259        1  283203584 md0p2
+ 259        2    9831424 md0p3
+   9        1 4883146240 md1
+ 253        0  104857600 dm-0
+ 253        1    2097152 dm-1
+   7        0     336142 loop0
+root@deimos:~# 
+
+Discos por UUID:
+
+root@deimos:~# blkid 
+/dev/md0p3: UUID="b5861678-6708-40d0-8172-2ed99882f411" TYPE="swap" 
+/dev/sdi1: LABEL="VID" UUID="5114-3278" TYPE="vfat" 
+/dev/sde1: UUID="af3b43f8-20bd-97ef-5373-0911998179b1" UUID_SUB="1b97db07-4719-beea-309d-517a2db8761a" LABEL="zeus:0" TYPE="linux_raid_member" 
+/dev/sda1: UUID="af3b43f8-20bd-97ef-5373-0911998179b1" UUID_SUB="b8eea31e-f2a1-43d1-4340-7be2635e7f09" LABEL="zeus:0" TYPE="linux_raid_member" 
+/dev/sdh1: UUID="cd855817-9e19-a7b5-baf3-16942ea7ae73" UUID_SUB="0f6eadbb-ade1-a3ff-7a1b-f771249ddc4b" LABEL="zeus:1" TYPE="linux_raid_member" 
+/dev/sdd1: UUID="cd855817-9e19-a7b5-baf3-16942ea7ae73" UUID_SUB="fde5f38a-075e-4320-5ba2-3448864aa9d5" LABEL="zeus:1" TYPE="linux_raid_member" 
+/dev/sdc1: UUID="cd855817-9e19-a7b5-baf3-16942ea7ae73" UUID_SUB="81d98774-6a4f-e170-dc8c-398d08cb72f4" LABEL="zeus:1" TYPE="linux_raid_member" 
+/dev/sdb1: UUID="cd855817-9e19-a7b5-baf3-16942ea7ae73" UUID_SUB="81ae94e0-babe-5230-18b0-8e97396b8d4d" LABEL="zeus:1" TYPE="linux_raid_member" 
+/dev/sdg1: UUID="cd855817-9e19-a7b5-baf3-16942ea7ae73" UUID_SUB="9061c2cc-e068-14d3-2361-ed753921e202" LABEL="zeus:1" TYPE="linux_raid_member" 
+/dev/sdf1: UUID="cd855817-9e19-a7b5-baf3-16942ea7ae73" UUID_SUB="170cbf32-8dc4-4447-6f6e-0e4054236594" LABEL="zeus:1" TYPE="linux_raid_member" 
+/dev/md0p1: LABEL="CRN" UUID="dd2a716d-5870-4cad-89be-a38809c51dd2" TYPE="ext4" 
+/dev/md0p2: UUID="nc0me1-IFg1-UTGt-1jf3-xDLv-mJZi-NJ0tBN" TYPE="LVM2_member" 
+/dev/loop0: LABEL="Openfiler NSA Disc 1" TYPE="iso9660" 
+root@deimos:~# 
+
+Disco SWA
+root@deimos:~# cat /proc/swaps 
+Filename				Type		Size	Used	Priority
+/dev/md0p3                              partition	9831420	0	-1
+root@deimos:~#
+
+
+Estado de los RAID en Deimos:
+
+root@deimos:~# cat /proc/mdstat 
+Personalities : [raid1] [raid6] [raid5] [raid4] 
+md1 : active (auto-read-only) raid5 sdb1[0] sdh1[5] sdg1[4] sdf1[3] sdd1[2] sdc1[1]
+      4883146240 blocks super 1.2 level 5, 512k chunk, algorithm 2 [6/6] [UUUUUU]
+      
+md0 : active raid1 sda1[0] sde1[1]
+      976629568 blocks super 1.2 [2/2] [UU]
+      
+unused devices: <none>
+root@deimos:~# 
+
+Particion para VM Openfiler:
+
+root@deimos:~# pvdisplay
+  WARNING: Ignoring duplicate config node: filter (seeking filter)
+  --- Physical volume ---
+  PV Name               /dev/md0p2
+  VG Name               vg0
+  PV Size               270,08 GiB / not usable 2,00 MiB
+  Allocatable           yes 
+  PE Size               4,00 MiB
+  Total PE              69141
+  Free PE               43029
+  Allocated PE          26112
+  PV UUID               nc0me1-IFg1-UTGt-1jf3-xDLv-mJZi-NJ0tBN
+   
+root@deimos:~# 
+
+Sumario de discos en Deimos:
+
+
+
+
+
+
+
+---------------------------------------------------------------------------
+
+En deimos hipervisor
+
+root@deimos:~# vgdisplay
+  --- Volume group ---
+  VG Name               vg0
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               270,08 GiB
+  PE Size               4,00 MiB
+  Total PE              69141
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       69141 / 270,08 GiB
+  VG UUID               lwEJ8k-aoDx-GdxW-ZJDZ-HcTo-60im-gnvMLW
+   
+root@deimos:~#
+
+lvcreate -L 100G -n vdeimos-root vg0
+
+root@deimos:~# lvcreate -L 100G -n vdeimos-root vg0
+  Logical volume "vdeimos-root" created
+root@deimos:~#
+
+root@deimos:~# lvscan
+  ACTIVE            '/dev/vg0/vdeimos-root' [100,00 GiB] inherit
+root@deimos:~#
+
+
+lvcreate -L 2G -n vdeimos-swap vg0
+
+root@deimos:~# lvcreate -L 2G -n vdeimos-swap vg0
+  Logical volume "vdeimos-swap" created
+root@deimos:~#
+
+root@deimos:~# lvscan
+  ACTIVE            '/dev/vg0/vdeimos-root' [100,00 GiB] inherit
+  ACTIVE            '/dev/vg0/vdeimos-swap' [2,00 GiB] inherit
+root@deimos:~#
+
+
+root@deimos:~# vgdisplay
+  --- Volume group ---
+  VG Name               vg0
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  3
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               270,08 GiB
+  PE Size               4,00 MiB
+  Total PE              69141
+  Alloc PE / Size       26112 / 102,00 GiB
+  Free  PE / Size       43029 / 168,08 GiB
+  VG UUID               lwEJ8k-aoDx-GdxW-ZJDZ-HcTo-60im-gnvMLW
+   
+root@deimos:~# 
+
+nano /etc/xen/vdeimos.cfg
+
+name = 'vdeimos'
+kernel = '/usr/lib/xen-4.1/boot/hvmloader'
+builder = 'hvm'
+device_model = '/usr/lib/xen-4.1/bin/qemu-dm'
+
+memory = 5120
+shadow_memory = 8
+
+vcpus=2
+acpi=1
+apic=1
+	 
+# Choose a better mac address
+vif = [ 'bridge=br0, mac=5c:d9:98:bc:46:3c' ]
+	 
+## The VM has the following block devices
+#  - A boot disk with a single partition for the OS, swap, and programs
+#  - The installation DVD
+#  - The PV drivers CD
+disk = [
+                  'phy:/dev/vg0/vdeimos-root,hda,w',
+                  'phy:/dev/vg0/vdeimos-swap,hdb,w',
+                  'phy:/dev/md1,hdc,w',
+                  'file:/xen-isos/openfiler-2.3-x86_64-disc1.iso,hdd:cdrom,r'
+        ]	 
+
+#En caso de perder el acceso usar esto
+# Boot from the DVD first
+boot='d'
+	 
+usbdevice='tablet'
+ 
+## Use VNC for the console.
+vnc=1
+vncunused=0
+vnclisten = '127.0.0.1'
+vncdisplay=2
+vncconsole=1
+vncpasswd='cronos'
+ 
+vncviewer=0
+sdl=0
+ 
+stdvga=0
+serial='pty'
+#ne2000 = "0"
+ 
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart'
+
+
+
+Para que vDeimos arranque en el startup de Deimos
+
+
+mkdir /etc/xen/auto
+
+
+ln -s /etc/xen/vdeimos.cfg /etc/xen/auto
+

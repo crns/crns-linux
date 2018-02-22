@@ -1,0 +1,1 @@
+mencoder -of mpeg -oac lavc -ovc lavc -lavcopts vcodec=mpeg1video /home/setpoint/08.avi -o peli.mpg

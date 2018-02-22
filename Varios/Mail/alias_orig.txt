@@ -1,0 +1,396 @@
+#
+#	@(#)aliases	8.2 (Berkeley) 3/5/94
+#
+#  Aliases in this file will NOT be expanded in the header from
+#  Mail, but WILL be visible over networks or from /bin/mail.
+#
+#	>>>>>>>>>>	The program "newaliases" must be run after
+#	>> NOTE >>	this file is updated for any changes to
+#	>>>>>>>>>>	show through to sendmail.
+#
+
+# Basic system aliases -- these MUST be present.
+MAILER-DAEMON:	postmaster
+postmaster: root,manuel.campos
+
+# General redirections for pseudo accounts.
+bin:		root
+daemon:		root
+games:		root
+ingres:		root
+nobody:		root
+system:		root
+toor:		root
+uucp:		root
+
+# Well-known aliases.
+manager:	root
+dumper:		root
+operator:	root
+
+# trap decode to catch security attacks
+decode:		root
+
+# Person who should get root's mail
+#root:		marc
+
+# Webmin: E-Com
+e-com: comercio.electronico
+
+# Webmin: Product Manager
+pmanager: ecarrasco,sliebig,hthon,avilches,rodrigo.martorell,rene.zelada,cnoriel
+
+# Webmin: Negocio
+negocio: ecarrasco,sliebig,hthon,avilches,rene.zelada,rodrigo.martorell,cnoriel,gibsy.gomez
+
+# Webmin: Ventas
+ventas: omachuca,lvaldes,jlopez,luis.valdes,angela.lizardi,alicia.jara,ricardo.castro,felipe.valdes,claudio.valdes,neryda.gonzalez,carolina.valdes,constanza.sanmartin
+
+# Webmin: caschile
+caschile: rodrigo.martorell,omachuca,nvaldes,claudio.valdes
+
+# Webmin: cv
+cv: icornejo,pilar.carrillo
+
+# Webmin: seminarios
+seminarios: angela.lizardi
+
+# Webmin: todos
+todos: dportillo,cpavez,sliebig,sramirez,hector.bravo,omachuca,lvaldes,gibsy.gomez,hthon,rigoberto.pulgar,aossandon,cnoriel,avilches,ecarrasco,fcampos,svergara,rene.zelada,ingrid.erazo,jorge.gonzalez,ipaillalef,fcocampbell,ccanales,jdelgado,jpuebla,jmenares,antonio.ordenes,psegovia,omar.navarrete,jlopez,nvaldes,marcelo.virgili,claudio.cardenas,rodrigo.martorell,luis.valdes,angela.lizardi,asalinas,paulo.suazo,miguel.castillo,jose.gonzalez,alvaro.diaz,felipe.allendes,cristian.romo,claudio.valdes,antonio.colima,miguel.caceres,mauricio.lopez,juan.hernandez,felipe.valdes,daniel.aravena,jorge.soto,robert.salinas,patricio.peralta,david.gonzalez,romulo.diaz,alvaro.setien,pablo.quezada,marcelo.baeza,alvaro.fuentes,rodrigo.carreno,german.soto,hernan.pinilla,rodrigo.castro,leonardo.parra,sergio.venegas,jorge.munoz,mario.moreno,cristian.rifo,juancarlos.munoz,ana.karina,fernando.valenzuela,oscar.huaiquian,alberto.valenzuela,alejandro.allende,marco.ovalle,ricardo.castro,tania.martinez,manuel.campos,eva.concha,alicia.jara,david.robles,eossandon,juan.gonzalez,jerson.neicun,jose.rodriguez,nicole.donoso,jaime.caceres,manuel.castro,jonnathan.oyarce,zoltan.rojas,miguel.contreras,axel.santibanez,constanza.sanmartin,aida.guzman,luis.rosales,rodrigo.uribe,alvaro.raiman,german.cadiz,gonzalo.caceres,gerson.neicun,antonio.vallejo,ana.munoz,jose.chavez,natalia.espinoza,daniela.sandoval,sebastian.cerda,angela.fuentes,evelyn.ilufi,any.cofre,rodrigo.chible,hugo.rojas,francisco.morales,alejandro.delgado,daniel.tiznado,mauricio.ponce,ignacio.cruz,catalina.boza,maicol.anton,eduardo.figueroa,pablo.soto,pablo.sepulveda,cristian.avila,cristopher.cortes,juan.campbell,daniza.yanez,icornejo,daniel.valdes,luis.morales,maximo.perez,francisco.munita,jose.monserrat,alexis.nunez,mario.vidal,juan.armijo,yaneth.villalobos,daniel.fuentes,mauricio.montenegro,francisco.martinez,felipe.aliaga,mauricio.montenegro,carlos.osorio,jonathan.valdes,neryda.gonzalez,carlos.sandoval,mario.lopez,marcelo.torrejon,yerko.franulic,jorge.negrete,francisca.ferreira,cynthia.riquelme,matias.catalan,fernando.diaz,sergio.zuniga,angelica.guzman,hernan.acosta,carolina.valdes,sergio.marchant,manuel.nunez,ruben.vega,luz.reyes,daniela.gonzalez,jose.valenzuela,valentina.guajardo,cristopher.sandoval,claudio.beltran,fernanda.orias,paolo.andaur,roxana.baez,francisco.delahoz,yasmin.puebla,alexis.molina,francisco.betancourt,denis.munoz,tomas.carrasco,gustavo.riquelme,mariana.flores,francisco.duarte,cristina.donaire,rodrigo.pavez,giovana.bustos,julio.henriquez,juan.amestica,carlos.montiers,felipe.astroza,jaqueline.deleon,matias.seguel,julio.gonzalez,felipe.salinas,pedro.perez,mauricio.urbina,claudia.roman,ramon.quiroz,luis.jofre,alejandro.morales,lucas.petruzzella,jocelyn.rojas,cristian.morales,christian.barros,tamara.alvarez,juan.silva,javier.saravia,camila.ramirez,jesus.munoz,paloma.orellana,macarena.gonzalez,juanf.gonzalez,paola.boin,virginia.basoalto,belen.delgado,bianca.ampuero,joel.balboa,roxana.ramirez,alicia.vasquez,paloma.dasilva,ignacio.ruz
+
+soporteinternet: cnoriel,sramirez
+# Webmin: Capaitadores
+# Webmin: jproyecto
+# Webmin: Transito
+transito: rene.zelada,ignacio.ruz
+bienestar: fcampos,hthon,avilches,luis.valdes,cpavez,ccanales,ipaillalef,jlopez,omachuca,marcelo.virgili,psegovia,rodrigo.martorell,rodrigo.martorell,alvaro.diaz,marcelo.virgili,claudio.cardenas
+# Webmin: Area .NET
+area.net: aossandon,rigoberto.pulgar,cnoriel,jorge.soto,alberto.valenzuela,paolo.andaur
+# Webmin: Area Finanzas
+area.finanzas: ecarrasco,robert.salinas,rodrigo.chible,francisco.morales,alvaro.raiman,ignacio.cruz,pablo.soto,francisco.martinez,giovana.bustos,tomas.carrasco
+# Webmin: cv_contador
+cv_contador: icornejo
+# Webmin: operaciones
+operaciones: cpavez,dportillo,asalinas,omar.navarrete,carlos.pavez,marcelo.virgili,mauricio.lopez,mauricio.urbina
+# Webmin: Servicio Tecnico
+servicio.tecnico: jose.valenzuela,jdelgado,marcelo.virgili,manuel.campos,hector.bravo,alejandro.morales
+# Webmin: Clasificador Presupustario
+clasificador2008: area.finanzas
+# Webmin: Comite Paritario Cas-Chile
+comiteparitario: nvaldes,fcampos,pilar.carrillo,claudio.valdes,sliebig,rodrigo.martorell,icornejo,omachuca,gibsy.gomez,juancarlos.munoz,constanza.sanmartin,hthon,avilches
+# Webmin: area de recursos humanos
+area.rrhh: gibsy.gomez,alejandro.allende,eduardo.figueroa,francisco.munita,juan.silva,carlos.osorio
+# Webmin: AREA RENTAS
+area.rentas: avilches,fernando.valenzuela,evelyn.ilufi
+# Webmin: certificados
+certificados: fcampos,sramirez,gibsy.gomez,dvaldes
+# Webmin: Error Ecom
+errorecom: comercio.electronico
+# Webmin: Usuario Demo QSM
+qsmdemo: angela.lizardi
+# Webmin: testing
+testing: juan.armijo,carlos.navarro,any.cofre,mauricio.ponce,cristian.avila,matias.catalan,hernan.acosta,daniela.gonzalez,gustavo.riquelme,francisco.duarte,macarena.gonzalez
+cobranza: omachuca,jlopez,lvaldes,luis.valdes,angela.lizardi,icornejo,carolina.valdes,dvaldes,fcocampbell,rodrigo.martorell,felipe.valdes,ricardo.castro
+administracion: pilar.carrillo
+# Webmin: soporterrhh
+soporterrhh: area.rrhh,jproyecto,rodrigo.martorell,sramirez
+# Webmin: rmartorell
+rmartorell: rodrigo.martorell
+# Webmin: Muni Colina
+colina: svergara@caschile.cl,luis.valenzuela@colina.cl,permisos.circulacion@colina.cl,secretaria.transito@colina.cl,mario.moreno
+# Webmin: Muni Zapallar
+zapallar: informatica@munizapallar.cl,transito@munizapallar.cl,yzamora@munizapallar.cl,permisos@munizapallar.cl,cpavez
+# Webmin: Muni Curico
+curico: rinaferretti@curico.cl,tesoreria@curico.cl,transito@curico.cl,permisosdecirculacion@curico.cl,lily@curico.cl,sig@curico.cl,solave@curico.cl,r_olave@yahoo.com,jeannette.aguilera@curico.cl,gino.giambruno@curico.cl,ayleen.burgos@curico.cl,sergio.olave@curico.cl,cpavez
+# Webmin: Muni Talca
+talca: pabloejs@gmail.com,brojas@gmail.com,jroco@talca.cl,transito@talca.cl,asalinas,brojas@talca.cl
+# Webmin: Muni Quinta Normal
+quintanormal: jgongora@quintanormal.cl,lcarrasco@quintanormal.cl,jpavez@quintanormal.cl,comprobantesonline@quintanormal.cl,cgormaz@quintanormal.cl,dportillo,rmartorell@e-com.cl
+# Webmin: Muni Lo Prado
+loprado: pcinter@loprado.cl,anfaundez@pentasecurity.cl,jinfante@pentasecurity.cl,mmeza@loprado.cl,lcalderon@loprado.cl,lriquelme@loprado.cl,forellana@loprado.cl,soporte@loprado.cl,rmartorell@e-com.cl
+# Webmin: Muni Huechuraba
+huechuraba: vurtubia@huechuraba.cl,jsandoval@huechuraba.cl,bhenriquez@huechuraba.cl,oduque@huechuraba.cl,raul.carrasco@huechuraba.cl,municipalidadhuechuraba@gmail.com,vann1358@gmail.com,vann1358@hotmail.com,mauricio.lopez,rmartorell@e-com.cl
+# Webmin: Muni San Joaquin
+sanjoaquin: enriquecuevas@sanjoaquin.cl,marco.ovalle,rmartorell@e-com.cl,alejandranaranjo@sanjoaquin.cl,leonelarqueros@sanjoaquin.cl
+# Webmin: Patentes Penalolen
+patentespenalolen: rentasweb@penalolen.cl,compuweb@penalolen.cl,tesoreriaweb@penalolen.cl,respaldospenalolen@yahoo.com,rmartorell@e-com.cl,dsandoval@penalolen.cl,lcastillo@penalolen.cl,rgonzalez@penalolen.cl
+# Webmin: Patentes San Joaquin
+patentessanjoaquin: enriquecuevas@sanjoaquin.cl,rmartorell@e-com.cl,alejandranaranjo@sanjoaquin.cl,leonelarqueros@sanjoaquin.cl
+# Webmin: Patentes Quinta Normal
+patentesquintanormal: jpavez@quintanormal.cl,jgongora@quintanormal.cl,jaimeleiva@quintanormal.cl,cmedina@quintanormal.cl,rmartorell@e-com.cl
+# Webmin: Patentes La Serena
+patenteslaserena: calfaro@munilaserena.cl,llara@munilaserena.cl,mbravo@munilaserena.cl,csanhueza@munilaserena.cl,patricio.alcayaga@laserena.cl,bdelacerda@munilaserena.cl,lrivera@munilaserena.cl,rmartorell@e-com.cl
+# Webmin: Patentes Colina
+patentescolina: evalderrama@colina.cl,chernandez@colina.cl,jzuniga@colina.cl,nzuniga@colina.cl,patentes@colina.cl,sebastian.vergara@colina.cl,svergara@caschile.cl,clara.aguilera@colina.cl,rmartorell@e-com.cl,dportillo
+# Webmin: Patentes Huechuraba
+patenteshuechuraba: msababa@huechuraba.cl,jsandoval@huechuraba.cl,bhenriquez@huechuraba.cl,pgonzalez@huechuraba.cl,jcolompin@huechuraba.cl,lsierra@huechuraba.cl,jtihista@huechuraba.cl,pagosweb@huechuraba.cl,webrespaldo@huechuraba.cl,municipalidadhuechuraba@gmail.com,mauricio.lopez,rmartorell@e-com.cl
+# Webmin: Patentes Zapallar
+patenteszapallar: tesoreria.zapallar@gmail.com,rdrigo@gmail.com,informatica@munizapallar.cl,tesoreria@munizapallar.cl,cpavez,rmartorell@e-com.cl
+# Webmin: Patentes Curico
+patentescurico: pablo.torres@curico.cl,rentas@curico.cl,pedro.figueroa@curico.cl,tesoreria@curico.cl,rafael.munoz@curico.cl,liliana.garrido@curico.cl,informatica@curico.cl,sistemas@curico.cl,olaverios.sergio@gmail.com,cpavez,rmartorell@e-com.cl
+# Webmin: Patentes Talca
+patentestalca: acastrog@talca.cl,pabloejs@gmail.com,brojas@talca.cl,fjara@talca.cl,lalvear@talca.cl,pcomerciales@talca.cl,jozam@talca.cl,raraya@talca.cl,ahernandez@talca.cl,asalinas,rmartorell@e-com.cl
+# Webmin: Patentes San Fernando
+patentessanfernando: fincon@municipalidadsanfernando.cl,omar.navarrete,rmartorell@e-com.cl
+# Webmin: Aseo Penalolen
+aseopenalolen: compuweb@penalolen.cl,tesoreriaweb@penalolen.cl,rentasweb@penalolen.cl,respaldospenalolen@yahoo.com,rmartorell@e-com.cl
+# Webmin: Aseo Zapallar
+aseozapallar: informatica@munizapallar.cl,cpavez,rmartorell@e-com.cl
+# Webmin: capacitadores
+capacitadores: jorge.gonzalez,ingrid.erazo,german.cadiz,jose.gonzalez,claudio.cardenas,miguel.caceres,miguel.castillo,david.gonzalez,jorge.munoz,cristian.rifo,mario.moreno,david.robles,juan.gonzalez
+# Webmin: area.abastecimiento
+area.abastecimiento: hthon,paulo.suazo,gonzalo.caceres,sergio.marchant
+# Webmin: Pemisos Pucon
+pucon: abrinck@municipalidadpucon.cl,transito@municipalidadpucon.cl,tesoreria@municipalidadpucon.cl,yleiva@municipalidadpucon.cl,ccurihual@municipalidadpucon.cl,administracion@municipalidadpucon.cl
+# Webmin: Municipalidad Vallenar
+vallenar: wzamora@vallenar.cl,vhumeres@vallenar.cl,tesoreria@vallenar.cl,pzamarca@vallenar.cl,eandana@vallenar.cl
+# Webmin: Aseo Huechuraba
+aseohuechuraba: msababa@huechuraba.cl,jsandoval@huechuraba.cl,bhenriquez@huechuraba.cl,jtihista@huechuraba.cl,pagosweb@huechuraba.cl,webrespaldo@huechuraba.cl,municipalidadhuechuraba@gmail.com,mauricio.lopez
+# Webmin: Aseo Chillan
+aseochillan: tesoreria@municipalidadchillan.cl,lcasanova@municipalidadchillan.cl
+# Webmin: Aseo Curico
+aseocurico: pablo.torres@curico.cl,juanrafael.gonzalez@curico.cl,dao@curico.cl,cobroaseo@curico.cl,tesoreria@curico.cl,rafael.munoz@curico.cl,liliana.garrido@curico.cl,informatica@curico.cl,sistemas@curico.cl,olaverios.sergio@gmail.com,cpavez
+# Webmin: Aseo Quinta Normal
+aseoquintanormal: comprobantesonline@quintanormal.cl,jespinoza@quintanormal.cl,jgongora@quintanormal.cl,jpavez@quintanormal.cl,dportillo,comercio.electronico
+# Webmin: Aseo San Antonio
+aseosanantonio: mbustosl@sanantonio.cl,grivera@sanantonio.cl,emachuca@sanantonio.cl,anavarrete@sanantonio.cl,mbenitez@sanantonio.cl,rmartorell@e-com.cl,dportillo
+# Webmin: Patentes Chillan
+patenteschillan: rentas@municipalidadchillan.cl,cpalma@municipalidadchillan.cl,mdonoso@municipalidadchillan.cl,lcasanova@municipalidadchillan.cl,tesoreria@municipalidadchillan.cl,rmartorell@e-com.cl
+# Webmin: Patentes Pirque
+patentespirque: informatica@mpirque.cl,pcomercial@mpirque.cl,rmartorell@e-com.cl
+# Webmin: Permisos Pirque
+pirque: informatica@mpirque.cl,permisos@mpirque.cl
+# Webmin: Permisos Chillan
+chillan: tesoreria@municipalidadchillan.cl,lcasanova@municipalidadchillan.cl,vmora@municipalidadchillan.cl,clagos@municipalidadchillan.cl,rmartorell@e-com.cl,evalenzuela@municipalidadchillan.cl,mpantoja@municipalidadchillan.cl,dtransito@municipalidadchillan.cl,rodrigo.carreno
+# Webmin: Permisos San Fernando
+sanfernando: cas@munisanfernando.com,finanzas@munisanfernando.com,fincon@munisanfernando.com,informatica@munisanfernando.com,tesoreria@munisanfernando.com,transito@munisanfernando.com,omar.navarrete,rmartorell@e-com.cl
+# Webmin: Patentes San Antonio
+patentessanantonio: grivera@sanantonio.cl,mbustosl@sanantonio.cl,emachuca@sanantonio.cl,rmartorell@e-com.cl,dportillo
+# Webmin: Patentes Angol
+patentesangol: rentas@angol.cl,informatica@angol.cl,rmartorell@e-com.cl
+# Webmin: desc iei
+IEI: cv
+# Webmin: Descripcion JDP
+JDP: cv
+# Webmin: Permisos Quilicura
+quilicura: pcirculacion1@quilicura.cl,ptesoreria1@quilicura.cl,pdirector1@quilicura.cl,mauricio.lopez,rmartorell@e-com.cl,mnovoa@quilicura.cl,miroa@quilicura.cl,cfredes@quilicura.cl
+# Webmin: Permisos Cerro Navia
+cerronavia: pcirculacion@cerronavia.cl,dirtransito@cerronavia.cl,lcalderon@cerronavia.cl,daf@cerronavia.cl
+# Webmin: Municipalidad de Cobquecura
+cobquecura: permisoscirculacion@cobquecura.cl,permisoscobquecura@gmail.com,cobquecura@tupatenteparachile.cl,cpavez,rmartorell@e-com.cl
+# Webmin: Municipalidad de Lota
+lota: aflores51@gmail.com,jep.finanzaslota@gmail.com,pcirculacion.lota@hotmail.com,jimenezmedina29@hotmail.com,ana_luisasalazar@hotmail.com,lota@tupatenteparachile.cl,rmartorell@e-com.cl
+# Webmin: Municipalidad de Pelluhue
+pelluhue: finanzaspelluhue@gmail.com,transitopelluhue@hotmail.com,munipehhue.curanipe@gmail.com,pelluhue@tupatenteparachile.cl,dportillo,rmartorell@e-com.cl
+# Webmin: Municipalidad Peralillo
+peralillo: jpfuente@gmail.com,rvilchez@peralillo.cl,peralillo@tupatenteparachile.cl,omar.navarrete,transito@muniperalillo.cl,jpfuentes@muniperalillo.cl,rvilchezduarte@gmail.com,rmartorell@e-com.cl
+# Webmin: Municipalidad de Licant�n
+licanten: tesorero@mlicanten.cl,fguerra@mlicanten.cl,traslados2012@mlicanten.cl,licanten@tupatenteparachile.cl,cpavez,rmartorell@e-com.cl,wurquiola@mlicanten.cl
+# Webmin: Permisos de Circulaci�n San Antonio
+sanantonio: soyarce@sanantonio.cl,pmachuca@sanantonio.cl,larellano@sanantonio.cl,emachuca@sanantonio.cl,grivera@sanantonio.cl,rmartorell@e-com.cl
+# Webmin: soporte.inhouse
+soporte_inhouse: comercio.electronico,soporte.inhouse
+# Webmin: Área Desarrollo Web
+area.web: cnoriel,cristopher.cortes,jose.monserrat,daniel.fuentes,mario.lopez,marcelo.torrejon,fernando.diaz,paolo.andaur,carlos.montiers,felipe.astroza,pedro.perez
+# Webmin: mesa de ayuda
+mesa.ayuda: ingrid.erazo,juan.gonzalez,zoltan.rojas,daniela.sandoval,maicol.anton,felipe.aliaga,mauricio.montenegro,jonathan.valdes,luis.morales,mario.vidal,marcelo.baeza,carlos.sandoval,francisca.ferreira,luz.reyes,ruben.vega,manuel.nunez,camila.campos,jaqueline.deleon,felipe.salinas,claudia.roman,luis.jofre,christian.barros,cristian.morales,jocelyn.rojas,camila.ramirez,juanf.gonzalez,alicia.vasquez,roxana.ramirez,paloma.dasilva
+# Webmin: Área de Comercio Electrónico
+comercio.electronico: comercio.electronico@e-com.cl
+# Webmin: Municipalidad de Parral
+parral: tesoreria@parral.cl,informatica@parral.cl,lespinaza@gmail.com,rmartorell@e-com.cl
+# Webmin: Municipalidad de Calera de Tango
+calera_de_tango: ftoledo@caleradetango.net,mcadiz@caleradetango.net,pdonoso@caleradetango.net,amedina@caleradetango.net,pconline@caleradetango.net,mguajardo@caleradetango.net
+# Webmin: jproyecto
+jproyecto: cpavez,omar.navarrete,dportillo,asalinas,mauricio.lopez,marco.ovalle,antonio.ordenes,alvaro.setien,german.soto,juan.carreno,rodrigo.carreno,ingrid.erazo,jorge.negrete,sergio.zuniga,julio.henriquez,rodrigo.pavez,javier.saravia,mauricio.urbina
+svergara@caschile.cl
+secretaria.transito@colina.cl,thomas.quilodran@caschile.cl,mcarrasco@colina.cl,mcarrasco@caschile.cl,svergara@caschile.cl
+# Webmin: aseocolina
+aseocolina: svergara@caschile.cl,dportillo
+svergara@caschile.cl
+permisocolina: svergara@caschile.cl,secretaria.transito@colina.cl,mcarrasco@caschile.cl,rmartorell@e-com.cl,dportillo
+permisoszapallar: cpavez,rmartorell@e-com.cl,permisos@munizapallar.cl,rcisternas@munizapallar.cl,amolina@munizapallar.cl,secretaria@munizapallar.cl,tesoreria@munizapallar.cl
+permisotalca: asalinas,rmartorell@e-com.cl
+permisoquintanormal: dportillo,rmartorell@e-com.cl
+aseoloprado: rmartorell@e-com.cl
+permisosloprado: rmartorell@e-com.cl,ccarrillo@loprado.cl,lriquelme@loprado.cl,pconline@loprado.cl,shernandez@loprado.cl
+permisohuechuraba: mauricio.lopez,oduque@huechuraba.cl
+aseosanjoaquin: marco.ovalle,claudiacea@sanjoaquin.cl,alejandranaranjo@sanjoaquin.cl,enrique.cuevas@sanjoaquin.cl,leonelarqueros@sanjoaquin.cl
+aseopucon: rmartorell@e-com.cl
+permisopucon: rmartorell@e-com.cl
+aseovallenar: rmartorell@e-com.cl
+permisosvallenar: jntorres@vallenar.cl,wzamora@vallenar.cl,hastorgap@vallenar.cl,mastudillo@vallenar.cl,tesoreria@vallenar.cl,pzamarca@vallenar.cl,pzamarca@gmail.com,eandana@vallenar.cl
+aseopirque: rmartorell@e-com.cl
+aseosanfernando: omar.navarrete,rmartorell@e-com.cl
+permisosanfernando: omar.navarrete,rmartorell@e-com.cl
+aseolaserena: rmartorell@e-com.cl
+permisoslaserena: jvalenzuela@munilaserena.cl,hode@munilaserena.cl,lrivera@munilaserena.cl,llara@munilaserena.cl,csanhueza@munilaserena.cl,patricio.alcayaga@laserena.cl
+patentesquilicura: mauricio.lopez,rmartorell@e-com.cl
+aseoquilicura: mauricio.lopez,rmartorell@e-com.cl,marielbav@gmail.com,cbriones@quilicura.cl
+permisosquilicura: mauricio.lopez,mnovoa@quilicura.cl
+aseocerronavia: rmartorell@e-com.cl
+patentescerronavia: rmartorell@e-com.cl
+permisocerronavia: rmartorell@e-com.cl
+aseocobquecura: cpavez,rmartorell@e-com.cl
+permisocobquecura: cpavez,rmartorell@e-com.cl
+patentescobquecura: cpavez,rmartorell@e-com.cl
+aseolota: rmartorell@e-com.cl
+patenteslota: rmartorell@e-com.cl
+permisolota: rmartorell@e-com.cl
+patentespelluhue: dportillo,rmartorell@e-com.cl
+aseopelluhue: dportillo
+aseoperalillo: omar.navarrete
+patentesperalillo: omar.navarrete,rmartorell@e-com.cl
+permisoperalillo: omar.navarrete
+aseolicanten: cpavez
+patenteslicanten: cpavez
+# Webmin: Permiso Circulacion Teno
+permisoteno: gdiaz@teno.cl,jmoraga@teno.cl,jcorvalan@teno.cl,jnorambuena@teno.cl,imoraga@teno.cl,mrojas@teno.cl,mespina@teno.cl,jvaldes@teno.cl,varce@teno.cl,mosses@teno.cl,etoledo@teno.cl,mvillar@teno.cl,mdiaz@teno.cl,cpavez,cristianp.teno@gmail.com
+# Webmin: Permiso Agarrobo
+permisosalgarrobo: transito@municipalidadalgarrobo.cl,informatica@municipalidadalgarrobo.cl,omar.navarrete
+# Webmin: Permiso San Carlos
+permisosancarlos: permisosdecirculacion@sancarlos.cl,transito@sancarlos.cl,finanzas@sancarlos.cl,daf@sancarlos.cl
+# Webmin: Permisos Estacion Central
+permisosestacioncentral: tesorero@estacioncentral.cl,ivanbrockway@estacioncentral.cl,permisoscirculacion@estacioncentral.cl
+# Webmin: Prueba
+pruebaecom: mcampos@e-com.cl
+# Webmin: Reclamos
+reclamos: rodrigo.martorell,claudio.valdes,sergio.ramirez,paloma.orellana
+mantenimiento: jdelgado,rodrigo.martorell,icornejo
+# Webmin: Patentes de Calera de tango
+patentescaleradetango: cnoriel@e-com.cl
+# Webmin: Patentes Villa Alemana
+patentesvillaalemana: tesoreria@villalemana.cl,vtm@villalemana.cl,informatica@villalemana.cl,rentas@villalemana.cl
+# Webmin: Patentes Estacion Central
+patentesestacioncentral: cnoriel@e-com.cl
+# Webmin: Permisos Panguipulli
+permisospanguipulli: roberto.gutierrez@municipalidadpanguipulli.cl,miguelangel.chaparro@munipangui.cl,pamela.cabezas@municipalidadpanguipulli.cl,eugenio.huenufil@municipalidadpanguipulli.cl
+# Webmin: Permisos Chaiten
+permisoschaiten: munichaiten@surnet.cl,permisos@munichaiten.cl
+# Webmin: Permisos Villa Alemana
+permisosvillaalemana: tesoreria@villalemana.cl,informatica@villalemana.cl,rentas@villalemana.cl,transito@villalemana.cl,permisos_circulacion@villalemana.cl
+# Webmin: Aseo Villa Alemana
+aseovillaalemana: tesoreria@villalemana.cl,vtm@villalemana.cl,informatica@villalemana.cl,rentas@villalemana.cl
+# Webmin: Patentes Parral
+patentesparral: tesoreria@parral.cl,patentes@parral.cl,parral@parral.cl,informatica@parral.cl,lespinaza@gmail.com
+# Webmin: Permisos Olmue
+permisosolmue: gladyszamorano@olmue.cl,tesoreria@olmue.cl,eduardoaros@olmue.cl,informatica@olmue.cl,cpavez
+# Webmin: Permisos San Joaquin
+permisossanjoaquin: alejandranaranjo@sanjoaquin.cl,leonelarqueros@sanjoaquin.cl,claudiacea@sanjoaquin.cl,enrique.cuevas@sanjoaquin.cl
+# Webmin: Permisos Santo Domingo
+permisossantodomingo: corozco@santodomingo.cl,jarmijo@santodomingo.cl,rovalle@santodomingo.cl,fdevia@santodomingo.cl,lescobar@santodomingo.cl,pcirculacion@santodomingo.cl,cpavez
+# Webmin: Permisos San Miguel
+permisossanmiguel: tesoreria@sanmiguel.cl,d_a_f@sanmiguel.cl,conta@sanmiguel.cl,transito@sanmiguel.cl
+# Webmin: Permisos Puerto Varas
+permisospuertovaras: permisos.enlinea@ptovaras.cl
+# Webmin: Permisos Calama
+permisoscalama: aacuna@municipalidadcalama.cl,mmontecinos@municipalidadcalama.cl,cpavez,agimenez@municipalidadcalama.cl,maguilar@municipalidadcalama.cl,percir@municipalidadcalama.cl
+# Webmin: Permisos Yumbel
+permisosyumbel: nalvarez@yumbel.cl,mponce@yumbel.cl,jcabezas@yumbel.cl,jsaez@yumbel.cl
+# Webmin: Permisos Talca
+permisostalca: jroco@talca.cl,csotoc@talca.cl,ahernandez@talca.cl,asalinas,transito@talca.cl,brojas@talca.cl
+brojas@talca.cl,jvalenzuela@talca.cl,friveros@talca.cl
+# Webmin: Permisos Curico
+permisoscurico: pablo.torres@curico.cl,hector.rojas@curico.cl,permisosdecirculacion@curico.cl,tesoreria@curico.cl,rafael.munoz@curico.cl,liliana.garrido@curico.cl,informatica@curico.cl,sistemas@curico.cl,olaverios.sergio@gmail.com,cpavez
+# Webmin: Web Master
+webmaster: pruebaecom
+# Webmin: Permisos San Ramon
+permisossanramon: cerda.maritza@gmail.com,tesoreriasanramon@gmail.com,a.lorenaguzman@yahoo.com.ar,mmoya@msramon.cl,mpavez@msramon.cl
+# Webmin: Traslado San Miguel
+trasladosanmiguel: online@sanmiguel.cl
+# Webmin: Permisos Licanten
+permisoslicanten: traslados2012@mlicanten.cl,licanten@tupatenteparachile.cl,cpavez,permisoslicanten@gmail.com
+# Webmin: Permisos La Pintana
+permisoslapintana: permisocirculacion@pintana.cl,cpavez
+# Webmin: Permisos Cartagena
+permisoscartagena: cpavez,tesoreria@cartagena-chile.cl,aamesticah@cartagena-chile.cl,administrador@cartagena-chile.cl,fdiaz@cartagena-chile.cl
+# Webmin: Permisos Copiapo
+pangui: e-com,grojas@copiapo.cl,egaray@copiapo.cl,scarvajal@copiapo.cl,rpalma@copiapo.cl
+# Webmin: Permisos Angol
+permisosangol: aurra@angol.cl,informatica@angol.cl
+# Webmin: Para uso del Comite de Navidad
+comitenavidad: alicia.jara,aossandon,camila.ramirez,cpavez,carolina.valdes,catalina.boza,cristopher.cortes,claudio.cardenas,claudio.valdes,ccanales,cynthia.riquelme,daniel.valdes,daniela.sandoval,denisse.munoz,eduardo.figueroa,fcampos,gibsy.gomez,giovana.bustos,hector.bravo,hthon,icornejo,ingrid.erazo,ipaillalef,jaqueline.deleon,jaime.caceres,jonathan.valdes,jorge.gonzalez,avilches,jlopez,luis.valdes,maicol.anton,marcelo.baeza,marco.ovalle,maximo.perez,javiera.valdes,neryda.gonzalez,paloma.orellana,psegovia,ricardo.castro,rodrigo.martorell,roxana.baez,sergio.ramirez,tamara.alvarez,zoltan.rojas,jpuebla,eossandon,juancarlos.munoz,alvaroherrerazurita19@gmail.com
+patentescopiapo: grojas@copiapo.cl,agonzalez@copiapo.cl,avillafana@copiapo.cl,egaray@copiapo.cl,rodrigo.uribe
+stecnico: servico.tecnico
+inn-cas: aossandon,gibsy.gomez,ingrid.erazo,omar.navarrete,claudio.valdes,rodrigo.martorell,sramirez,angela.lizardi,rene.zelada,german.soto
+ingenieria: rodrigo.martorell,aossandon,rigoberto.pulgar,fcampos,valentina.guajardo,hector.bravo,ingenieria
+diseno: rodrigo.martorell
+firma: rodrigo.martorell
+seguridadinformacion: sgsi,sramirez,claudio.valdes
+certificados_colina: leonardo.martinez@colina.cl,monica.diaz@colina.cl,e-com@caschile.cl
+tesoreria_colina: jose.zuniga@colina.cl,e-com@caschile.cl
+# Webmin: Gerencia Tecnica
+gerencia.tecnica: rene.zelada,ecarrasco,sliebig,avilches,hthon,rigoberto.pulgar,cnoriel,evelyn.ilufi,paulo.suazo,fcampos,jdelgado,fernando.valenzuela,aossandon,manuel.campos,robert.salinas,gibsy.gomez,marcelo.virgili,alejandro.allende,juan.armijo,rodrigo.martorell,gonzalo.caceres,rodrigo.chible,hugo.rojas
+soporte.remoto: jaime.caceres,rodrigo.castro,manuel.castro,zoltan.rojas,miguel.contreras,axel.santibanez,jonnathan.oyarce,mario.vidal,maximo.perez,marcelo.baeza,daniela.sandoval,jorge.gonzalez,miguel.caceres,david.gonzalez,mario.moreno,julio.gonzalez,felipe.salinas,luis.rosales,david.robles
+# Webmin: Recursos Humanos
+rr.hh: rr.hh,claudio.valdes,icornejo,catalina.boza,cristina.donaire
+# Webmin: Alias para grupo de certificacion
+certificacion: jaime.caceres,rodrigo.castro,manuel.castro,zoltan.rojas,marcelo.baeza,miguel.contreras,axel.santibanez,jonnathan.oyarce,rodrigo.martorell
+# Webmin: Cuenta Espejo Backup
+manuel.campos: manuel.campos
+implementacion: cpavez,jorge.gonzalez,david.robles,miguel.caceres,david.gonzalez,mario.moreno,jose.gonzalez
+soporte.bancoestado: soporte.bancoestado,ingenieria,area.finanzas,claudio.valdes
+# Webmin: Integracion DUOC - Rigoberto Pulgar
+integraciones.duoc: ingenieria,frederick.mondaca,carlos.canales,bastian.gongora,manuel.hernandez,sebastian.blanco,emilio.soto
+# Webmin: Lista de pruebas de correo
+crn: manuel.campos
+aseotalca: lalvear@talca.cl,ahernandez@talca.cl,ccabrera@talca.cl,projas@talca.cl,lbravo@talca.cl,mvenegasc@talca.cl,jvalenzuela@talca.cl,brojas@talca.cl,asalinas
+# Webmin: Alias para periodistas CASCHILE
+comunicaciones: comunicaciones,carmen.zepeda,natalia.espinoza,angelica.guzman
+fotografos: gerson.neicun,antonio.vallejo,ana.munoz,nicole.donoso,virgina.basoalto,belen.delgado,bianca.ampuero
+# Webmin: Solicitado por Carolina Noriel 13/08/2012
+tesoreria_sanmiguel: tesoreria@sanmiguel.cl,d_a_f@sanmiguel.cl,conta@sanmiguel.cl
+# Webmin: Solicitado por Carolina Noriel 13/08/2012
+certificados_sanmiguel: javierlopezorrego@gmail.com,claudiacorrea@sanmiguel.cl,elidaosorio@sanmiguel.cl,estersoto@sanmiguel.cl,ximenagp@gmail.com
+dburgoa: rodrigo.martorell
+daniel.burgoa: rodrigo.martorell
+transparencia_colina: transparencia@colina.cl,cnoriel,mcampos@sifim.cl
+webcast: rodrigo.martorell
+# Webmin: Cuenta usada por CIT de Ingenieria
+cit: manuel.campos
+patentesrenca: mmejias@renca.cl,mtiara@renca.cl,lalegria@renca.cl,scarvallo@renca.cl,agutierrez@renca.cl,patentes@renca.cl,rmartorell@e-com.cl,cpavez,cnoriel@e-com.cl
+trueque: dportillo,cpavez,sliebig,sramirez,hector.bravo,omachuca,lvaldes,gibsy.gomez,hthon,rigoberto.pulgar,aossandon,cnoriel,avilches,ecarrasco,fcampos,svergara,rene.zelada,ingrid.erazo,jorge.gonzalez,ipaillalef,ccanales,jdelgado,jpuebla,jmenares,antonio.ordenes,psegovia,omar.navarrete,jlopez,juan.armijo,marcelo.virgili,claudio.cardenas,rodrigo.martorell,luis.valdes,angela.lizardi,asalinas,paulo.suazo,miguel.castillo,jose.gonzalez,alvaro.diaz,felipe.allendes,cristian.romo,claudio.valdes,antonio.colima,miguel.caceres,mauricio.lopez,juan.hernandez,felipe.valdes,daniel.aravena,jorge.soto,robert.salinas,patricio.peralta,david.gonzalez,romulo.diaz,alvaro.setien,pablo.quezada,marcelo.baeza,alvaro.fuentes,rodrigo.carreno,german.soto,hernan.pinilla,rodrigo.castro,leonardo.parra,sergio.venegas,jorge.munoz,mario.moreno,cristian.rifo,juancarlos.munoz,ana.karina,fernando.valenzuela,oscar.huaiquian,alberto.valenzuela,alejandro.allende,marco.ovalle,ricardo.castro,tania.martinez,eva.concha,alicia.jara,david.robles,eossandon,juan.gonzalez,jerson.neicun,jose.rodriguez,nicole.donoso,jaime.caceres,manuel.castro,jonnathan.oyarce,zoltan.rojas,miguel.contreras,axel.santibanez,constanza.sanmartin,aida.guzman,luis.rosales,rodrigo.uribe,alvaro.raiman,german.cadiz,gonzalo.caceres,gerson.neicun,antonio.vallejo,ana.munoz,jose.chavez,natalia.espinoza,daniela.sandoval,esteban.sepulveda,sebastian.cerda,angela.fuentes,evelyn.ilufi,any.cofre,rodrigo.chible,hugo.rojas,francisco.morales,alejandro.delgado,daniel.tiznado,mauricio.ponce,ignacio.cruz,catalina.boza,maicol.anton,eduardo.figueroa,pablo.soto,pablo.sepulveda,cristian.avila,cristopher.cortes,juan.campbell,daniza.yanez,luis.morales,icornejo,maximo.perez,jose.monserrat,alexis.nunez,mario.vidal,yaneth.villalobos,daniel.fuentes,mauricio.montenegro,francisco.martinez,felipe.aliaga,carlos.osorio,jonathan.valdes,neryda.gonzalez,carlos.sandoval,mario.lopez,marcelo.torrejon,jorge.negrete,yerko.franulic,francisca.ferreira,cynthia.riquelme,matias.catalan,fernando.diaz,sergio.zuniga,angelica.guzman,hernan.acosta,carolina.valdes,francisco.munita,sergio.marchant,luz.reyes,ruben.vega,manuel.nunez,daniela.gonzalez,jose.valenzuela,valentina.guajardo,cristopher.sandoval,claudio.beltran,fernanda.orias,paolo.andaur,roxana.baez,francisco.delahoz,yasmin.puebla,francisco.betancourt,tomas.carrasco,denis.munoz,gustavo.riquelme,mariana.flores,cristina.donaire,rodrigo.pavez,giovana.bustos,julio.henriquez,juan.amestica,carlos.montiers,felipe.astroza,matias.seguel,felipe.salinas,pedro.perez,mauricio.urbina,lucas.petruzzella,christian.barros,cristian.morales,jocelyn.rojas,tamara.alvarez,juan.silva,javier.saravia,camila.ramirez,jesus.munoz,paloma.orellana,macarena.gonzalez,claudia.roman,juanf.gonzalez,virginia.basoalto,belen.delgado,bianca.ampuero,joel.balboa,roxana.ramirez,alicia.vasquez,paola.boin,paloma.dasilva,ignacio.ruz
+archivos2013: omachuca,lvaldes,jlopez,luis.valdes,angela.lizardi,alicia.jara,ricardo.castro,felipe.valdes,claudio.valdes,rodrigo.martorell,sramirez,jpuebla
+finanzas: johana.campos,aida.guzman,icornejo
+conaset: ingenieria,mesa.ayuda,jproyecto
+oirs.lampa: oirs@lampa.cl
+# Webmin: Pago patentes Punta Arenas
+patentespuntaarenas: ricardo.barria@e-puntaarenas.cl,fabiola.gonzalez@e-puntaarenas.cl,zulema.ayancan@e-puntaarenas.cl,ema.barrientos@e-puntaarenas.cl,daniel.sanchez@e-puntaarenas.cl,asalinas@caschile.cl
+# Webmin: alias para RR.HH solicitado por Ilian Cornejo
+facturas: facturaciondte
+labcas: sliebig,any.cofre,dportillo,rodrigo.martorell
+viajes.operaciones: icornejo,claudio.valdes,sergio.ramirez,ingrid.erazo,psegovia
+sgsi: sgsi,jesus.munoz,paloma.orellana,marcelo.virgili,manuel.campos,claudio.valdes,rmartorell
+fonoalarma.natales: emergencias@muninatales.cl,mimedom@hotmail.com,rodrigo.martorell
+bancoestado: ingrid.erazo,alvaro.setien,sergio.ramirez,rodrigo.martorell,esteban.sepulveda,ecarrasco,claudio.valdes,rigoberto.pulgar
+soportebancoestado: soporte.bancoestado,bancoestado
+fonoalarma.colina: rodrigo.martorell,cristopher.cortes,cnoriel
+fonoalarma.lapintana: cnoriel,rodrigo.martorell,cristopher.cortes
+# Webmin: Alias correo Juan Lopez
+jlopez: jlopez,angela.lizardi
+# Webmin: Solo para ellas
+nosotras: neryda.gonzalez,psegovia,hthon,ipaillalef,icornejo,ecarrasco,cnoriel,angela.lizardi,gibsy.gomez,angelica.guzman,alicia.jara,cynthia.riquelme,eva.concha,yaneth.villalobos,carolina.valdes,aida.guzman,evelyn.ilufi,francisca.ferreira,any.cofre,daniza.yanez,daniela.sandoval,nicole.donoso,natalia.espinoza,constanza.sanmartin,catalina.boza,ingrid.erazo,yasmin.puebla,daniela.gonzalez,valentina.guajardo,fernanda.orias,paola.boin,roxana.baez,denis.munoz,cristina.donaire,giovana.bustos,jaqueline.deleon,jocelyn.rojas,claudia.roman,camila.ramirez,paloma.orellana,macarena.gonzalez,virgina.basoalto,belen.delgado,bianca.ampuero,alicia.vasquez,roxana.ramirez,paloma.dasilva
+mvenegas: mvenegas,hector.bravo
+jefeinstalacion: jonnathan.oyarce,jose.chavez,svergara,yaneth.villalobos,daniza.yanez,ccanales,jose.gonzalez,maicol.anton,german.cadiz,joel.balboa,juan.gonzalez,daniel.tiznado,mauricio.montenegro,luis.morales
+carmen.zepeda: carmen.zepeda
+# Webmin: Eliminar
+denis.munoz: denisse.munoz
+jaqueline: 
+# Webmin: mesa
+mesa: mesa
+cesar.erices: hector.bravo
+# Webmin: Cuenta de Recepcion
+recepcion: recepcion,denisse.munoz
+# Webmin: Solicitados por R. Pulgar
+dtecert: dtecert,eossandon,lucas.petruzzella,aossandon,rigoberto.pulgar,fcampos,valentina.guajardo,hector.bravo
+# Webmin: Solicitados por R. Pulgar
+dteprod: dteprod,facturaciondte
+# Webmin: Solicitados por R. Pulgar
+siicert: siicert,ingenieria,eossandon,lucas.petruzzella
+# Webmin: Solicitados por R. Pulgar
+siiprod: siiprod,facturaciondte
+# Webmin: Solicitado por Rigoberto Pulgar
+facturaciondte: eossandon,aida.guzman,tamara.alvarez,icornejo
+tania: tamara.alvarez,carolina.valdes
+dvaldes: dvaldes,manuel.campos
+claudio.valdes: claudio.valdes,manuel.campos
+

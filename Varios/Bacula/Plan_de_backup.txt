@@ -1,0 +1,195 @@
+
+
+### Maquinas GNU/Linux ###
+
+# 0100 SRV-DEDALO Client (File Services) to backup
+  Name = srv-dedalo-fd
+  Address = 192.168.7.160  ### El servidor de Archivos/SMB/FTP
+
+    		File = "/home/Versiones"
+		File = "/home/sgsi"
+    		File = "/home/replicador"
+    		File = "/home/Bitacoras"
+    		File = "/home/intranet"
+                File = "/home/capacitacion"
+		File = "/home/proyectomovil"
+
+
+#0101 MAILCASCHILE Client (File Services) to backup
+  Name = mailcaschile-fd
+  Address = 192.168.7.181  ### El servidor de correo CASCHILE
+ 
+    File = "/etc"
+    File = "/home/mailbak"
+    File = "/var/spool/mail"
+
+# 0102 MAIL-ECOM Client (File Services) to backup
+  Name = mail-fd
+  Address = 192.168.7.140  ### mail.e-com.cl 
+
+    		File = "/etc"
+    		File = "/var/vmail"
+
+
+# 0103 CAS-STORAGE Client (File Services) to backup
+  Name = cas-storage-fd
+  Address = cas-storage  ### cas-storage.caschile.cl
+
+    		File = "/etc"
+		File = "/bacula-restores"
+#		File = "/var/samba/SGSI
+#    		File = "/var/samba/testing"
+#		File = "/var/samba/Ingenieria"
+#                File = "/var/samba/ajara"
+#		File = "/var/samba/Cobranzas"
+#                File = "/var/samba/OPERACIONES"
+  
+
+# 0104 LEGOLAS Client (File Services) to backup
+  Name = legolas-fd
+  Address = legolas  ### legolas.caschile.cl
+
+                File = "/etc"
+                File = "/home/transparencias"
+
+
+### Fin Maquinas GNU/LINUX ###
+
+### Maquinas Microsoft WINDOWS TM ###
+
+# 01 - BISTALK Client (File Services) to backup
+Client {
+  Name = biztalk-fd
+  Address = biztalk
+
+     		File = "c:/Inetpub"
+     		File = "d:/Sitios_Web/Pruebas e-com"
+
+
+# 02 - SRV-FIRMA Client (File Services) to backup
+Client {
+  Name = srv-firma-fd
+  Address = srv-firma 		# 192.168.7.63
+
+
+     		File = "c:/Inetpub"
+     		File = "c:/Appserv"
+
+
+# 02 - SRV-MOVIL Client (File Services) to backup
+Client {
+  Name = srv-movil-fd
+  Address = srv-movil
+
+     File = "d:/Repositories"
+
+
+
+# 03 - DB_SERVER Client (File Services) to backup
+  Name = db_server-fd
+  Address = db_server	 #192.168.7.79
+
+    		File = "e:/VSS_CAS"
+
+
+
+# 04 - SQL-SERVER Client (File Services) to backup
+  Name = sql-server-fd
+  Address = SQL-SERVER
+
+     		File = "e:/Sistemas"
+
+
+# 05 - SRV-AREANET Client (File Services) to backup
+  Name = srv-areanet-fd
+  Address = srv-areanet
+
+     		File = "f:/Respaldos"
+
+
+
+# 06 - SRV-CASCHILE Client (File Services) to backup
+  Name = srv-caschile-fd
+  Address = srv-caschile
+}
+
+     		File = "c:/Inetpub/wwwroot/QSM_Cas_Produccion"
+     		File = "c:/Inetpub/wwwroot/cas-chile"
+     		File = "e:/Microsoft SQL Server/MSSQL10_50.MSSQLSERVER/MSSQL/Backup"
+
+
+
+# 07 - SRV-FINANZAS Client (File Services) to backup
+Client {
+  Name = srv-finanzas-fd
+  Address = srv-finanzas
+
+     		File = "c:/CasChile"
+     		File = "e:/Microsoft SQL Server 2008/MSSQL/Backup"
+
+
+# 08 - SRV-TIBIA Client (File Services) to backup
+  Name = srv-tibia-fd
+  Address = SRV-TIBIA
+
+     		File = "c:/AppServ"
+
+
+
+# 09 - SRV-WEB Client (File Services) to backup
+  Name = srv-web-fd
+  Address = srv-web
+
+     		File = "d:/IIS"
+		File = "d:/AppServ/www"
+
+
+
+# 10 - SRV-DUOC Client (File Services) to backup
+  Name = srv-duoc-fd
+  Address = srv-duoc
+
+                File = "C:/SistemasNET"
+                File = "C:/InetPub"
+
+#-------------------------------------#
+# 11 - SRV-ECOM Client (File Services) to backup
+# Client (File Services) to backup 192.168.7.153
+
+  Name = srv-ecom-fd
+  Address = srv-ecom
+
+	File = "e:/MICROSOFT SQL SERVER/MSSQL/Backup"
+	File = "c:/Inetpub/wwwroot/e-com"
+	File = "c:/AppServ/www"
+
+
+# Client (File Services) to backup
+  Name = pc_pcarrillo-fd
+  Address = pc_pcarrillo
+
+        File = "C:/RR.HH"
+
+
+
+# Client (File Services) to backup
+  Name = pc_psegovia-fd
+  Address = pc_psegovia
+
+        File = "C:/Caschile"
+
+
+# Client (File Services) to backup
+  Name = raulmatus-think-fd
+  Address = raulmatus-think
+
+        File = "C:/Users/Raul Matus/Desktop/raul matus"
+
+
+
+# Client (File Services) to backup
+  Name = pc_secgerencia-fd
+  Address = pc_secgerencia
+
+        File = "C:/Users/Laura Ferrada/Documents/Respaldo disco D"
+

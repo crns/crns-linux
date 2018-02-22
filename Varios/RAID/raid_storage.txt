@@ -1,0 +1,94 @@
+Desmontar filesystem
+
+umount /var/samba
+
+Chequear estado de los raid
+
+cat /proc/mdstat
+
+mdadm --assemble --scan
+
+Desactivar Raid
+
+mdadm --assemble --scan
+
+root@cas-storage:~# mdadm --stop /dev/md2
+mdadm: failed to stop array /dev/md2: Device or resource busy
+Perhaps a running process, mounted filesystem or active volume group?
+
+mdadm /dev/md2 -f /dev/hda1 -r /dev/hda1 -a /dev/hda1
+
+
+mdadm --add /dev/md0 /dev/sdd4
+
+
+
+mdadm --assemble --force /dev/md125 /dev/sdb4 /dev/sdc4 /dev/sdd4 /dev/sde4
+
+
+mdadm --assemble --run /dev/md125 /dev/sd[bcde]4
+
+mdadm --assemble --run /dev/md2 /dev/sd[bcde]4
+
+mdadm --scan --assemble --uuid = 7b096c97:c4883311:2a2fcc6a:c86395a0
+
+
+
+mdadm --examine /dev/sd[bcde]4
+
+
+sfdisk -d /dev/sdc | sfdisk /dev/sdb
+
+mdadm --create /dev/md125 --assume-clean --level=5 --raid-devices=4 /dev/sdb4 /dev/sdc4 missing /dev/sde4
+
+Detener arrayd
+
+mdadm --assemble --update=resync -f /dev/md125  /dev/sdb4 /dev/sdc4 /dev/sde4
+
+
+mdadm --create /dev/md125 --assume-clean --level=5 --raid-devices=4 /dev/sdb4 /dev/sdc4 /dev/sdd4 /dev/sde4
+
+mdadm --assemble --update=resync -f /dev/md0 /dev/sdb4 /dev/sdc4 /dev/sdd4 /dev/sde4
+
+mdadm --assemble --update=uuid /dev/md0 /dev/sdb4 /dev/sdc4 /dev/sdd4 /dev/sde4
+
+mdadm --assemble --update=resync /dev/md0 /dev/sdb4 /dev/sdc4 /dev/sdd4 /dev/sde4
+
+
+uuid efe4c1cf:af891a92:f62d0850:1abd085c
+
+mdadm --readwrite /dev/md0
+
+
+------------------------------
+LVM Trabajo con los volumenes lógicos
+
+
+pvcreate /dev/md0
+
+vgcreate gv /dev/md0
+
+lvcreate -L8,00G -n volumen_logico grupo_volumen
+
+lvcreate -L20,00G -n vl gv
+
+-----------------------
+Restaurando Volumen Lógico
+
+pvcreate --restorefile /etc/lvm/backup/gv -t -u zrLznX-DDnk-HD0D-mRPK-M6Zm-UuEs-YXhIW0 gv
+
+-----------------------------
+CAS-Storage
+
+pvcreate --restorefile /etc/lvm/backup/vg0 -t -u uAbEZb-Hq1M-wBOW-gGiO-4T76-dbE9-XiEFz3 vg0
+
+------------------------------------------
+mdadm --readwrite /dev/md2
+
+pvcreate -u 2SyiYO-NL12-dPJN-Pdru-1ze6-RkZd-8Ube3n /dev/md2
+
+vgcfgrestore --file vg0 --test vg0
+
+
+
+

@@ -1,0 +1,580 @@
+Hosting Apache Worker
+
+Multiprocesamiento tipo Prefork (mpm-prefork).
+
+Es el módulo MPM instalado y usado por defecto en las instalaciones. Este módulo crea diferentes procesos independientes para manejar las diferentes peticiones. Esta técnica de crear varios procesos se la denomina forking, de ahí el nombre mpm-prefork. Al iniciar Apache Prefork se crean varios procesos hijo (el número de procesos que se crea dependerá de nuestra configuración).
+
+Es la instalación por defecto porque es la que ofrece una mayor compatibilidad con los diferentes módulos. Existen módulos de Apache que no son seguros para usar con threads (no son thread-safe) por eso hay que recurrir a una versión de Apache que no use threads como es el Apache MPM Prefork (que usa procesos en lugar de threads). Un claro ejemplo de módulo muy usado que no es thread-safe es mod_php.
+
+MPM Prefork es el módulo más estable pero también es el que más recursos consume (en cuanto a RAM y CPU) ya que mantener los diferentes procesos de Apache es “caro” en cuanto a recursos.
+
+Multiprocesamiento tipo Worker (mpm-worker).
+
+Es un módulo MPM que pretende mejorar el rendimiento frente a MPM Prefork y de hecho lo consigue. Este módulo usa procesos y al mismo tiempo hace uso de threads (también llamados hilos), es decir, combina las técnicas de forking y threading. Al iniciar Apache Worker se crean varios procesos hijo y a su vez cada proceso hijo emplea varios threads. Con esto se consigue que cada proceso hijo pueda manejar varias peticiones simultaneas gracias a los threads.
+
+Entendiendo lo anterior, deducimos que empleando este método que combina procesos y threads requiere de un menor número de procesos hijo y cómo consecuencia emplea menos recursos de CPU y RAM (dónde más se nota el impacto es en el uso de CPU, que baja de forma drástica respecto a Prefork).
+
+Pero no es oro todo lo que brilla, ya que MPM Worker al usar threads sólo soporta módulos de Apache que sean thread-safe, por lo que el famoso mod_php no puede ser usado con Apache MPM Worker. Otro inconveniente de MPM Worker es que si por algún motivo un proceso hijo tiene que ser terminado por circunstancias anómalas, se pierden todas las conexiones que manejan los threads de ese proceso hijo cancelado, es decir, ante fallos MPM Worker se comporta peor.
+
+Volviendo al tema de mod_php y su incompatibilidad con MPM Worker, obviamente existe una alternativa a mod_php compatible con Worker que se llama php-fpm, la cual también ofrece sus ventajas e inconvenientes frente a mod_php. Resumiendo mucho una comparativa entre mod_php y php-fpm podríamos decir:
+
+    Ventajas de mod_php: nos ofrece velocidad y facilidad de configuración.
+    Ventajas de php-fpm: nos ofrece un mejor uso de recursos (RAM y CPU) y mayor eficiencia.
+    Inconvenientes de mod_php: consume más recursos.
+    Inconvenientes de php-fpm: configuración más complicada.
+
+
+Multiprocesamiento tipo Event (mpm-event).
+
+MPM Event hasta hace poco era considerado como experimental pero hoy en día ya es una opción estable. Es una mejora de MPM Worker y soluciona un problema de optimización que mostraba MPM Worker con la opción Keep Alive de Apache. No quiero entrar en una explicación detallada sobre el problema de optimización y confundiros con datos técnicos, por lo que seré breve y diré que MPM Event mejora el rendimiento de Apache durante las peticiones con Keep Alive, que son muy comunes.
+
+Como MPM Event está basado en MPM Worker, tiene las mismas ventajas e inconvenientes que este, por lo que obviamente MPM Event no es compatible con mod_php, habrá que usar php-fpm.
+
+Multiprocesamiento tipo ITK (mpm-itk todavía en fase experimental).
+
+MPM ITK es un módulo nuevo y experimental cuyo funcionamiento es el mismo que el MPM Prefork, es decir, usa procesos hijo para su funcionamiento y no threads. La novedad de MPM ITK está en que permite asignar a cada host virtual (Virtualhost) un usuario del sistema, de esta forma en un servidor compartido que aloja varias webs de diferentes usuarios, estos usuarios no pueden interactuar con los archivos del resto de usuarios.
+
+Este MPM es innovador pero está en fase experimental, de hecho no viene ni en la documentación oficial de Apache. Existen algunos módulos como suPHP o mod_ruid2 que nos permiten conseguir resultados similares a MPM ITK.
+
+-------------------------------------
+
+Instalar Apache Worker
+
+root@tom:~# apt-get install apache2-mpm-worker
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  apache2 apache2-bin apache2-data apache2-utils libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap libldap-2.4-2 liblua5.1-0 libsasl2-2
+  libsasl2-modules libsasl2-modules-db openssl ssl-cert
+Suggested packages:
+  www-browser apache2-doc apache2-suexec-pristine apache2-suexec-custom libsasl2-modules-otp libsasl2-modules-ldap libsasl2-modules-sql
+  libsasl2-modules-gssapi-mit libsasl2-modules-gssapi-heimdal ca-certificates openssl-blacklist
+The following NEW packages will be installed:
+  apache2 apache2-bin apache2-data apache2-mpm-worker apache2-utils libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap libldap-2.4-2
+  liblua5.1-0 libsasl2-2 libsasl2-modules libsasl2-modules-db openssl ssl-cert
+0 upgraded, 16 newly installed, 0 to remove and 0 not upgraded.
+Need to get 3110 kB of archives.
+After this operation, 8741 kB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+
+2.- Habilitar modulo de reescritura:
+
+
+
+root@tom:~# /etc/init.d/apache2 restart
+[ ok ] Restarting apache2 (via systemctl): apache2.service.
+root@tom:~# 
+
+-----------
+Instalar Mysql
+
+apt-get install mysql-server mysql-client
+
+root@tom:~# apt-get install mysql-server mysql-client
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  libaio1 libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libterm-readkey-perl mysql-client-5.5 mysql-common mysql-server-5.5
+  mysql-server-core-5.5 psmisc
+Suggested packages:
+  libclone-perl libmldbm-perl libnet-daemon-perl libsql-statement-perl libipc-sharedcache-perl mailx tinyca
+The following NEW packages will be installed:
+  libaio1 libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libterm-readkey-perl mysql-client mysql-client-5.5 mysql-common
+  mysql-server mysql-server-5.5 mysql-server-core-5.5 psmisc
+0 upgraded, 13 newly installed, 0 to remove and 0 not upgraded.
+Need to get 8879 kB of archives.
+After this operation, 96.7 MB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+
+root#bom1216badil
+
+---------------------
+3.- Instalar PHP-FPM
+
+apt-get install php5-fpm php5
+
+root@tom:~# apt-get install php5-fpm php5
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  libapparmor1 libonig2 libperl4-corelibs-perl libqdbm14 lsof php5-cli php5-common php5-json php5-readline ucf
+Suggested packages:
+  php-pear php5-user-cache
+The following NEW packages will be installed:
+  libapparmor1 libonig2 libperl4-corelibs-perl libqdbm14 lsof php5 php5-cli php5-common php5-fpm php5-json php5-readline ucf
+0 upgraded, 12 newly installed, 0 to remove and 0 not upgraded.
+Need to get 5837 kB of archives.
+After this operation, 21.3 MB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+
+Configura php-fpm para que escuche por un socket unix y permitir la ejecuciń de php hasta 600 segundos:
+
+Editar /etc/php5/fpm/pool.d/www.conf
+
+Linea 38   listen = /var/run/php5-fpm.sock
+
+Linea 328  request_terminate_timeout = 605
+
+Linea  234  pm.status_path = /status  descomentar y dejar en  pm.status_path = /php-fpm-status
+
+Linea 246  ping.path = /ping descomentar y dejar en  ping.path = /php-fpm-ping
+
+
+Reiniciar php5-fpm
+
+root@tom:~# service php5-fpm restart
+root@tom:~#
+
+Setup the log rotation:
+
+NO se hace nada:
+
+Instalar soporte php mysql y modulos php adicionales:
+
+root@tom:~# apt-get install php5-mysql php5-curl php5-gd php5-idn php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-mhash php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-json
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+Note, selecting 'php5-intl' instead of 'php5-idn'
+Note, selecting 'php5-common' instead of 'php5-mhash'
+php5-json is already the newest version.
+php5-json set to manually installed.
+php5-common is already the newest version.
+php5-common set to manually installed.
+The following extra packages will be installed:
+  aspell aspell-en ca-certificates dbus dictionaries-common emacsen-common fontconfig-config fonts-dejavu-core fonts-droid ghostscript gsfonts
+  imagemagick-common libaspell15 libavahi-client3 libavahi-common-data libavahi-common3 libc-client2007e libcap-ng0 libcups2 libcupsfilters1
+  libcupsimage2 libcurl3 libdbus-1-3 libfftw3-double3 libfontconfig1 libfreetype6 libgd3 libglib2.0-0 libglib2.0-data libgomp1 libgs9 libgs9-common
+  libijs-0.35 libjasper1 libjbig0 libjbig2dec0 libjpeg62-turbo liblcms2-2 liblqr-1-0 libltdl7 libmagickcore-6.q16-2 libmagickwand-6.q16-2 libmcrypt4
+  libpaper-utils libpaper1 libpci3 libperl5.20 libpng12-0 librecode0 librtmp1 libsensors4 libsnmp-base libsnmp30 libssh2-1 libtidy-0.99-0 libtiff5
+  libvpx1 libx11-6 libx11-data libxau6 libxcb1 libxdmcp6 libxext6 libxpm4 libxslt1.1 mlock poppler-data shared-mime-info ttf-dejavu-core
+  xdg-user-dirs
+Suggested packages:
+  aspell-doc spellutils dbus-x11 wordlist ghostscript-x uw-mailutils cups-common libfftw3-bin libfftw3-dev libgd-tools libjasper-runtime
+  liblcms2-utils libmagickcore-6.q16-2-extra libmcrypt-dev mcrypt lm-sensors snmp-mibs-downloader php5-dev memcached poppler-utils
+  fonts-japanese-mincho fonts-ipafont-mincho fonts-japanese-gothic fonts-ipafont-gothic fonts-arphic-ukai fonts-arphic-uming fonts-nanum
+The following NEW packages will be installed:
+  aspell aspell-en ca-certificates dbus dictionaries-common emacsen-common fontconfig-config fonts-dejavu-core fonts-droid ghostscript gsfonts
+  imagemagick-common libaspell15 libavahi-client3 libavahi-common-data libavahi-common3 libc-client2007e libcap-ng0 libcups2 libcupsfilters1
+  libcupsimage2 libcurl3 libdbus-1-3 libfftw3-double3 libfontconfig1 libfreetype6 libgd3 libglib2.0-0 libglib2.0-data libgomp1 libgs9 libgs9-common
+  libijs-0.35 libjasper1 libjbig0 libjbig2dec0 libjpeg62-turbo liblcms2-2 liblqr-1-0 libltdl7 libmagickcore-6.q16-2 libmagickwand-6.q16-2 libmcrypt4
+  libpaper-utils libpaper1 libpci3 libperl5.20 libpng12-0 librecode0 librtmp1 libsensors4 libsnmp-base libsnmp30 libssh2-1 libtidy-0.99-0 libtiff5
+  libvpx1 libx11-6 libx11-data libxau6 libxcb1 libxdmcp6 libxext6 libxpm4 libxslt1.1 mlock php-pear php5-curl php5-gd php5-imagick php5-imap
+  php5-intl php5-mcrypt php5-memcache php5-mysql php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl poppler-data
+  shared-mime-info ttf-dejavu-core xdg-user-dirs
+0 upgraded, 86 newly installed, 0 to remove and 0 not upgraded.
+Need to get 34.9 MB of archives.
+After this operation, 116 MB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+
+
+----------
+
+ 
+
+
+Terminar la configuración de Apache PHP-FPM
+
+apt-get install libapache2-mod-fastcgi
+
+root@tom:~# apt-get install libapache2-mod-fastcgi
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  libapache2-mod-fastcgi
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 64.1 kB of archives.
+After this operation, 250 kB of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ jessie/non-free libapache2-mod-fastcgi amd64 2.4.7~0910052141-1.1 [64.1 kB]
+Fetched 64.1 kB in 0s (854 kB/s)                 
+Selecting previously unselected package libapache2-mod-fastcgi.
+(Reading database ... 22762 files and directories currently installed.)
+Preparing to unpack .../libapache2-mod-fastcgi_2.4.7~0910052141-1.1_amd64.deb ...
+Unpacking libapache2-mod-fastcgi (2.4.7~0910052141-1.1) ...
+Setting up libapache2-mod-fastcgi (2.4.7~0910052141-1.1) ...
+apache2_invoke: Enable module fastcgi
+root@tom:~# 
+
+
+
+cd /etc/apache2/mods-available
+
+root@barbol:~# wget --no-check-certificate 'https://raw.github.com/biapy/howto.biapy.com/master/apache2/php-fpm/php5-fpm.load'
+
+Contenido del archivo php5-fpm.load
+
+# PHP-FPM configuration.
+# dummy file, see /etc/apache2/mods-available/php5-fpm.conf
+
+
+root@barbol:~# wget --no-check-certificate 'https://raw.github.com/biapy/howto.biapy.com/master/apache2/php-fpm/php5-fpm.conf'
+
+El contenido de php5-fpm.conf es:
+
+# PHP-FPM configuration
+<IfModule mod_fastcgi.c>
+  Alias /php5.fastcgi /var/lib/apache2/fastcgi/php5.fastcgi
+  AddHandler php-script .php
+  FastCGIExternalServer /var/lib/apache2/fastcgi/php5.fastcgi -socket /var/run/php5-fpm.sock -idle-timeout 610
+  Action php-script /php5.fastcgi virtual
+
+  # Forbid access to the fastcgi handler.
+  <Directory /var/lib/apache2/fastcgi>
+    <Files php5.fastcgi>
+      Order deny,allow
+      Allow from all
+    </Files>
+  </Directory>
+
+  # FPM status page.
+  <Location /php-fpm-status>
+    SetHandler php-script
+    Order deny,allow
+    Deny from all
+    Allow from 127.0.0.1 ::1
+  </Location>
+
+  # FPM ping page.
+  <Location /php-fpm-ping>
+    SetHandler php-script
+    Order deny,allow
+    Deny from all
+    Allow from 127.0.0.1 ::1
+  </Location>
+</IfModule>
+
+
+a2dismod php5
+
+
+a2enmod php5-fpm fastcgi actions
+
+root@tom:/etc/apache2/mods-available# a2enmod php5-fpm fastcgi actions
+Enabling module php5-fpm.
+Module fastcgi already enabled
+Enabling module actions.
+To activate the new configuration, you need to run:
+  service apache2 restart
+
+root@tom:
+
+/etc/init.d/apache2 restart
+
+root@tom:/etc/apache2/mods-available# /etc/init.d/apache2 restart
+[ ok ] Restarting apache2 (via systemctl): apache2.service.
+root@tom:/etc/apache2/mods-available#
+
+---------------------------
+Esto faltaba y funciono OK
+---------------------------
+
+Editar nano /etc/php5/fpm/pool.d/www.conf y descomentar desde la linea 45:
+
+
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0660
+
+service php5-fpm restart
+
+---
+nano /etc/apache2/mods-enabled/fastcgi.conf
+
+#<IfModule mod_fastcgi.c>
+#  AddHandler fastcgi-script .fcgi
+  #FastCgiWrapper /usr/lib/apache2/suexec
+#  FastCgiIpcDir /var/lib/apache2/fastcgi
+#</IfModule>
+
+<IfModule mod_fastcgi.c>
+AddHandler fastcgi-script .fcgi
+FastCgiIpcDir /var/lib/apache2/fastcgi
+
+Alias /php5.fastcgi "/var/www/fastcgi/php5.fastcgi"
+AddHandler php-script .php
+FastCGIExternalServer /var/www/fastcgi/php5.fastcgi -socket /var/run/php5-fpm.sock
+Action php-script /php5.fastcgi virtual
+
+<Directory "/var/www/fastcgi">
+Order allow,deny
+<Files "php5.fastcgi">
+Order deny,allow
+</Files>
+</Directory>
+</IfModule>
+
+Luego crean el directorio y le dan permiso 777
+
+mkdir /var/www/fastcgi
+chmod 777 /var/www/fastcgi
+
+Reiniciar:
+
+/etc/init.d/apache2 restart
+/etc/init.d/php5-fpm restart
+
+
+---------------
+Apache 2 en debian
+
+Probar umask
+root@tom:/home/caschile# umask
+0022
+
+Establecer umask a 002
+nano /etc/login.defs
+
+Agregar "session optional pam_umask.so usergroups"al final de:
+nano /etc/pam.d/common-session
+
+reiniciar sesion y probar umask
+
+OK
+
+root@tom:~# umask
+0002
+
+-------------------------
+
+Acceso ftp sitio:
+
+root@tom:~# apt-get install vsftpd
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  dialog
+The following NEW packages will be installed:
+  dialog vsftpd
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 405 kB of archives.
+After this operation, 1824 kB of additional disk space will be used.
+Do you want to continue? [Y/n]
+
+-------------------
+Ajustar php.conf
+
+
+
+----------------------
+Securizar Apache 2
+
+...
+
+cd /etc/apache2/conf.d/
+
+wget 'https://raw.github.com/biapy/howto.biapy.com/master/apache2/security-hardened.conf'
+
+
+-----------------------
+
+Securizar PHP5
+
+nano /etc/php5/mods-available/security-hardened.ini
+
+; Harden PHP5 security
+; priority=50
+; Disable PHP exposure
+expose_php = Off
+
+Aplicar en Wheezy
+
+php5enmod security-hardened/50
+
+/etc/init.d/php5-fpm restart
+
+----- ??
+nano /etc/php5/mods-available/mbstring.ini
+
+Aplicar:
+
+php5enmod mbstring/50
+
+----
+
+root@barbol:~# /etc/init.d/php5-fpm restart
+
+-----------------------
+Optimizar
+
+Worker and Winnt MPMs:
+
+With the worker and winnt MPMs, the default 15 second timeout is setup to keep the connection open for the next page request; to better handle a client going from link to link. Check logs to see how long a client remains on each page before moving on to another link. Set value appropriately [do not set higher than 60 seconds].
+SymLinks
+
+	KeepAlive On
+	KeepAliveTimeout 15
+	MaxKeepAliveRequests 100
+
+Make sure 'Options +FollowSymLinks -SymLinksIfOwnerMatch' is set for all directories. Otherwise, Apache will issue an extra system call per filename component to substantiate that the filename is NOT a symlink; and more system calls to match an owner.
+
+	<Directory />
+	    Options FollowSymLinks
+	</Directory>
+
+AllowOverride
+
+Set a default 'AllowOverride None' for your filesystem. Otherwise, for a given URL to path translation, Apache will attempt to detect an .htaccess file under every directory level of the given path.
+
+	<Directory />
+	    AllowOverride None
+	</Directory>
+
+ExtendedStatus
+
+If mod_status is included, make sure that directive 'ExtendedStatus' is set to 'Off'. Otherwise, Apache will issue several extra time-related system calls on every request made.
+
+	ExtendedStatus Off
+
+Timeout
+
+Lower the amount of time the server will wait before failing a request.
+
+	Timeout 45
+
+
+Mediciones
+
+MaxClients: Ésta es una de las directivas más importanes, pues determina el número máximo de peticiones simultáneas que Apache puede atender. La idea es no permitir más conexiones de las que se pueden atender, para evitar usar swap, lo cual disminuye en mucho el rendimiento global. Las peticiones que no se puedan atender se pondrán en cola, según el valor de la directiva ListenBacklog. Se explica cómo se calcula éste número (de forma aproximada) en la documentación oficial, pero se entiende mejor de la fórmula de devside.net:
+
+	MaxClients ≈ (RAM - size_all_other_processes)/(size_apache_process)
+
+RAM: se puede usar "free -m" para ver la ram total en MB, o cat /proc/meminfo, entre otras.
+
+	free -m
+
+size_apache_process: Se podrá calcular el tamaño de un proceso httpd con "ps -ylC apache2 --sort:rss", el cual mostrará todos los procesos httpd en ejecución, de menor a mayor tamaño, en bytes, para la columna RSS (Resident Set Size: "la memoria no-swap que ha usado, en KB"). Se podrá coger el tamaño mayor (dividido entre 1024 para tenerlo en MB) como "size_apache_process", o siendo menos severos, usar la siguiente fórmula, la cual calcula la media de los procesos actuales de Apache, ya en MB:
+
+	ps -ylC httpd --sort:rss | awk '{SUM += $8; I += 1} END {print SUM/I/1024}'
+
+
+size_all_other_processes: Siguiendo la regla anterior, se podrá ver el uso de memoria por los procesos que no sean de Apache, con la fórmula descrita a continuación, la cual ya devolverá el resultado en MB (Aquí la fuente):
+
+	ps -N -ylC apache2 --sort:rss | awk '{SUM += $8} END {print SUM/1024}'
+
+
+En legolas:
+
+MaxClients ≈ (5962 - 342.172)/4.47991
+
+MaxClients = 1254
+
+
+
+
+Módulos de Multi-Procesamiento (MPM)
+
+Apache "viene con una serie de Módulos de MultiProcesamiento que son los responsables de conectar con los puertos de red de la máquina, acceptar las peticiones, y generar los procesos hijo que se encargan de servirlas" (Fuente). Básicamente:
+
+Worker: usa múltiples procesos hijos, con múltiples threads cada uno. Cada thread gestiona una conexión a la vez. Generalmente, se recomienda en entornos de alto tráfico.
+
+Prefork: usa múltiples procesos hijos, con un único thread cada uno. Cada proceso gestiona una conexión a la vez. Puede trabajar con módulos de terceros.
+
+Aquí más información sobre estos MPM. Por cierto, se puede ver con qué MPM estamos trabajando, ejecutando la siguiente línea, lo cual nos devolverá, entre otros, prefork.c o worker.c:
+
+    /usr/sbin/apachectl -l
+
+
+Configuracion por default
+
+# worker MPM
+# StartServers: initial number of server processes to start
+# MinSpareThreads: minimum number of worker threads which are kept spare
+# MaxSpareThreads: maximum number of worker threads which are kept spare
+# ThreadLimit: ThreadsPerChild can be changed to this maximum value during a
+#              graceful restart. ThreadLimit can only be changed by stopping
+#              and starting Apache.
+# ThreadsPerChild: constant number of worker threads in each server process
+# MaxClients: maximum number of simultaneous client connections
+# MaxRequestsPerChild: maximum number of requests a server process serves
+<IfModule mpm_worker_module>
+    StartServers          2
+    MinSpareThreads      25
+    MaxSpareThreads      75
+    ThreadLimit          64
+    ThreadsPerChild      25
+    MaxClients          150
+    MaxRequestsPerChild   0
+</IfModule>
+
+Optimización (legolas):
+
+<IfModule mpm_worker_module>
+    ServerLimit          24
+    StartServers          6
+    MinSpareThreads      50
+    MaxSpareThreads      600
+    ThreadLimit          50
+    ThreadsPerChild      25
+    MaxClients          600
+    MaxRequestsPerChild   0
+</IfModule>
+
+-----------------------------------
+Resumen de contenidos
+
+Este Módulo de MultiProcesamiento (MPM) implementa un servidor híbrido multiproceso-multihebra. Usando hebras para atender peticiones, el servidor puede servir un mayor número de peticiones con menos recursos de sistema que un servidor basado únicamente en procesos. No obtante, se mantiene casi por completo la estabilidad de un servidor basado en procesos manteniendo la capacidad multiproceso, pudiendo cada proceso tener muchas hebras.
+
+Las directivas más importantes que se usan para controlar este MPM son ThreadsPerChild, que controla el número de hebras que tiene cada proceso hijo y MaxClients, que controla el número máximo de hebras que pueden crearse.
+Directivas
+
+    AcceptMutex
+    CoreDumpDirectory
+    EnableExceptionHook
+    Group
+    Listen
+    ListenBacklog
+    LockFile
+    MaxClients
+    MaxMemFree
+    MaxRequestsPerChild
+    MaxSpareThreads
+    MinSpareThreads
+    PidFile
+    ReceiveBufferSize
+    ScoreBoardFile
+    SendBufferSize
+    ServerLimit
+    StartServers
+    ThreadLimit
+    ThreadsPerChild
+    User
+
+Temas
+
+    Cómo funciona
+
+Consulte también
+
+    Especificar las direcciones y los puertos que usa Apache
+
+
+Cómo funciona
+
+Un solo proceso de control (el padre) es el responsable de crear los procesos hijo. Cada proceso hijo crea un número fijo de hebras del servidor de la forma que se especifica en la directiva ThreadsPerChild, así como una hebra de escucha que escuchará si se producen peticiones y las pasará a una hebra del servidor para que la procese.
+
+Apache siempre intenta mantener en reserva cierto número de hebras de sobra o en espera, que están preparadas para servir peticiones en el momento en que lleguen. Así, los clientes no tienen que esperar a que se creen nuevas hebras o procesos para que sean atendidas sus peticiones. El número de procesos que se crean al principio está determinado por la directiva StartServers. Después durante el funcionamiento del servidor, Apache calcula el número total de hebras en espera entre todos los procesos, y crea o elimina procesos para mantener ese número dentro de los límites especificados en las directivas MinSpareThreads y MaxSpareThreads. Como este proceso está bastante autorregulado, no es muy habitual que sea necesario modificar los valores que estas directivas traen por defecto. El número máximo de clientes que pueden ser servidos simultáneamente (por ejemplo, el número máximo de hebras entre todos los procesos) está determinado por la directiva MaxClients. El número máximo de procesos hijo activos está determinado por el valor especificado en la directiva MaxClients dividido por el valor especificado en la directiva ThreadsPerChild.
+
+Hay dos directivas que establecen límites estrictos al número de procesos hijo activos y al número de hebras del servidor en un proceso hijo, y puede cambiarse solo parando completamente el servidor y volviendo a iniciarlo. La directiva ServerLimit marca el límite estricto de procesos hijo activos posibles, y debe ser mayor o igual al valor de la directiva MaxClients dividido por el valor de la directiva ThreadsPerChild. El valor de la directiva ThreadLimit es el límite estricto del número de hebras del servidor, y debe ser mayor o igual al valor de la directiva ThreadsPerChild. Si los valores de esas directivas no son los que vienen por defecto, deben aparecer antes que el resto de directivas del módulo worker.
+
+Además del conjunto de procesos hijo activos, puede haber otros procesos hijo que están terminando pero en los que al menos una hebra del servidor está todavía tratando una conexión con un cliente. Puede haber hasta MaxClients procesos terminando, aunque el número real de estos procesos que puede esperarse es mucho menor. Este comportamiento puede evitarse desactivando la eliminación individual de procesos hijo, lo que se hace de la siguiente manera:
+
+    fijar el valor de la directiva MaxRequestsPerChild a cero
+    fijar el valor de la directiva MaxSpareThreads al mismo valor que la directiva MaxClients
+
+Una configuración típica del sistema de control de procesos y hebras del módulo de MPM worker prodría ser como sigue:
+
+ServerLimit 16
+StartServers 2
+MaxClients 150
+MinSpareThreads 25
+MaxSpareThreads 75
+ThreadsPerChild 25
+
+Mientras que el proceso padre se inicia con privilegios de usuario root en Unix para usar el puerto de escucha 80, los procesos hijo y las hebras se inician con menores privilegios de usuario. Las directivas User y Group se usan para determinar los privilegios con los que se iniciarán los procesos hijo. Los procesos hijo deben ser capaces de leer los contenidos que van a servir, pero solo los permisos extrictamente necesarios para cumplir su tarea. Además. a menos que se use suexec, los privilegios fijados en estas directivas son los que que van a heredar los scripts CGI.
+
+La directiva MaxRequestsPerChild controla con qué frecuencia el servidor recicla los procesos eliminando los antiguos y creando nuevos

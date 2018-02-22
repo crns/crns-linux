@@ -1,0 +1,9 @@
+root@frodo:/etc/xen# xen-create-image --hostname=gollum --dist=natty --mirror=http://old-releases.ubuntu.com --vcpus=2 --size=100Gb --swap=1Gb --memory=4096Mb --ip=192.168.7.167 --mac=00:21:5e:c7:9c:51 --memory=4096Mb --arch=amd64
+
+
+root@frodo:/etc/xen# xm create gollum.cfg 
+
+
+root@frodo:/etc/xen# ln -s /etc/xen/gollum.cfg /etc/xen/auto
+
+

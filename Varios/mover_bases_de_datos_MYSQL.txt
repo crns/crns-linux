@@ -1,0 +1,55 @@
+SERVIDOR ORIGEN:
+
+Obtener:
+- Nombre de la base de datos
+- Usuario de la base de datos
+- Password del usuario de la base de datos
+Los datos se obtienen desde algun archivo de configuración del sitio, configuration.php o config.php o dese alguna carpeta modelo(db.php o connect.php, etc, si el sitio es MVC.
+
+Luego realizar el backup del esquema y datos de la base de datos con (todo desde la bash shell):
+
+ mysqldump --opt -u <usuarioDB> -p<passworDB> <basededatos> > basededatos-añomesdiaversion.sql
+
+ejemplo transparencia-cabildo.caschile.cl:
+
+user: cabildodb
+password: ca1722do
+database: transparencia_cabildo
+
+ mysqldump --opt -u cabildodb -pca1722do transparencia_cabildo > transparencia_cabildo-2015042700.sql
+
+Ahora backup de los procedimientos almacenados:
+
+ mysqldump -u cabildodb -pca1722do --routines --no-create-info --no-data --no-create-db --skip-opt transparencia_cabildo > procedimientos_transparencia_cabildo-2015042700.sql
+
+Luego el archivo se traslada , por ejemplo, via ssh al servidor destino:
+
+SERVIDOR DESTINO:
+
+En el servidor destino, mediante la cuenta root de mysql se crea el usuario, se crea la base de datos y se importan los datos:
+
+Ejemplo (como root de mysql):
+
+Crear usuario y permisos (desde mysql):
+
+ GRANT ALL PRIVILEGES ON transparencia_cabildo.* TO 'cabildodb'@'localhost' IDENTIFIED BY 'ca1722do';
+
+Ahora crear la base de datos (desde mysql):
+
+ create database transparencia_cabildo;
+
+ flush tables;
+
+ flush privileges;
+
+quit
+
+Ahora importar los datos desde archivos de respaldos desde la shell (RESTORE):
+
+ mysql -u cabildodb -pca1722do transparencia_cabildo < transparencia_cabildo-2015042700.sql
+ mysql -u cabildodb -pca1722do transparencia_cabildo < procedimientos_transparencia_cabildo-2015042700.sql
+
+PRESTO
+ENJOY!!
+
+

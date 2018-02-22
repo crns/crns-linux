@@ -68,10 +68,11 @@ Check that grub was properly installed on the domU with
 which should great with the familiar grub menu, and then abort
 
 
-Replace the kernel and ramdisk parameters in the domU config file with the following line. 
+Reeemplazar los parámetros kernel y ramdisk en el archivo de cnfiguración del domU con la siguiente linea. 
 
 bootloader      = '/usr/lib/xen-default/bin/pygrub'
 
+o
 
 bootloader      = '/usr/lib/xen-4.4/bin/pygrub'
 

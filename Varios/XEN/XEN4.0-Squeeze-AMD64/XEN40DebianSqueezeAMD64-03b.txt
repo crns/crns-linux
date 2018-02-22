@@ -1,0 +1,428 @@
+
+Ahora instalar XEN 4.1
+
+apt-get autoremove
+
+root@frodo:~# apt-get autoremove
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@frodo:~# 
+
+
+##apt-get install xen-linux-system xen-utils xenstore-utils xen-tools 
+
+##        install xen-linux-system-amd64
+
+apt-get install xen-linux-system xen-tools
+
+root@frodo:~# apt-get install xen-linux-system xen-tools
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «xen-linux-system-amd64» en lugar de «xen-linux-system»
+Se instalarán los siguientes paquetes extras:
+  ca-certificates debootstrap gawk libaio1 libconfig-inifiles-perl libcurl3-gnutls libelf1 libencode-locale-perl libexpect-perl libffi5
+  libfile-listing-perl libfile-slurp-perl libfont-afm-perl libglib2.0-0 libglib2.0-data libhtml-form-perl libhtml-format-perl libhtml-parser-perl
+  libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl
+  libio-pty-perl libio-socket-ip-perl libio-socket-ssl-perl libio-stty-perl libiscsi1 liblist-moreutils-perl liblua5.1-0 liblwp-mediatypes-perl
+  liblwp-protocol-https-perl libmailtools-perl libnet-http-perl libnet-ssleay-perl libnspr4 libnss3 librpm3 librpmbuild3 librpmio3 librpmsign1
+  librtmp0 libsigsegv2 libsocket-perl libssh2-1 libterm-size-perl libtext-template-perl liburi-perl libwww-perl libwww-robotrules-perl libxen-4.1
+  libxenstore3.0 qemu-keymaps qemu-utils rinse rpm rpm-common rpm2cpio shared-mime-info sharutils xen-hypervisor-4.1-amd64
+  xen-linux-system-3.2.0-4-amd64 xen-system-amd64 xen-utils-4.1 xen-utils-common xenstore-utils
+Paquetes sugeridos:
+  gawk-doc libdata-dump-perl libcrypt-ssleay-perl libauthen-ntlm-perl alien elfutils rpm-i18n xen-docs-4.1 reiserfsprogs xfsprogs cfengine2
+  btrfs-tools
+Paquetes recomendados:
+  xen-hypervisor-amd64 xen-hypervisor-i386 xen-hypervisor-i386-pae xen-utils xen-hypervisor-4.1
+Se instalarán los siguientes paquetes NUEVOS:
+  ca-certificates debootstrap gawk libaio1 libconfig-inifiles-perl libcurl3-gnutls libelf1 libencode-locale-perl libexpect-perl libffi5
+  libfile-listing-perl libfile-slurp-perl libfont-afm-perl libglib2.0-0 libglib2.0-data libhtml-form-perl libhtml-format-perl libhtml-parser-perl
+  libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl
+  libio-pty-perl libio-socket-ip-perl libio-socket-ssl-perl libio-stty-perl libiscsi1 liblist-moreutils-perl liblua5.1-0 liblwp-mediatypes-perl
+  liblwp-protocol-https-perl libmailtools-perl libnet-http-perl libnet-ssleay-perl libnspr4 libnss3 librpm3 librpmbuild3 librpmio3 librpmsign1
+  librtmp0 libsigsegv2 libsocket-perl libssh2-1 libterm-size-perl libtext-template-perl liburi-perl libwww-perl libwww-robotrules-perl libxen-4.1
+  libxenstore3.0 qemu-keymaps qemu-utils rinse rpm rpm-common rpm2cpio shared-mime-info sharutils xen-hypervisor-4.1-amd64
+  xen-linux-system-3.2.0-4-amd64 xen-linux-system-amd64 xen-system-amd64 xen-tools xen-utils-4.1 xen-utils-common xenstore-utils
+0 actualizados, 70 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 20,4 MB de archivos.
+Se utilizarán 49,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+-----
+Modificando el arraque:
+
+
+root@frodo:~# cd /etc/grub.d/
+
+root@frodo:/etc/grub.d# ls -l
+total 52
+-rwxr-xr-x 1 root root 6728 jul  2  2013 00_header
+-rwxr-xr-x 1 root root 5407 jul  2  2013 05_debian_theme
+-rwxr-xr-x 1 root root 5977 jul  2  2013 10_linux
+-rwxr-xr-x 1 root root 6335 jul  2  2013 20_linux_xen
+-rwxr-xr-x 1 root root 6522 jul  2  2013 30_os-prober
+-rwxr-xr-x 1 root root  214 sep 19  2011 40_custom
+-rwxr-xr-x 1 root root   95 sep 19  2011 41_custom
+-rw-r--r-- 1 root root  483 sep 19  2011 README
+root@frodo:/etc/grub.d# 
+
+Crear enlace simbolico al kernel XEN:
+
+root@frodo:/etc/grub.d# ln -s 20_linux_xen 09_linux_xen
+
+Verificar:
+
+root@frodo:/etc/grub.d# ls -l
+total 52
+-rwxr-xr-x 1 root root 6728 jul  2  2013 00_header
+-rwxr-xr-x 1 root root 5407 jul  2  2013 05_debian_theme
+lrwxrwxrwx 1 root root   12 jul 24 20:00 09_linux_xen -> 20_linux_xen
+-rwxr-xr-x 1 root root 5977 jul  2  2013 10_linux
+-rwxr-xr-x 1 root root 6335 jul  2  2013 20_linux_xen
+-rwxr-xr-x 1 root root 6522 jul  2  2013 30_os-prober
+-rwxr-xr-x 1 root root  214 sep 19  2011 40_custom
+-rwxr-xr-x 1 root root   95 sep 19  2011 41_custom
+-rw-r--r-- 1 root root  483 sep 19  2011 README
+root@frodo:/etc/grub.d#
+
+Actualizar el gestor de arranque:
+root@frodo:/etc/grub.d# update-grub
+Generating grub.cfg ...
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found linux image: /boot/vmlinuz-2.6.32-5-amd64
+Found initrd image: /boot/initrd.img-2.6.32-5-amd64
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+done
+
+Y reboot
+
+Comprobar con xm dmesg
+
+...
+(XEN) Scrubbing Free RAM: .done.
+(XEN) Xen trace buffers: disabled
+(XEN) Std. Loglevel: Errors and warnings
+(XEN) Guest Loglevel: Nothing (Rate-limited: Errors and warnings)
+(XEN) Xen is relinquishing VGA console.
+(XEN) *** Serial input -> DOM0 (type 'CTRL-a' three times to switch input to Xen)
+(XEN) Freed 244kB init memory.
+(XEN) physdev.c:168: dom0: wrong map_pirq type 3
+root@frodo:~# 
+
+
+Ahora configurar XEN:
+
+Modificar /etc/xen/xend-config.sxp descomentando y cambiando la opcion:
+
+(xend-http-server yes)
+(xend-address '')
+
+En la linea 170 insertar:
+
+(network-script 'network-bridge bridge=br0')
+
+Guardar y salir
+
+------
+Hacer arrancable una máquina virtual ya creada:
+
+Crear directorio /etc/xen/auto
+
+mkdir /etc/xen/auto
+
+root@frodo:/etc/xen# ln -s /etc/xen/pippin.cfg /etc/xen/auto
+
+
+Crear o arrancar instancia de la máquina virtual:
+
+xm create /etc/xen/pippin.cfg
+
+
+*- Preparar XEN-TOOLS para crear máquinas Linux
+
+cd /etc/xen-tools
+
+nano xen-tools.conf
+
+Esto no:
+##lvm = xen-vol
+
+Cambiar y descomentar ls siguiente linea:
+
+# dir = /home/xen
+
+a:
+
+dir = /var/xen-vms
+
+En la sección "Disk and Sizing options" personalizar:
+
+size   = 300Gb      # Disk image size.
+memory = 4Gb    # Memory size
+swap   = 1Gb    # Swap size
+
+En la seccion "Networking setup values", descomentar y personalizar:
+
+gateway    = 192.168.1.6
+netmask    = 255.255.255.0
+broadcast  = 192.168.1.255
+
+Buscar y comentar la sgte. linea:
+
+mirror = `xt-guess-suite-and-mirror --mirror`
+
+comentarla y agregar:
+
+mirror = http://ftp.cl.debian.org/debian/
+
+Lista las opciones básicas:
+
+
+- Crear un VM Linux
+
+Ver los siguientes ejemplos:
+
+xen-create-image --hostname=nombremv --size=5Gb --swap=256Mb --ide --ip=192.168.0.11 --netmask=255.255.255.0 --gateway=192.168.0.1 --force --dir=/home/xen --memory=128Mb --arch=i386 --kernel=/boot/vmlinuz-2.6.26-2-xen-686 --debootstrap --dist=lenny --mirror=http://ftp.fr.debian.org/debian/ --passwd 
+
+xen-create-image --dist=squeeze --hostname=x50 --vifname=x50 --mac=00:16:C0:A8:FC:32 --ip=192.168.252.50 --partitions=default_4G
+
+xen-create-image --hostname=test --ip=192.168.1.99 --memory=512Mb --size=5G --swap=256Kb
+
+- Crear maquina SAM
+
+(Nota: La mac en frodo es 00:21:5e:c7:9c:44 de la primera NIC la segunda es 00:21:5e:c7:9c:46, por lo tanto se asignaran MAC terminadas en decimal impar desde 00:21:5e:c7:9c:45)
+
+
+#Usado para crear CORREO
+xen-create-image --dist=squeeze --hostname=correo --ip=192.168.1.8 --mac=9c:b6:54:12:1d:f0 --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64 
+
+root@nol:/etc/xen-tools# xen-create-image --dist=squeeze --hostname=correo --ip=192.168.1.8 --mac=9c:b6:54:12:1d:f0 --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64 --passwd
+
+General Information
+--------------------
+Hostname       :  correo
+Distribution   :  squeeze
+Mirror         :  http://ftp.cl.debian.org/debian/
+Partitions     :  swap            1Gb   (swap)
+                  /               300Gb (ext3)
+Image type     :  sparse
+Memory size    :  4Gb
+Kernel path    :  /boot/vmlinuz-2.6.32-5-amd64
+Initrd path    :  /boot/initrd.img-2.6.32-5-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.1.8 [MAC: 9c:b6:54:12:1d:f0]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.1.255
+Gateway        : 192.168.1.6
+
+
+Creating partition image: /var/xen-vms/domains/correo/swap.img
+Done
+
+Creating swap on /var/xen-vms/domains/correo/swap.img
+Done
+
+Creating partition image: /var/xen-vms/domains/correo/disk.img
+Done
+
+Creating ext3 filesystem on /var/xen-vms/domains/correo/disk.img
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Enter new UNIX password: 
+Retype new UNIX password: 
+passwd: password updated successfully
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/correo.log
+
+Installation Summary
+---------------------
+Hostname        :  correo
+Distribution    :  squeeze
+IP-Address(es)  :  192.168.1.8 
+RSA Fingerprint :  b5:11:5a:6a:e0:6c:88:4c:e5:41:8b:ae:9c:2d:a6:01
+Root Password   :  N/A
+
+root@nol:/etc/xen-tools# 
+
+La passwor de root se pide por consola y Presto-
+-------------------------------------------------
+
+Arrancar VM CORREO:
+
+Primero verificar:
+
+root@nol:~# xm list
+Name                                        ID   Mem VCPUs      State   Time(s)
+Domain-0                                     0  3869     4     r-----    150.3
+root@nol:~# 
+
+Arrancar manualmente vm:
+
+xm create /etc/xen/correo.cfg
+
+
+root@frodo:~# xm create /etc/xen/sam.cfg
+Using config file "/etc/xen/sam.cfg".
+Started domain sam (id=2)
+
+
+
+root@frodo:~# xm list
+Name                                        ID   Mem VCPUs      State   Time(s)
+Domain-0                                     0 18058     8     r-----   5844.8
+pippin                                       1  2048     2     -b----    692.5
+sam                                          2  4096     1     -b----      1.4
+
+
+Conectar a sam por ssh con la contraseña creada en la instalación:
+Nota: se agrga una entrada en /etc/hosts con el host sam, se puede usar el nomre para el acceso ssh.
+
+root@frodo:~# ssh sam
+
+The authenticity of host '192.168.7.163 (192.168.7.163)' can't be established.
+RSA key fingerprint is 82:3e:95:db:da:47:fe:7d:54:3c:71:57:8b:e1:7b:fa.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.7.163' (RSA) to the list of known hosts.
+root@192.168.7.163's password: 
+Linux sam 2.6.32-5-amd64 #1 SMP Tue May 13 16:34:35 UTC 2014 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+root@sam:~# 
+
+Configura autoarranque de sam en el reinicio del frodo:
+
+ln -s /etc/xen/sam.cfg /etc/xen/auto
+
+Listo Enjoy  ;-)
+
+- Crear MERRY
+
+--
+
+xm create /etc/xen/merry.cfg
+
+ln -s /etc/xen/merry.cfg /etc/xen/auto
+
+
+:-) Enjoy
+
+------
+
+Eliminar la máqina creada con:
+
+destroy correo
+rm -rf /etc/xen/correo.cfg
+
+y borrando el disco creado el directorio
+
+Crear nuevamente sin la opccion password
+
+
+
+xen-create-image --dist=squeeze --hostname=correo --ip=192.168.1.8 --mac=9c:b6:54:12:1d:f2 --vcpus=2 --memory=2048Mb --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64
+
+root@nol:~# xen-create-image --dist=squeeze --hostname=correo --ip=192.168.1.8 --mac=9c:b6:54:12:1d:f2 --vcpus=2 --memory=2048Mb --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64
+
+General Information
+--------------------
+Hostname       :  correo
+Distribution   :  squeeze
+Mirror         :  http://ftp.cl.debian.org/debian/
+Partitions     :  swap            1Gb   (swap)
+                  /               300Gb (ext3)
+Image type     :  sparse
+Memory size    :  2048Mb
+Kernel path    :  /boot/vmlinuz-2.6.32-5-amd64
+Initrd path    :  /boot/initrd.img-2.6.32-5-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.1.8 [MAC: 9c:b6:54:12:1d:f2]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.1.255
+Gateway        : 192.168.1.6
+
+
+Creating partition image: /var/xen-vms/domains/correo/swap.img
+Done
+
+Creating swap on /var/xen-vms/domains/correo/swap.img
+Done
+
+Creating partition image: /var/xen-vms/domains/correo/disk.img
+Done
+
+Creating ext3 filesystem on /var/xen-vms/domains/correo/disk.img
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/correo.log
+
+Installation Summary
+---------------------
+Hostname        :  correo
+Distribution    :  squeeze
+IP-Address(es)  :  192.168.1.8 
+RSA Fingerprint :  20:bd:0c:ba:9f:6d:ea:9e:4e:f2:a2:2c:9b:28:4e:9f
+Root Password   :  vGs5RNWg
+
+
+Listo!
+
+Ahora lanzar vm correo:
+
+
+xm create /etc/xen/correo.cfg
+
+mkdir /etc/xen/auto
+
+ln -s /etc/xen/correo.cfg /etc/xen/auto
+
+
+:-) Enjoy
+
+

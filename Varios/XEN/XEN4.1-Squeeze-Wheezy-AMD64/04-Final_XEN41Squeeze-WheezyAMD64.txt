@@ -1,0 +1,171 @@
+Instalando y configurando un Initiator iSCSI en Wheezy
+
+root@crn-xen:~# apt-get install open-iscsi
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  open-iscsi
+0 actualizados, 1 se instalarán, 0 para eliminar y 9 no actualizados.
+Necesito descargar 532 kB de archivos.
+Se utilizarán 2.166 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main open-iscsi amd64 2.0.873-3 [532 kB]
+Descargados 532 kB en 0seg. (1.666 kB/s)
+Seleccionando el paquete open-iscsi previamente no seleccionado.
+(Leyendo la base de datos ... 49443 ficheros o directorios instalados actualmente.)
+Desempaquetando open-iscsi (de .../open-iscsi_2.0.873-3_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando open-iscsi (2.0.873-3) ...
+root@crn-xen:~# 
+
+Editar el archivo /etc/iscsi/iscsid.conf
+
+root@crn-xen:~# nano /etc/iscsi/iscsid.conf
+
+node.startup = automatic    --> linea 37 descomentar y comentar linea 40
+
+
+Guardar y salir
+
+root@crn-xen:~# /etc/init.d/open-iscsi restart
+[ ok ] Unmounting iscsi-backed filesystems: Unmounting all devices marked _netdev.
+[ ok ] Disconnecting iSCSI targets:.
+[ ok ] Stopping iSCSI initiator service:.
+[ ok ] Starting iSCSI initiator service: iscsid.
+[....] Setting up iSCSI targets:
+iscsiadm: No records found
+. ok 
+[ ok ] Mounting network filesystems:.
+root@crn-xen:~# 
+
+
+
+root@crn-xen:~# iscsiadm -m discovery -t st -p arwen
+192.168.7.239:3260,1 iqn.2006-01.com.openfiler:tsn.00ea25df6386
+root@crn-xen:~#
+
+root@crn-xen:~# iscsiadm -m node
+192.168.7.239:3260,1 iqn.2006-01.com.openfiler:tsn.00ea25df6386
+root@crn-xen:~#
+
+root@crn-xen:~# cat /etc/iscsi/nodes/iqn.2006-01.com.openfiler\:tsn.00ea25df6386/192.168.7.239\,3260\,1/default
+
+# BEGIN RECORD 2.0-873
+node.name = iqn.2006-01.com.openfiler:tsn.00ea25df6386
+node.tpgt = 1
+node.startup = automatic
+node.leading_login = No
+iface.iscsi_ifacename = default
+iface.transport_name = tcp
+iface.vlan_id = 0
+iface.vlan_priority = 0
+iface.iface_num = 0
+iface.mtu = 0
+iface.port = 0
+node.discovery_address = arwen
+node.discovery_port = 3260
+node.discovery_type = send_targets
+node.session.initial_cmdsn = 0
+node.session.initial_login_retry_max = 8
+node.session.xmit_thread_priority = -20
+node.session.cmds_max = 128
+node.session.queue_depth = 32
+node.session.nr_sessions = 1
+node.session.auth.authmethod = None
+node.session.timeo.replacement_timeout = 120
+node.session.err_timeo.abort_timeout = 15
+node.session.err_timeo.lu_reset_timeout = 30
+node.session.err_timeo.tgt_reset_timeout = 30
+node.session.err_timeo.host_reset_timeout = 60
+node.session.iscsi.FastAbort = Yes
+node.session.iscsi.InitialR2T = No
+node.session.iscsi.ImmediateData = Yes
+node.session.iscsi.FirstBurstLength = 262144
+node.session.iscsi.MaxBurstLength = 16776192
+node.session.iscsi.DefaultTime2Retain = 0
+node.session.iscsi.DefaultTime2Wait = 2
+node.session.iscsi.MaxConnections = 1
+node.session.iscsi.MaxOutstandingR2T = 1
+node.session.iscsi.ERL = 0
+node.conn[0].address = 192.168.7.239
+node.conn[0].port = 3260
+node.conn[0].startup = manual
+node.conn[0].tcp.window_size = 524288
+node.conn[0].tcp.type_of_service = 0
+node.conn[0].timeo.logout_timeout = 15
+node.conn[0].timeo.login_timeout = 15
+node.conn[0].timeo.auth_timeout = 45
+node.conn[0].timeo.noop_out_interval = 5
+node.conn[0].timeo.noop_out_timeout = 5
+node.conn[0].iscsi.MaxXmitDataSegmentLength = 0
+node.conn[0].iscsi.MaxRecvDataSegmentLength = 262144
+node.conn[0].iscsi.HeaderDigest = None
+node.conn[0].iscsi.DataDigest = None
+node.conn[0].iscsi.IFMarker = No
+node.conn[0].iscsi.OFMarker = No
+# END RECORD
+
+
+
+root@crn-xen:~# cat /proc/partitions 
+major minor  #blocks  name
+
+  11        0    1048575 sr0
+   8        0  976762584 sda
+   8        1  974608384 sda1
+   8        2    2152448 sda2
+root@crn-xen:~#
+
+root@crn-xen:~# /etc/init.d/open-iscsi restart 
+[ ok ] Unmounting iscsi-backed filesystems: Unmounting all devices marked _netdev.
+[....] Disconnecting iSCSI targets:iscsiadm: No matching sessions found
+. ok 
+[ ok ] Stopping iSCSI initiator service:.
+[ ok ] Starting iSCSI initiator service: iscsid.
+[....] Setting up iSCSI targets:
+Logging in to [iface: default, target: iqn.2006-01.com.openfiler:tsn.00ea25df6386, portal: 192.168.7.239,3260] (multiple)
+Login to [iface: default, target: iqn.2006-01.com.openfiler:tsn.00ea25df6386, portal: 192.168.7.239,3260] successful.
+. ok 
+[ ok ] Mounting network filesystems:.
+root@crn-xen:~#
+
+root@crn-xen:~# cat /proc/partitions 
+major minor  #blocks  name
+
+  11        0    1048575 sr0
+   8        0  976762584 sda
+   8        1  974608384 sda1
+   8        2    2152448 sda2
+   8       16   10240000 sdb
+root@crn-xen:~# 
+
+root@crn-xen:~# fdisk -l
+
+Disk /dev/sda: 1000.2 GB, 1000204886016 bytes
+255 heads, 63 sectors/track, 121601 cylinders, total 1953525168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000c0e16
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048  1949218815   974608384   83  Linux
+/dev/sda2      1949218816  1953523711     2152448   82  Linux swap / Solaris
+
+Disk /dev/sdb: 10.5 GB, 10485760000 bytes
+64 heads, 32 sectors/track, 10000 cylinders, total 20480000 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+Disk /dev/sdb doesn't contain a valid partition table
+root@crn-xen:~# 
+
+----
+
+Ahora el o los disco creados se tratan como volumenes lvm2, a continuación...
+
+
+
+

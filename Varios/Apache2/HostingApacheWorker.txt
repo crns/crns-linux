@@ -1,0 +1,531 @@
+
+Multiprocesamiento tipo Prefork (mpm-prefork).
+
+Es el módulo MPM instalado y usado por defecto en las instalaciones. Este módulo crea diferentes procesos independientes para manejar las diferentes peticiones. Esta técnica de crear varios procesos se la denomina forking, de ahí el nombre mpm-prefork. Al iniciar Apache Prefork se crean varios procesos hijo (el número de procesos que se crea dependerá de nuestra configuración).
+
+Es la instalación por defecto porque es la que ofrece una mayor compatibilidad con los diferentes módulos. Existen módulos de Apache que no son seguros para usar con threads (no son thread-safe) por eso hay que recurrir a una versión de Apache que no use threads como es el Apache MPM Prefork (que usa procesos en lugar de threads). Un claro ejemplo de módulo muy usado que no es thread-safe es mod_php.
+
+MPM Prefork es el módulo más estable pero también es el que más recursos consume (en cuanto a RAM y CPU) ya que mantener los diferentes procesos de Apache es “caro” en cuanto a recursos.
+
+Multiprocesamiento tipo Worker (mpm-worker).
+
+Es un módulo MPM que pretende mejorar el rendimiento frente a MPM Prefork y de hecho lo consigue. Este módulo usa procesos y al mismo tiempo hace uso de threads (también llamados hilos), es decir, combina las técnicas de forking y threading. Al iniciar Apache Worker se crean varios procesos hijo y a su vez cada proceso hijo emplea varios threads. Con esto se consigue que cada proceso hijo pueda manejar varias peticiones simultaneas gracias a los threads.
+
+Entendiendo lo anterior, deducimos que empleando este método que combina procesos y threads requiere de un menor número de procesos hijo y cómo consecuencia emplea menos recursos de CPU y RAM (dónde más se nota el impacto es en el uso de CPU, que baja de forma drástica respecto a Prefork).
+
+Pero no es oro todo lo que brilla, ya que MPM Worker al usar threads sólo soporta módulos de Apache que sean thread-safe, por lo que el famoso mod_php no puede ser usado con Apache MPM Worker. Otro inconveniente de MPM Worker es que si por algún motivo un proceso hijo tiene que ser terminado por circunstancias anómalas, se pierden todas las conexiones que manejan los threads de ese proceso hijo cancelado, es decir, ante fallos MPM Worker se comporta peor.
+
+Volviendo al tema de mod_php y su incompatibilidad con MPM Worker, obviamente existe una alternativa a mod_php compatible con Worker que se llama php-fpm, la cual también ofrece sus ventajas e inconvenientes frente a mod_php. Resumiendo mucho una comparativa entre mod_php y php-fpm podríamos decir:
+
+    Ventajas de mod_php: nos ofrece velocidad y facilidad de configuración.
+    Ventajas de php-fpm: nos ofrece un mejor uso de recursos (RAM y CPU) y mayor eficiencia.
+    Inconvenientes de mod_php: consume más recursos.
+    Inconvenientes de php-fpm: configuración más complicada.
+
+
+Multiprocesamiento tipo Event (mpm-event).
+
+MPM Event hasta hace poco era considerado como experimental pero hoy en día ya es una opción estable. Es una mejora de MPM Worker y soluciona un problema de optimización que mostraba MPM Worker con la opción Keep Alive de Apache. No quiero entrar en una explicación detallada sobre el problema de optimización y confundiros con datos técnicos, por lo que seré breve y diré que MPM Event mejora el rendimiento de Apache durante las peticiones con Keep Alive, que son muy comunes.
+
+Como MPM Event está basado en MPM Worker, tiene las mismas ventajas e inconvenientes que este, por lo que obviamente MPM Event no es compatible con mod_php, habrá que usar php-fpm.
+
+Multiprocesamiento tipo ITK (mpm-itk todavía en fase experimental).
+
+MPM ITK es un módulo nuevo y experimental cuyo funcionamiento es el mismo que el MPM Prefork, es decir, usa procesos hijo para su funcionamiento y no threads. La novedad de MPM ITK está en que permite asignar a cada host virtual (Virtualhost) un usuario del sistema, de esta forma en un servidor compartido que aloja varias webs de diferentes usuarios, estos usuarios no pueden interactuar con los archivos del resto de usuarios.
+
+Este MPM es innovador pero está en fase experimental, de hecho no viene ni en la documentación oficial de Apache. Existen algunos módulos como suPHP o mod_ruid2 que nos permiten conseguir resultados similares a MPM ITK, yo personalmente uso mod_ruid2 y estoy contento con el.
+
+-------------------------------------
+Sólo para Squeeze...
+
+Agregar repositorios dotdeb
+
+command apt-get install lsb-release
+
+DEBIAN_VERSION="$(command lsb_release -cs)"
+
+command echo "# DotDeb repository. deb http://packages.dotdeb.org ${DEBIAN_VERSION} all deb-src http://packages.dotdeb.org ${DEBIAN_VERSION} all" \
+    > '/etc/apt/sources.list.d/dotdeb-org.list'
+
+Agregar ssl key de los repositorios:
+
+command wget 'http://www.dotdeb.org/dotdeb.gpg' --quiet --output-document=- | command apt-key add -
+
+Assign a low priority to Dotdeb packages:
+
+command echo "Package: *
+Pin: origin packages.dotdeb.org
+Pin-Priority: 200" > '/etc/apt/preferences.d/dotdeb-org'
+
+Update the available packages list:
+
+root@sam:~# apt-get update
+root@sam:~# apt-get upgrade
+
+----------------
+Nota: (Desde aqui funcion Ok en Weezy)
+
+Instalar Apache MPM Worker con php-fpm
+
+1.- Instalar Apache2 MPM Worker
+
+root@barbol:~# apt-get install apache2-mpm-worker
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  apache2-utils apache2.2-bin apache2.2-common libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap ssl-cert
+Paquetes sugeridos:
+  apache2-doc apache2-suexec apache2-suexec-custom openssl-blacklist
+Se instalarán los siguientes paquetes NUEVOS:
+  apache2-mpm-worker apache2-utils apache2.2-bin apache2.2-common libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap ssl-cert
+0 actualizados, 9 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 1.494 kB de archivos.
+Se utilizarán 5.652 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]?
+
+...
+...
+
+Configurando apache2.2-common (2.2.22-13+deb7u3) ...
+Enabling site default.
+Enabling module alias.
+Enabling module autoindex.
+Enabling module dir.
+Enabling module env.
+Enabling module mime.
+Enabling module negotiation.
+Enabling module setenvif.
+Enabling module status.
+Enabling module auth_basic.
+Enabling module deflate.
+Enabling module authz_default.
+Enabling module authz_user.
+Enabling module authz_groupfile.
+Enabling module authn_file.
+Enabling module authz_host.
+Enabling module reqtimeout.
+Configurando apache2-mpm-worker (2.2.22-13+deb7u3) ...
+[ ok ] Starting web server: apache2.
+Configurando ssl-cert (1.0.32) ...
+root@barbol:~# 
+
+2.- Habilitar modulo de reescritura:
+
+a2enmod rewrite
+
+root@barbol:~# a2enmod rewrite
+Enabling module rewrite.
+To activate the new configuration, you need to run:
+  service apache2 restart
+
+root@barbol:~# /etc/init.d/apache2 restart
+[ ok ] Restarting web server: apache2 ... waiting .
+root@barbol:~# 
+
+
+-----------
+Instalar Mysql
+
+apt-get install mysql-server mysql-client
+
+root@barbol:~# apt-get install mysql-server mysql-client
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libaio1 libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 mysql-client-5.5 mysql-common mysql-server-5.5 mysql-server-core-5.5
+Paquetes sugeridos:
+  libipc-sharedcache-perl libterm-readkey-perl tinyca
+Se instalarán los siguientes paquetes NUEVOS:
+  libaio1 libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 mysql-client mysql-client-5.5 mysql-common mysql-server
+  mysql-server-5.5 mysql-server-core-5.5
+0 actualizados, 11 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 9.772 kB de archivos.
+Se utilizarán 97,1 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]?
+-------
+lego2206las
+-------
+eo1135mer
+-------
+
+sólo en Squeeze
+
+Instalar PHP 5.3
+
+DEBIAN_VERSION="$(command lsb_release -cs)"
+
+PACKAGES=$(command wget "http://packages.dotdeb.org/dists/${DEBIAN_VERSION}/php5/binary-$(command dpkg --print-architecture)" \
+    --quiet --output-document=- \
+    | command grep "href=" | command grep -v "h1" | command grep -v "\.\./" \
+    | command sed -e 's/^[^>]*>\([^_]*\)_.*$/\1/' | command tr "\n" " ")
+PECL_PACKAGES=$(command wget "http://packages.dotdeb.org/dists/${DEBIAN_VERSION}/php5-pecl/binary-$(command dpkg --print-architecture)" \
+    --quiet --output-document=- \
+    | command grep "href=" | command grep -v "h1" | command grep -v "\.\./" \
+    | command sed -e 's/^[^>]*>\([^_]*\)_.*$/\1/' | command tr "\n" " ")
+ALL_PACKAGES=$(command wget "http://packages.dotdeb.org/dists/${DEBIAN_VERSION}/php5/binary-all" \
+    --quiet --output-document=- \
+    | command grep "href=" | command grep -v "h1" | command grep -v "\.\./" \
+    | command sed -e 's/^[^>]*>\([^_]*\)_.*$/\1/' | command tr "\n" " ")
+
+
+command echo "Package: ${PACKAGES} \\
+    ${PECL_PACKAGES} \\
+    ${ALL_PACKAGES}
+Pin: origin packages.dotdeb.org
+Pin-Priority: 500" \
+    > '/etc/apt/preferences.d/dotdeb-org-php5'
+
+command mkdir --parents '/etc/php5/conf.d' '/var/lib/php5'
+command chmod 733 '/var/lib/php5'
+command chmod o+t '/var/lib/php5'
+echo '; Store sessions to /var/lib/php5
+session.save_path = "/var/lib/php5"
+session.gc_probability = 0' \
+    > '/etc/php5/conf.d/000-session-store-default.ini'
+
+command apt-get upgrade
+
+
+---------------------
+3.- Instalar PHP-FPM
+
+apt-get install php5-fpm php5
+
+root@barbol:~# apt-get install php5-fpm php5
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libonig2 libqdbm14 php5-common
+Paquetes sugeridos:
+  php-pear
+Se instalarán los siguientes paquetes NUEVOS:
+  libonig2 libqdbm14 php5 php5-common php5-fpm
+0 actualizados, 5 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 3.484 kB de archivos.
+Se utilizarán 9.945 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Configura php-fpm para que escuche por un socket unix y permitir la ejecuciń de php hasta 600 segundos:
+
+Editar /etc/php5/fpm/pool.d/www.conf
+
+Linea 33   listen = /var/run/php5-fpm.sock
+
+Linea 318  request_terminate_timeout = 605
+
+Linea  224  pm.status_path = /status  descomentar y dejar en  pm.status_path = /php-fpm-status
+
+Linea 236  ping.path = /ping descomentar y dejar en  ping.path = /php-fpm-ping
+
+
+Reiniciar php5-fpm
+
+root@barbol:~# service php5-fpm restart
+[ ok ] Restarting PHP5 FastCGI Process Manager: php5-fpm.
+root@barbol:~# 
+
+Setup the log rotation:
+
+En Squeeze
+
+if [ ! -e '/etc/logrotate.d/php5-fpm' ]; then
+  command echo -e "/var/log/php5-fpm.log {
+\trotate 12
+\tweekly
+\tmissingok
+\tnotifempty
+\tcompress
+\tdelaycompress
+\tpostrotate
+\t\tinvoke-rc.d php5-fpm force-reload > /dev/null
+\tendscript
+}" \
+    > '/etc/logrotate.d/php5-fpm'
+fi
+
+En Wheezy
+
+Editar /etc/logrotate.d/php5-fpm
+
+Cambiar invoke-rc.d php5-fpm reopen-logs > /dev/null a invoke-rc.d php5-fpm force-reload > /dev/null
+
+invoke-rc.d php5-fpm reopen-logs > /dev/null
+
+service php5-fpm restart
+
+--
+En Squeeze -  editar nano /etc/php5/fpm/pool.d/www.conf y descomentar desde la linea 45:
+
+
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0660
+
+service php5-fpm restart
+
+----------
+
+Instalar soporte php mysql y modulos php adicionales
+
+apt-get install php5-mysql php5-curl php5-gd php5-idn php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-mhash php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-json
+
+root@barbol:~# apt-get install php5-mysql php5-curl php5-gd php5-idn php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-mhash php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-json
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «php5-intl» en lugar de «php5-idn»
+Nota, seleccionando «php5-common» en lugar de «php5-mhash»
+Nota, seleccionando «php5-common» en lugar de «php5-json»
+php5-common ya está en su versión más reciente.
+fijado php5-common como instalado manualmente.
+Se instalarán los siguientes paquetes extras:
+  aspell aspell-en dbus dictionaries-common fontconfig-config fonts-droid ghostscript gsfonts imagemagick-common libaspell15 libavahi-client3
+  libavahi-common-data libavahi-common3 libc-client2007e libcups2 libcupsimage2 libcurl3 libdbus-1-3 libffi5 libfontconfig1 libgd2-xpm libgif4
+  libglib2.0-0 libglib2.0-data libgomp1 libgs9 libgs9-common libice6 libicu48 libijs-0.35 libjasper1 libjbig0 libjbig2dec0 libjpeg8 liblcms2-2
+  liblqr-1-0 libltdl7 libmagickcore5 libmagickwand5 libmcrypt4 libming1 libpaper-utils libpaper1 libperl5.14 libpng12-0 librecode0 librtmp0
+  libsensors4 libsm6 libsnmp-base libsnmp15 libssh2-1 libsystemd-login0 libtidy-0.99-0 libtiff4 libxpm4 libxslt1.1 libxt6 mlock php5-cli
+  poppler-data pslib1 shared-mime-info ttf-dejavu-core x11-common
+Paquetes sugeridos:
+  aspell-doc spellutils dbus-x11 ispell emacsen-common jed-extra ghostscript-cups ghostscript-x hpijs uw-mailutils cups-common libgd-tools
+  libjasper-runtime liblcms2-utils libmagickcore5-extra libmcrypt-dev mcrypt lm-sensors snmp-mibs-downloader php5-dev memcached poppler-utils
+  fonts-japanese-mincho fonts-ipafont-mincho fonts-japanese-gothic fonts-ipafont-gothic fonts-arphic-ukai fonts-arphic-uming fonts-unfonts-core
+Se instalarán los siguientes paquetes NUEVOS:
+  aspell aspell-en dbus dictionaries-common fontconfig-config fonts-droid ghostscript gsfonts imagemagick-common libaspell15 libavahi-client3
+  libavahi-common-data libavahi-common3 libc-client2007e libcups2 libcupsimage2 libcurl3 libdbus-1-3 libffi5 libfontconfig1 libgd2-xpm libgif4
+  libglib2.0-0 libglib2.0-data libgomp1 libgs9 libgs9-common libice6 libicu48 libijs-0.35 libjasper1 libjbig0 libjbig2dec0 libjpeg8 liblcms2-2
+  liblqr-1-0 libltdl7 libmagickcore5 libmagickwand5 libmcrypt4 libming1 libpaper-utils libpaper1 libperl5.14 libpng12-0 librecode0 librtmp0
+  libsensors4 libsm6 libsnmp-base libsnmp15 libssh2-1 libsystemd-login0 libtidy-0.99-0 libtiff4 libxpm4 libxslt1.1 libxt6 mlock php-pear php5-cli
+  php5-curl php5-gd php5-imagick php5-imap php5-intl php5-mcrypt php5-memcache php5-ming php5-mysql php5-ps php5-pspell php5-recode php5-snmp
+  php5-sqlite php5-tidy php5-xmlrpc php5-xsl poppler-data pslib1 shared-mime-info ttf-dejavu-core x11-common
+0 actualizados, 83 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 41,2 MB de archivos.
+Se utilizarán 129 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+----------
+
+Terminar la configuración de Apache PHP-FPM
+
+apt-get install libapache2-mod-fastcgi
+
+root@barbol:~# apt-get install libapache2-mod-fastcgi
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  libapache2-mod-fastcgi
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 72,4 kB de archivos.
+Se utilizarán 283 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/non-free libapache2-mod-fastcgi amd64 2.4.7~0910052141-1 [72,4 kB]
+Descargados 72,4 kB en 0seg. (311 kB/s)         
+Seleccionando el paquete libapache2-mod-fastcgi previamente no seleccionado.
+(Leyendo la base de datos ... 28397 ficheros o directorios instalados actualmente.)
+Desempaquetando libapache2-mod-fastcgi (de .../libapache2-mod-fastcgi_2.4.7~0910052141-1_amd64.deb) ...
+Configurando libapache2-mod-fastcgi (2.4.7~0910052141-1) ...
+Enabling module fastcgi.
+To activate the new configuration, you need to run:
+  service apache2 restart
+root@barbol:/etc/apache2/sites-enabled# 
+
+---
+En Squeeze - editar /etc/apache2/mods-avalaible/fastcgi.conf y dejar  de la sgte forma:
+
+#<IfModule mod_fastcgi.c>
+#  AddHandler fastcgi-script .fcgi
+  #FastCgiWrapper /usr/lib/apache2/suexec
+#  FastCgiIpcDir /var/lib/apache2/fastcgi
+#</IfModule>
+
+<IfModule mod_fastcgi.c>
+        AddHandler php5-fcgi .php
+        Action php5-fcgi /cgi-bin/php5.external
+        <Location "/cgi-bin/php5.external">
+                Order Deny,Allow
+                Deny from All
+                Allow from env=REDIRECT_STATUS
+        </Location>
+</IfModule>
+
+--
+
+cd /etc/apache2/mods-available
+
+root@barbol:~# wget --no-check-certificate 'https://raw.github.com/biapy/howto.biapy.com/master/apache2/php-fpm/php5-fpm.load'
+
+root@barbol:~# wget --no-check-certificate 'https://raw.github.com/biapy/howto.biapy.com/master/apache2/php-fpm/php5-fpm.conf'
+
+
+a2dismod php5
+
+a2enmod php5-fpm fastcgi actions
+
+/etc/init.d/apache2 restart
+
+-------
+
+
+
+Securizar Apache
+
+cd /etc/apache2/conf.d/
+
+wget 'https://raw.github.com/biapy/howto.biapy.com/master/apache2/security-hardened.conf'
+
+/etc/init.d/apache2 restart
+
+-------
+
+APC-Cache
+
+apt-get install php-apc
+
+root@barbol:~# apt-get install php-apc
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  php-apc
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 90,6 kB de archivos.
+Se utilizarán 267 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main php-apc amd64 3.1.13-1 [90,6 kB]
+Descargados 90,6 kB en 0seg. (237 kB/s)
+Seleccionando el paquete php-apc previamente no seleccionado.
+(Leyendo la base de datos ... 28409 ficheros o directorios instalados actualmente.)
+Desempaquetando php-apc (de .../php-apc_3.1.13-1_amd64.deb) ...
+Configurando php-apc (3.1.13-1) ...
+root@barbol:~# 
+
+root@barbol:~# /etc/init.d/php5-fpm restart
+[ ok ] Restarting PHP5 FastCGI Process Manager: php5-fpm.
+root@barbol:~# 
+
+root@barbol:~# /etc/init.d/apache2 restart
+[ ok ] Restarting web server: apache2 ... waiting .
+root@barbol:~# 
+
+++++++++++++++++
+Lo siguiente no aplica en Squeeze
+
+nano /etc/php5/mods-available/apc-config.ini
+
+; APC Configuration
+; priority=50
+apc.enabled = 1
+; Memory allocated to APC. Use Munin or APC Info to see if more is needed.
+apc.shm_size="96M"
+; rfc1867 allow file upload progression display.
+apc.rfc1867 = on
+
+
+php5enmod apc-config/50
+
+Si se reqy¿uier agregar una especifica configuración en PHP-FPM:
+
+nano /etc/php5/mods-available/apc-fpm.ini
+
+; Enable APC ressources sharing.
+; priority=50
+apc.mmap_file_mask=/apc.shm.XXXXXX
+
+Aplicar:
+
+php5enmod apc-fpm/50
+
+En Squeeze:
+
+nano /etc/php5/fpm/conf.d/apc.ini
+
+; Enable APC ressources sharing.
+apc.mmap_file_mask=/apc.shm.XXXXXX
+
+Aplicar
+
+root@barbol:~# /etc/init.d/php5-fpm restart
+[ ok ] Restarting PHP5 FastCGI Process Manager: php5-fpm.
+root@barbol:~# 
+
+root@barbol:~# /etc/init.d/apache2 restart
+[ ok ] Restarting web server: apache2 ... waiting .
+root@barbol:~# 
+
+--------
+** Verificar en Squeeze
+
+Securizar PHP5
+
+nano /etc/php5/mods-available/security-hardened.ini
+
+; Harden PHP5 security
+; priority=50
+; Disable PHP exposure
+expose_php = Off
+
+;Dangerous : disable system functions. This can break some administration softwares.
+;disable_functions = symlink,shell_exec,exec,proc_close,proc_open,popen,system,dl,passthru,escapeshellarg,escapeshellcmd
+
+En Squezze editar en  sgte ruta:
+
+nano /etc/php5/fpm/conf.d/security-hardened.ini
+
+Aplicar en Wheezy
+
+php5enmod security-hardened/50
+
+Aplicar en Squeeze:
+
+root@barbol:~# /etc/init.d/php5-fpm restart
+[ ok ] Restarting PHP5 FastCGI Process Manager: php5-fpm.
+root@barbol:~# 
+
+root@barbol:~# /etc/init.d/apache2 restart
+[ ok ] Restarting web server: apache2 ... waiting .
+root@barbol:~# 
+---------
+Setear Encoding a UTF-8 en mbstrig:
+
+nano /etc/php5/mods-available/mbstring.ini
+
+En Squeeze
+
+nano /etc/php5/fpm/conf.d/mbstring.ini
+
+; Set mbstring defaults to UTF-8
+; priority=50
+mbstring.language=UTF-8
+mbstring.internal_encoding=UTF-8
+mbstring.http_input=UTF-8
+mbstring.http_output=UTF-8
+mbstring.detect_order=auto
+
+Aplicar:
+
+php5enmod mbstring/50
+
+root@barbol:~# /etc/init.d/php5-fpm restart
+[ ok ] Restarting PHP5 FastCGI Process Manager: php5-fpm.
+root@barbol:~# 
+
+root@barbol:~# /etc/init.d/apache2 restart
+[ ok ] Restarting web server: apache2 ... waiting .
+root@barbol:~# 
+---------
+
+
+WEBMAIL
+
+nano /etc/php5/fpm/conf.d/suhosin.ini
+
+suhosin.session.encrypt=Off
+
+
+
+
+
+
+

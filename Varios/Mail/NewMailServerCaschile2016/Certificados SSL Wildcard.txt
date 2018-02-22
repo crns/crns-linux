@@ -1,0 +1,32 @@
+
+sam.key.orig       Clave privada del servidor con clave "caschile" usada para generar CSR
+
+sam.key            Clave privada del servidor sin clave, se usa en el servidor
+
+sam.csr            Certificado de solicitud de firma Wildcard "*.caschile.cl"
+
+public.crt             Certificado primario o wildcard "*.caschile.cl"
+
+intermediate.crt       Certificado intermediario del CA
+
+bundle.crt             Archivo con certificados concatenados primario e intermediario
+
+
+---------------------------------------------------
+
+openssl genrsa -des3 -out sam.key 2048
+
+openssl req -new -key sam.key -out sam.csr
+
+
+-----
+
+Se obtiene el intermediate.crt y el public.crt con los que se genera el bundle.crt
+
+-----
+
+cp sam.key sam.key.orig
+
+openssl rsa -in sam.key.orig -out sam.key
+
+

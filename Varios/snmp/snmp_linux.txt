@@ -1,0 +1,56 @@
+En el lado del server:
+
+apt-get install snmpd
+
+root@saruman:~# apt-get install snmpd
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  snmpd
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 964 kB de archivos.
+Se utilizarán 1147 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/main snmpd amd64 5.4.3~dfsg-2+squeeze1 [964 kB]
+Descargados 964 kB en 0seg. (5853 kB/s)
+Preconfigurando paquetes ...
+Seleccionando el paquete snmpd previamente no seleccionado.
+(Leyendo la base de datos ... 39991 ficheros o directorios instalados actualmente.)
+Desempaquetando snmpd (de .../snmpd_5.4.3~dfsg-2+squeeze1_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando snmpd (5.4.3~dfsg-2+squeeze1) ...
+Starting network management services: snmpd.
+root@saruman:~# 
+
+
+Editar /etc/snmp/snmpd.conf
+
+Comentar la sgte linea;
+
+agentAddress  udp:127.0.0.1:161
+
+debe quedar asi:
+
+#agentAddress  udp:127.0.0.1:161
+
+Descomentar la sgte linea:
+
+#agentAddress udp:161,udp6:[::1]:161
+
+Debe quedar asi:
+
+agentAddress udp:161,udp6:[::1]:161
+
+Incluir:
+
+rocomunity c4sch1l3 192.168.7.1/32
+
+
+Reiniciar:
+
+root@saruman:~# /etc/init.d/snmpd restart
+Restarting network management services: snmpd.
+root@saruman:~#
+
+
+

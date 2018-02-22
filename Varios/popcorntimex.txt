@@ -1,0 +1,2 @@
+wget ftp://ftp.pbone.net/mirror/ftp.sourceforge.net/pub/sourceforge/p/po/postinstaller/fedora/releases/21/x86_64/updates/popcorntime-0.3.8.0-1.20150711git702f376.fc21.x86_64.rpm
+

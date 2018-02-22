@@ -1,0 +1,176 @@
+
+  Name = srv-dedalo-fd
+  Address = 192.168.7.160  ### El servidor de Archivos/SMB/FTP
+
+    		File = "/home/Versiones"
+		File = "/home/sgsi"
+    		File = "/home/replicador"
+    		File = "/home/Bitacoras"
+    		File = "/home/intranet"
+                File = "/home/capacitacion"
+		File = "/home/proyectomovil"
+
+
+
+  Name = mailcaschile-fd
+  Address = 192.168.7.181  ### El servidor de correo CASCHILE
+
+    File = "/etc"
+    File = "/home/mailbak"
+    File = "/var/spool/mail"
+
+
+
+  Name = mail-fd
+  Address = 192.168.7.140  ### mail.e-com.cl 
+
+F
+    		File = "/etc"
+    		File = "/var/vmail"
+
+  Name = cas-storage-fd
+  Address = cas-storage  ### cas-storage.caschile.cl
+
+    		File = "/etc"
+		File = "/var/samba"
+
+
+
+  Name = legolas-fd
+  Address = legolas  ### legolas.caschile.cl
+ 
+
+                File = "/etc"
+                File = "/home/transparencias"
+
+
+### Maquinas Microsoft WINDOWS TM ###
+
+  Name = biztalk-fd
+  Address = biztalk
+
+
+     		File = "c:/Inetpub"
+     		File = "d:/Sitios_Web/Pruebas e-com"
+
+
+  Name = srv-firma-fd
+  Address = srv-firma 		# 192.168.7.63
+
+
+     		File = "c:/Inetpub"
+     		File = "c:/Appserv"
+
+
+  Name = srv-movil-fd
+  Address = srv-movil
+
+
+     File = "d:/AppServ"	
+     File = "d:/Repositories"
+
+  Name = db_server-fd
+  Address = db_server	 #192.168.7.79
+
+
+    		File = "e:/VSS_CAS"
+
+
+  Name = sql-server-fd
+  Address = sql-server
+
+
+     		File = "e:/Sistemas"
+
+
+  Name = srv-areanet-fd
+  Address = srv-areanet
+
+     		File = "f:/Respaldos"
+
+  Name = srv-caschile-fd
+  Address = srv-caschile
+
+     		File = "c:/Inetpub/wwwroot/QSM_Cas_Produccion"
+     		File = "c:/Inetpub/wwwroot/cas-chile"
+     		File = "e:/Microsoft SQL Server/MSSQL10_50.MSSQLSERVER/MSSQL/Backup"
+
+
+  Name = srv-finanzas-fd
+  Address = SRV-FINANZAS
+
+		File = "e:/Microsoft SQL Server/MSSQL10_50.MSSQLSERVER/MSSQL"
+
+  Name = srv-tibia-fd
+  Address = SRV-TIBIA
+
+     		File = "c:/AppServ"
+
+
+  Name = srv-web-fd
+  Address = srv-web
+
+
+
+     		File = "d:/IIS"
+		File = "d:/AppServ/www"
+
+
+  Name = srv-duoc-fd
+  Address = srv-duoc
+
+
+                File = "C:/SistemasNET"
+                File = "C:/InetPub"
+
+
+  Name = srv-ecom-fd
+  Address = srv-ecom
+
+
+        File = "c:/Inetpub/wwwroot/e-com"
+        File = "c:/AppServ/www"
+	File = "e:/MICROSOFT SQL SERVER/MSSQL/Backup"
+
+
+
+  Name = srv-smsweb-fd
+  Address = srv-smsweb
+
+
+        File = "c:/wamp/www"
+        File = "e:/SitiosWeb"
+        File = "e:/Aplicaciones .NET"
+
+
+##
+## Estaciones de usuario con Windows
+##
+
+
+  Name = pc_psegovia-fd
+  Address = pc_psegovia
+
+        File = "C:/Caschile"
+
+
+  Name = raulmatus-think-fd
+  Address = raulmatus-think
+
+
+        File = "C:/Users/Raul Matus/Desktop/raul matus"
+
+  Name = pc_secgerencia-fd
+  Address = PC_SecGerencia
+ 
+
+        File = "C:/Users/Laura Ferrada/Documents/Respaldo disco D"
+
+
+  Name = pc-admsec-38-fd
+  Address = pc-admsec-38
+ 
+
+        File = "C:/Users"
+
+

@@ -1,0 +1,134 @@
+root@legolas:~# apt-get install bacula-fd
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  bacula-common libpython2.7
+Suggested packages:
+  bacula-doc bacula-traymonitor
+The following NEW packages will be installed:
+  bacula-common bacula-fd libpython2.7
+0 upgraded, 3 newly installed, 0 to remove and 0 not upgraded.
+Need to get 2089 kB of archives.
+After this operation, 4754 kB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+
+Agregar en /etc/hosts
+
+192.168.7.211   tape-dir
+192.168.7.211   tape-mon
+
+Editar el archivo /etc/bacula/bacula-fd.conf
+
+Director {
+  Name = tape-dir
+  Password = "Zp_DRvUIJYDIxD9XGCwP8SiSruSevZlXw"
+}
+
+Director {
+  Name = tape-mon
+  Password = "iSfy54UPyNUHcEG6Rcsgq9OIZO5Zz8rAI"
+  Monitor = yes
+}
+
+FileDaemon {                          # this is me
+  Name = vlegolas-fd
+  FDport = 9102                  # where we listen for the director
+  WorkingDirectory = /var/lib/bacula
+  Pid Directory = /var/run/bacula
+  Maximum Concurrent Jobs = 20
+  FDAddress = 192.168.7.166
+}
+
+Reiniciar el demonio:
+
+root@legolas:/etc/bacula# /etc/init.d/bacula-fd restart   
+[ ok ] Stopping Bacula File daemon...: bacula-fd.
+[ ok ] Starting Bacula File daemon...: bacula-fd.
+root@legolas:/etc/bacula# 
+
+Verificar:
+
+root@legolas:/etc/bacula# netstat -pant | grep bacula
+tcp        0      0 192.168.7.166:9102      0.0.0.0:*               LISTEN      5732/bacula-fd  
+root@legolas:/etc/bacula# 
+
+Ahora configurar en TAPE-DIR
+
+Editar /etc/hosts y agregar
+
+192.168.7.166    vlegolas
+
+Editar /etc/bacula/bacula-dir.conf  y agregar a la configuración lo siguiente:
+
+# 0105 vLEGOLAS Client (File Services) to backup
+Client {
+  Name = vlegolas-fd
+  Address = vlegolas  ### 192.168.7.166
+  FDPort = 9102
+  Catalog = MyCatalog
+  ## Esto corresponde a password en la configuración del cliente
+  Password = "Zp_DRvUIJYDIxD9XGCwP8SiSruSevZlXw"        # password for FileDaemon
+  File Retention = 30 days            # 30 days
+  Job Retention = 6 months            # six months
+  AutoPrune = yes                     # Prune expired Jobs/Files
+}
+
+### Job 0105 ###
+Job {
+        Name = "vlegolas-fd"
+        JobDefs = "CasChile"
+        Client = vlegolas-fd
+        FileSet = "vlegolas-fd Set"
+}
+
+FileSet {
+        Name = "vlegolas-fd Set"
+        Include {
+                Options {
+                        signature = MD5
+                        Compression = GZIP
+                        WildFile = "*.iso"
+                        #WildFile = "*.mp3"
+                        exclude = yes
+                }
+                File = "/etc"
+                File = "/home/amuch"
+		File = "/home/webcast"
+        }
+}
+
+Reiniciar servicio bacula-director
+
+root@tape:/etc/bacula# /etc/init.d/bacula-director restart
+Stopping Bacula Director...:.
+Starting Bacula Director...:.
+root@tape:/etc/bacula# 
+
+comprobar...
+
+
+
+Seguridad
+
+https://lists.debian.org/debian-user/2006/04/msg00149.html
+
+According to
+http://www.bacula.org/dev-manual/Bacula_Security_Issues.html (thanks go
+to apathy for pointing it out!) the daemeon name when running (the
+service name) can be configured to be different to the process name!!
+
+Debian configuration for Bacula sets the service name to be
+%hostname%-dir (which makes sense) so your hosts.allow has to have an
+entry for '%hostname%-dir', NOT 'bacula-dir'!
+
+
+Segun lo anterior se edita /etc/hosts.allow
+
+vlegolas-fd : 127. 192.168.7.211
+
+
+
+
+

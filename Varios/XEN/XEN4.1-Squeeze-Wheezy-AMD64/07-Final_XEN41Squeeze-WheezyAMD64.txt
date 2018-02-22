@@ -1,0 +1,180 @@
+Crear máquina Windows
+
+
+
+Verificar disco iSCSI
+
+cat /proc/partitions
+
+root@crn-xen:~# cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0  976762584 sda
+   8        1  974608384 sda1
+   8        2    2152448 sda2
+  11        0    1048575 sr0
+   8       16   10240000 sdb
+   8       32   51200000 sdc
+ 254        0    1048576 dm-0
+ 254        1    8388608 dm-1
+root@crn-xen:~# 
+
+Se usara la unidad /dev/sdc
+
+
+root@crn-xen:~# pvcreate /dev/sdc
+  Writing physical volume data to disk "/dev/sdc"
+  Physical volume "/dev/sdc" successfully created
+root@crn-xen:~#
+
+
+root@crn-xen:~# vgcreate vcrono /dev/sdc
+  Volume group "vcrono" successfully created
+root@crn-xen:~# 
+
+Crear volumen lógico que se usará de disco:
+
+Verificar espacio disponible en el grupo de volumen vcrono:
+
+root@crn-xen:~# vgdisplay vcrono
+  --- Volume group ---
+  VG Name               vcrono
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               48,82 GiB
+  PE Size               4,00 MiB
+  Total PE              12499
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       12499 / 48,82 GiB
+  VG UUID               HrgpjT-6wc6-ULyN-PSz0-8X7W-dgmt-Xfdy9F
+   
+root@crn-xen:~#
+
+Fijarse en Free PE / Size:
+
+lvcreate -L 48G -n vcrono-disk vcrono
+
+root@crn-xen:~# lvcreate -L 48G -n vcrono-disk vcrono
+  Logical volume "vcrono-disk" created
+root@crn-xen:~#
+
+Verificar:
+
+root@crn-xen:~# lvdisplay vcrono
+  --- Logical volume ---
+  LV Path                /dev/vcrono/vcrono-disk
+  LV Name                vcrono-disk
+  VG Name                vcrono
+  LV UUID                mqeB21-l5yL-TfUk-5qYu-JbEK-j1Ce-dM3L1r
+  LV Write Access        read/write
+  LV Creation host, time crn-xen, 2015-02-23 12:57:22 -0300
+  LV Status              available
+  # open                 0
+  LV Size                48,00 GiB
+  Current LE             12288
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           254:2
+   
+root@crn-xen:~#
+
+o tambien usar:
+
+root@crn-xen:~# lvscan
+  ACTIVE            '/dev/vcrono/vcrono-disk' [48,00 GiB] inherit
+  ACTIVE            '/dev/vgaladriel/vgaladriel-swap' [1,00 GiB] inherit
+  ACTIVE            '/dev/vgaladriel/vgaladriel-disk' [8,00 GiB] inherit
+root@crn-xen:~# 
+
+
+Definir la máquina windows:
+
+Crear/editar el archivo /etc/xen/vcrono.cfg con el siguiente contenido:
+
+nano /etc/xen/vcrono.cfg
+
+name = 'vcrono'
+kernel = '/usr/lib/xen-4.1/boot/hvmloader'
+builder = 'hvm'
+device_model = '/usr/lib/xen-4.1/bin/qemu-dm'
+memory = 2048
+shadow_memory = 8
+vcpus=2
+acpi=1
+apic=1
+	 
+# Choose a better mac address
+vif = [ 'bridge=br0, mac=00:1c:c0:8f:5d:12' ]
+#vif         = [ 'ip=192.168.7.237 ,mac=00:1c:c0:8f:5d:10,bridge=br0' ]
+
+	 
+## The VM has the following block devices
+#  - A boot disk with a single partition for the OS, swap, and programs
+#  - The installation DVD
+#  - The PV drivers CD
+disk  = [
+		'phy:/dev/vcrono/vcrono-disk,hda,w',
+		'file:/xen-img/win7-32_64-full.iso,hdc:cdrom,r',
+		#'file:/xen-img/HBCD-15.2.ISO,hdc:cdrom,r',
+		'file:/xen-img/windrivers.iso,hdd:cdrom,r',
+	]	 
+
+#disk        = [
+#                  'phy:/dev/vgaladriel/vgaladriel-disk,xvda2,w',
+#                  'phy:/dev/vgaladriel/vgaladriel-swap,xvda1,w',
+#              ]
+
+
+
+#En caso de perder el acceso usar esto
+# Boot from the DVD first
+boot='c'
+	 
+usbdevice='tablet'
+ 
+## Use VNC for the console.
+vnc=1
+vncunused=0
+vnclisten = '127.0.0.1'
+vncdisplay=2
+vncconsole=1
+vncpasswd='cronos'
+ 
+vncviewer=0
+sdl=0
+ 
+stdvga=0
+serial='pty'
+ne2000 = "0"
+ 
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart' 
+
+
+--------
+La conexión a la consola de instalación de Windows es vía un tunel/ssh al puerto xxxx en la ip 127.0.0.1
+
+
+------
+
+Lanzar creación de máquina Windows:
+
+
+
+
+
+
+

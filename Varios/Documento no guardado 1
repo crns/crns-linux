@@ -1,0 +1,39 @@
+Encriptando trabajos de backup en bacula:
+
+Crear par de Master keys Publico/Privada:
+
+- login en taper-dir
+- cambiar directorio keys:
+root@tape:~# cd /etc/bacula/keys/
+root@tape:/etc/bacula/keys#
+
+openssl genrsa -out master.key 2048
+openssl req -new -key master.key -x509 -out master.cert
+
+root@tape:/etc/bacula/keys# ls -la
+total 40
+drwxrwxr-x 2 root root 4096 sep 14 15:21 .
+drwxr-xr-x 4 root root 4096 sep 14 10:53 ..
+-rw-rw-r-- 1 root root 1688 sep 14 10:56 master.cert
+-rw-rw-r-- 1 root root 1679 sep 14 10:54 master.key
+root@tape:/etc/bacula/keys#
+
+OK.
+
+Crear claves de cliente (file-daemond /fd):
+
+- login en taper-dir
+- cambiar directorio keys:
+root@tape:~# cd /etc/bacula/keys/
+root@tape:/etc/bacula/keys#
+
+En general los comandos son:
+
+  openssl genrsa -out fd-example.key 2048
+  openssl req -new -key fd-example.key -x509 -out fd-example.cert
+  cat fd-example.key fd-example.cert >fd-example.pem
+
+Crear key Publico/privado para host SARUMAN:
+
+
+

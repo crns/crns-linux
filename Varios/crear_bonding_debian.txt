@@ -1,0 +1,100 @@
+root@aragon:~# ip l l
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN mode DEFAULT 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT qlen 1000
+    link/ether c8:be:19:51:26:f7 brd ff:ff:ff:ff:ff:ff
+3: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT qlen 1000
+    link/ether 44:37:e6:28:e8:ec brd ff:ff:ff:ff:ff:ff
+root@aragon:~# 
+
+
+
+
+root@aragon:~# apt-cache search bonding
+disulfinder - cysteines disulfide bonding state and connectivity predictor
+disulfinder-data - data files for predictor of disulfide bonds in proteins
+ifenslave-2.6 - Attach and detach slave interfaces to a bonding device
+pdb2pqr - Preparation of protein structures for electrostatics calculations
+root@aragon:~#
+
+
+
+root@aragon:~# apt-cache search ifenslave
+ifenslave-2.6 - Attach and detach slave interfaces to a bonding device
+root@aragon:~#
+
+
+
+root@aragon:~# apt-get install ifenslave
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «ifenslave-2.6» en lugar de «ifenslave»
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libreadline5
+Use 'apt-get autoremove' to remove it.
+Se instalarán los siguientes paquetes NUEVOS:
+  ifenslave-2.6
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 21,4 kB de archivos.
+Se utilizarán 102 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main ifenslave-2.6 amd64 1.1.0-20 [21,4 kB]
+Descargados 21,4 kB en 0seg. (106 kB/s)  
+Seleccionando el paquete ifenslave-2.6 previamente no seleccionado.
+(Leyendo la base de datos ... 28239 ficheros o directorios instalados actualmente.)
+Desempaquetando ifenslave-2.6 (de .../ifenslave-2.6_1.1.0-20_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando ifenslave-2.6 (1.1.0-20) ...
+update-alternatives: utilizando /sbin/ifenslave-2.6 para proveer /sbin/ifenslave (ifenslave) en modo automático
+root@aragon:~# 
+
+
+
+Editar /etc/modules y agregar bonding
+
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+# Parameters can be specified after the module name.
+
+loop
+bonding
+
+
+Crear /etc/modprobe.d/bonding.conf con el sgte contenido:
+
+options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=2
+
+#para usar con 802.3ad en switch 3Com
+#options bonding mode=4 miimon=100 downdelay=200 updelay=200 max_bonds=2
+
+echo "options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=2" > /etc/modprobe.d/bonding.conf
+
+root@aragon:~# cat /etc/modprobe.d/bonding.conf
+options bonding mode=0 miimon=100 downdelay=200 updelay=200 max_bonds=1
+root@aragon:~#
+
+Modificar /etc/network/interfaces
+
+comentar la configuración del la interfaz primaria en #allow-hotplug eth0 y reemplazar por (ejemplo):
+
+auto bond0
+iface bond0 inet static
+#        pre-up modprobe bonding
+        hwaddress ether 00:19:DB:C2:3D:3C
+        address 192.168.7.160
+        netmask 255.255.255.0
+        network 192.168.7.0
+        broadcast 192.168.7.255
+	gateway 192.168.7.131
+        up /sbin/ifenslave bond0 eth1 eth2
+        down /sbin/ifenslave -d bond0 eth1 eth2
+
+
+Presto!!
+Reboot an enjoy
+
+
+
+

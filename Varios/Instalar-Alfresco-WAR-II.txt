@@ -1,0 +1,28 @@
+Instalar-Alfresco-WAR-II.txt
+
+
+cd web-server/
+cp endorsed/* /var/lib/tomcat6/common/endorsed/
+chown -R tomcat6:tomcat6 /var/lib/tomcat6/common/endorsed
+
+
+Copiamos los ficheros .war al directorio de aplicaciones de tomcat donde se autodesplegarán simplemente copiándolos en el directorio.
+
+cd webapps
+cp alfresco.war share.war /var/lib/tomcat6/webapps/
+
+cp *.war /var/lib/tomcat6/webapps/
+
+
+###Cuenta de correo alf.cas@caschile.cl#alf1403cas
+
+
+cd /var/lib/tomcat6/webapps/alfresco/WEB-INF/classes/
+
+cp alfresco-global.properties.sample alfresco-global.properties
+
+nano alfresco-global.properties
+
+
+
+

@@ -1,0 +1,95 @@
+root@frodo:~# xen-create-image --dist=wheezy --hostname=eomer --ip=192.168.7.182 --mac=00:21:5e:c7:9c:52 --vcpus=2 --memory=2Gb --size=100Gb --swap=1Gb --force
+
+
+
+- Arrancar la máquina debian
+
+xm create /etc/xen/eomer.cfg
+
+
+- Configurar arranque automático
+
+ln -s /etc/xen/eomer.cfg /etc/xen/auto
+
+En el primer arranque instalar lo siguiente:
+
+
+-------
+
+
+root@eomer:~# apt-get install linux-image-amd64
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  linux-image-amd64
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 5630 B of archives.
+After this operation, 5120 B of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ wheezy/main linux-image-amd64 amd64 3.2+46 [5630 B]
+Fetched 5630 B in 0s (215 kB/s)              
+Selecting previously unselected package linux-image-amd64.
+(Reading database ... 16670 files and directories currently installed.)
+Unpacking linux-image-amd64 (from .../linux-image-amd64_3.2+46_amd64.deb) ...
+Setting up linux-image-amd64 (3.2+46) ..
+
+
+root@eomer:~# apt-get install vlan
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  vlan
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 40.2 kB of archives.
+After this operation, 180 kB of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ wheezy/main vlan amd64 1.9-3 [40.2 kB]
+Fetched 40.2 kB in 0s (684 kB/s)
+Selecting previously unselected package vlan.
+(Reading database ... 16676 files and directories currently installed.)
+Unpacking vlan (from .../archives/vlan_1.9-3_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up vlan (1.9-3) ...
+root@eomer:~#
+
+root@eomer:~# apt-cache search dnsutils
+dnsutils - Clients provided with BIND
+ldnsutils - ldns library for DNS programming
+libproxychains3 - proxy chains -- shared library (runtime)
+root@eomer:~# apt-get install dnsutils
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  bind9-host geoip-database libbind9-80 libcap2 libclass-isa-perl libdns88 libgeoip1 libisc84 libisccc80 libisccfg82 liblwres80 libswitch-perl libxml2 perl perl-modules
+  sgml-base xml-core
+Suggested packages:
+  rblcheck geoip-bin perl-doc libterm-readline-gnu-perl libterm-readline-perl-perl make libpod-plainer-perl sgml-base-doc debhelper
+The following NEW packages will be installed:
+  bind9-host dnsutils geoip-database libbind9-80 libcap2 libclass-isa-perl libdns88 libgeoip1 libisc84 libisccc80 libisccfg82 liblwres80 libswitch-perl libxml2 perl
+  perl-modules sgml-base xml-core
+0 upgraded, 18 newly installed, 0 to remove and 0 not upgraded.
+Need to get 11.8 MB of archives.
+After this operation, 42.1 MB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+
+root@eomer:~# apt-get install fail2ban
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  file gamin libexpat1 libffi5 libgamin0 libglib2.0-0 libglib2.0-data libmagic1 libpcre3 mime-support python python-central python-gamin python-minimal python-support
+  python2.7 python2.7-minimal shared-mime-info whois
+Suggested packages:
+  mailx python-doc python-tk python2.7-doc binutils binfmt-support
+The following NEW packages will be installed:
+  fail2ban file gamin libexpat1 libffi5 libgamin0 libglib2.0-0 libglib2.0-data libmagic1 libpcre3 mime-support python python-central python-gamin python-minimal
+  python-support python2.7 python2.7-minimal shared-mime-info whois
+0 upgraded, 20 newly installed, 0 to remove and 0 not upgraded.
+Need to get 9867 kB of archives.
+After this operation, 36.7 MB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+
+

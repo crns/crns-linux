@@ -1,0 +1,31 @@
+Ejemplo cuenta corporacionpirque
+
+srv-dedalo:~# cd /home
+
+srv-dedalo:/home# chown -R root:root corporacionpirque
+
+srv-dedalo:/home# chmod -R 2755 corporacionpirque
+
+Ahora crear directorio UPLOAD:
+
+srv-dedalo:/home/corpoquintanormal# mkdir UPLOAD
+
+srv-dedalo:/home/corporacionpirque# chmod -R 2775 UPLOAD/
+
+Agregar cuenta a grupo FTPCaschile:
+
+srv-dedalo:/home/corporacionpirque# gpasswd -a corporacionpirque FTPCaschile
+Añadiendo al usuario corporacionpirque al grupo FTPCaschile
+srv-dedalo:/home/corporacionpirque# 
+
+Asignar permisos en directorio UPLOAD:
+
+srv-dedalo:/home/corporacionpirque# chown -R corporacionpirque:FTPCaschile UPLOAD/
+
+Verificar:
+
+srv-dedalo:/home/corporacionpirque# ls -la
+total 28
+drwxr-sr-x   3 corporacionpirque FTPCaschile  4096 ene 19 16:31 .
+drwxr-sr-x 570 root              root        20480 ene 13 17:43 ..
+drwxrwsr-x   8 corporacionpirque FTPCaschile  4096 ene 19 16:31 UPLOAD

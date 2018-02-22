@@ -1,0 +1,96 @@
+
+
+
+cd /etc/systemd/system/
+
+ln -s /lib/systemd/system/multi-user.target default.target
+
+apt-get update; apt-get upgrade
+
+apt-get install firmware-iwlwifi
+
+apt-get install firmware-realtek
+
+apt-get install debian-keyring debian-archive-keyring
+
+apt-get install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils
+
+apt-get autoremove
+
+--------------------------
+
+
+adduser mcampos sudo
+
+apt-get install git vim nano mcedit gedit
+
+apt-get install openbox obconf obmenu
+
+apt-get install lxappearance gtk.-engines-* gnome-themes .+-icon-theme
+
+git clone https://github.com/NitruxSA/flattr-icons.git /usr/share/icons/flattr
+
+apt-get install nitrogen
+---
+
+---
+nano ~/.config/openbox/autostart
+nitrogen --restore&
+
+
+apt-get install tint2
+
+
+wget https://tintwizard.googlecode.com/files/tintwizard-0.3.4.tar.gz
+
+
+
+
+-------
+
+
+apt-get install xcompmgr
+xcompmgr -cCfF -t-3 -l-5 -r5 -D4&
+nano ~/.config/openbox/autostart
+
+
+apt-get install conky
+
+
+------------------------------------------
+
+http://linuxgnublog.org/tag/debian-jessie/
+
+Como Instalar Google Chrome en Debian Jessie (sólo 64bits)
+
+Editar sources
+
+# Chrome 
+deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+
+# gpg --keyserver keys.gnupg.net --recv-key A040830F7FAC5991
+# gpg --export --armor A040830F7FAC5991 | apt-key add -
+
+apt-get update
+apt-get install google-chrome-stable
+
+------------------------------------------
+Instalar Java en jesiie con repos de ubuntu
+http://www.guatewireless.org/articulos/como-instalar-oracle-java-8-en-debian-jessie-via-repositorio-jdk8.html
+
+echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list
+echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+
+apt-get update
+apt-get install oracle-java8-installer
+
+Variables Java:
+apt-get install oracle-java8-set-default
+
+----------------------------
+Eclipse IDE
+
+https://levlaz.org/installing-the-latest-version-of-eclipse-ide-mars-in-debian/
+

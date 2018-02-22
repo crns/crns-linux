@@ -1,0 +1,302 @@
+root@crn-xen:~# apt-get install lvm2
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libdevmapper-event1.02.1 libreadline5
+Se instalarán los siguientes paquetes NUEVOS:
+  libdevmapper-event1.02.1 libreadline5 lvm2
+0 actualizados, 3 se instalarán, 0 para eliminar y 9 no actualizados.
+Se necesita descargar 617 kB/767 kB de archivos.
+Se utilizarán 1.521 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main libdevmapper-event1.02.1 amd64 2:1.02.74-8 [32,6 kB]
+Des:2 http://ftp.cl.debian.org/debian/ wheezy/main lvm2 amd64 2.02.95-8 [584 kB]
+Descargados 617 kB en 1seg. (424 kB/s)
+Seleccionando el paquete libdevmapper-event1.02.1:amd64 previamente no seleccionado.
+(Leyendo la base de datos ... 49474 ficheros o directorios instalados actualmente.)
+Desempaquetando libdevmapper-event1.02.1:amd64 (de .../libdevmapper-event1.02.1_2%3a1.02.74-8_amd64.deb) ...
+Seleccionando el paquete libreadline5:amd64 previamente no seleccionado.
+Desempaquetando libreadline5:amd64 (de .../libreadline5_5.2+dfsg-2~deb7u1_amd64.deb) ...
+Seleccionando el paquete lvm2 previamente no seleccionado.
+Desempaquetando lvm2 (de .../lvm2_2.02.95-8_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando libdevmapper-event1.02.1:amd64 (2:1.02.74-8) ...
+Configurando libreadline5:amd64 (5.2+dfsg-2~deb7u1) ...
+Configurando lvm2 (2.02.95-8) ...
+[....] Setting up LVM Volume Groups...  No volume groups found
+  No volume groups found
+done.
+update-initramfs: deferring update (trigger activated)
+Procesando disparadores para initramfs-tools ...
+update-initramfs: Generating /boot/initrd.img-3.2.0-4-amd64
+root@crn-xen:~#
+
+
+
+root@crn-xen:~# pvcreate /dev/sdb
+  Writing physical volume data to disk "/dev/sdb"
+  Physical volume "/dev/sdb" successfully created
+
+
+root@crn-xen:~# vgcreate vgaladriel /dev/sdb
+  Volume group "vgaladriel" successfully created
+
+root@crn-xen:~# vgscan
+  Reading all physical volumes.  This may take a while...
+  Found volume group "vgaladriel" using metadata type lvm2
+root@crn-xen:~#
+
+
+Ahora crear Máquina virtual GNU/Linux Debian/Wheezy amd64/emt64
+
+
+root@crn-xen:/etc/xen# xen-create-image --lvm=vgaladriel --dist=wheezy --hostname=vgaladriel --ip=192.168.7.238 --mac=00:1c:c0:8f:5d:10 --vcpus=2 --memory=1Gb --size=8Gb --swap=1G --force
+
+root@crn-xen:~# xen-create-image --lvm=vgaladriel --dist=wheezy --hostname=vgaladriel --ip=192.168.7.238 --mac=00:1c:c0:8f:5d:10 --vcpus=2 --memory=1Gb --size=8Gb --swap=1G --force
+
+General Information
+--------------------
+Hostname       :  vgaladriel
+Distribution   :  wheezy
+Mirror         :  http://ftp.cl.debian.org/debian/
+Partitions     :  swap            1G    (swap)
+                  /               8Gb   (ext3)
+Image type     :  full
+Memory size    :  1Gb
+Kernel path    :  /boot/vmlinuz-3.2.0-4-amd64
+Initrd path    :  /boot/initrd.img-3.2.0-4-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.7.238 [MAC: 00:1c:c0:8f:5d:10]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.7.255
+Gateway        : 192.168.7.1
+
+
+Creating swap on /dev/vgaladriel/vgaladriel-swap
+Done
+
+Creating ext3 filesystem on /dev/vgaladriel/vgaladriel-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/vgaladriel.log
+
+Installation Summary
+---------------------
+Hostname        :  vgaladriel
+Distribution    :  wheezy
+IP-Address(es)  :  192.168.7.238 
+RSA Fingerprint :  a4:18:74:ed:1c:eb:9e:fe:97:44:a1:b3:5d:b3:fe:6f
+Root Password   :  kHvtCQQg
+
+
+Ahora lanzar máquina creada, el proceso anterior
+
+
+
+
+
+
+
+
+--------------------------------------
+
+Otro ejemplos de creación de máquinas:
+
+- Crear un VM Linux
+
+Ver los siguientes ejemplos:
+
+xen-create-image --hostname=nombremv --size=5Gb --swap=256Mb --ide --ip=192.168.0.11 --netmask=255.255.255.0 --gateway=192.168.0.1 --force --dir=/home/xen --memory=128Mb --arch=i386 --kernel=/boot/vmlinuz-2.6.26-2-xen-686 --debootstrap --dist=lenny --mirror=http://ftp.fr.debian.org/debian/ --passwd 
+
+xen-create-image --dist=squeeze --hostname=x50 --vifname=x50 --mac=00:16:C0:A8:FC:32 --ip=192.168.252.50 --partitions=default_4G
+
+xen-create-image --hostname=test --ip=192.168.1.99 --memory=512Mb --size=5G --swap=256Kb
+
+Crear vm WHEEZY
+
+root@crn-xen:/etc/xen# xen-create-image --dist=wheezy --hostname=vgaladriel --ip=192.168.7.238 --mac=00:1c:c0:8f:5d:10 --vcpus=2 --memory=1Gb --size=7Gb --swap=1G --force
+
+inicio 0:34
+termino 0:40
+
+Hacer que la maquina arranque automaticamente
+
+mkdir /etc/xen/auto
+
+ln -s /etc/xen/vgaladriel.cfg /etc/xen/auto
+
+Iniciar:
+
+xm create /etc/xen/vgaladriel.cfg
+
+----
+
+
+
+
+
+
+
+- Crear maquina SAM
+
+(Nota: La mac en frodo es 00:21:5e:c7:9c:44 de la primera NIC la segunda es 00:21:5e:c7:9c:46, por lo tanto se asignaran MAC terminadas en decimal impar desde 00:21:5e:c7:9c:45)
+
+
+#Usado para crear SAM
+xen-create-image --dist=squeeze --hostname=sam --ip=192.168.7.163 --mac=00:21:5e:c7:9c:45 --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64
+
+
+#Usado para crear MERRY
+xen-create-image --dist=squeeze --hostname=merry --ip=192.168.7.164 --mac=00:21:5e:c7:9c:47 --vcpus=4 --memory=8Gb --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64
+
+
+
+-------------------------------
+root@frodo:~# xen-create-image --dist=squeeze --hostname=sam --ip=192.168.7.163 --mac=00:21:5e:c7:9c:45 --kernel=/boot/vmlinuz-2.6.32-5-amd64 --initrd=/boot/initrd.img-2.6.32-5-amd64 --force
+
+WARNING
+-------
+
+  You appear to have a missing vif-script, or network-script, in the
+ Xen configuration file /etc/xen/xend-config.sxp.
+
+  Please fix this and restart Xend, or your guests will not be able
+ to use any networking!
+
+
+General Information
+--------------------
+Hostname       :  sam
+Distribution   :  squeeze
+Mirror         :  http://ftp.cl.debian.org/debian/
+Partitions     :  swap            1Gb   (swap)
+                  /               300Gb (ext3)
+Image type     :  full
+Memory size    :  4Gb
+Kernel path    :  /boot/vmlinuz-2.6.32-5-amd64
+Initrd path    :  /boot/initrd.img-2.6.32-5-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.7.163 [MAC: 00:21:5e:c7:9c:45]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.7.255
+Gateway        : 192.168.7.131
+
+Removing /dev/xen-vol/sam-disk - since we're forcing the install
+
+Creating swap on /dev/xen-vol/sam-swap
+Done
+
+Creating ext3 filesystem on /dev/xen-vol/sam-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/sam.log
+
+Installation Summary
+---------------------
+Hostname        :  sam
+Distribution    :  squeeze
+IP-Address(es)  :  192.168.7.163 
+RSA Fingerprint :  82:3e:95:db:da:47:fe:7d:54:3c:71:57:8b:e1:7b:fa
+Root Password   :  QkENLvWE
+
+root@frodo:~# 
+
+-------------------------------------------------
+
+Arrancar VM SAM:
+
+xm create /etc/xen/sam.cfg
+
+
+root@frodo:~# xm create /etc/xen/sam.cfg
+Using config file "/etc/xen/sam.cfg".
+Started domain sam (id=2)
+
+
+
+root@frodo:~# xm list
+Name                                        ID   Mem VCPUs      State   Time(s)
+Domain-0                                     0 18058     8     r-----   5844.8
+pippin                                       1  2048     2     -b----    692.5
+sam                                          2  4096     1     -b----      1.4
+
+
+Conectar a sam por ssh con la contraseña creada en la instalación:
+Nota: se agrga una entrada en /etc/hosts con el host sam, se puede usar el nomre para el acceso ssh.
+
+root@frodo:~# ssh sam
+
+The authenticity of host '192.168.7.163 (192.168.7.163)' can't be established.
+RSA key fingerprint is 82:3e:95:db:da:47:fe:7d:54:3c:71:57:8b:e1:7b:fa.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.7.163' (RSA) to the list of known hosts.
+root@192.168.7.163's password: 
+Linux sam 2.6.32-5-amd64 #1 SMP Tue May 13 16:34:35 UTC 2014 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in thedf -h
+
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+root@sam:~# 
+
+Configura autoarranque de sam en el reinicio del frodo:
+
+ln -s /etc/xen/sam.cfg /etc/xen/auto
+
+Listo Enjoy  ;-)
+
+- Crear MERRY
+
+--
+
+xm create /etc/xen/merry.cfg
+
+ln -s /etc/xen/merry.cfg /etc/xen/auto
+
+
+:-) Enjoy
+
+
+

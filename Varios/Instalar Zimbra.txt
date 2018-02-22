@@ -1,0 +1,395 @@
+Instalar Zimbra zcs-8.0.7
+
+1.- Previo:
+
+1a.- Instalación base limpia de Debian Squezze
+
+Si se instala en una maquina virtual XEN, entoces realizar lo siguiente:
+
+Se verificará que este instalado el paquete linux-image
+
+root@merry:~# dpkg -l | grep linux-image
+ii  linux-image-2.6.32-5-amd64    2.6.32-48squeeze6            Linux 2.6.32 for 64-bit PCs
+root@merry:~# 
+
+Entonces ejecutar apt-get install linux-image-2.6-amd64 que es el meta-paquete:
+
+root@merry:~# apt-get install linux-image-2.6-amd64
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  linux-image-2.6-amd64
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 4348 B of archives.
+After this operation, 49.2 kB of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ squeeze/main linux-image-2.6-amd64 amd64 2.6.32+29 [4348 B]
+Fetched 4348 B in 0s (192 kB/s)                 
+Selecting previously deselected package linux-image-2.6-amd64.
+(Reading database ... 12716 files and directories currently installed.)
+Unpacking linux-image-2.6-amd64 (from .../linux-image-2.6-amd64_2.6.32+29_amd64.deb) ...
+Setting up linux-image-2.6-amd64 (2.6.32+29) ...
+root@merry:~# 
+
+Lo anterior permite en general cargar modulos del kernel sin problemas.
+
+2.- Preparar la base Debian:
+
+- Verificar /etc/hosts y agregar los FQDN 
+
+127.0.0.1               localhost.localdomain   localhos
+192.168.7.164           merry.caschile.cl       merry
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+
+- Verificar archivo /etc/hostname y dejar el FQDN
+
+merry.caschile.cl
+
+- Verificar correcta configuración del resolver local en archivo /etc/resolv.conf 
+
+
+3.- Desactivar IPv6
+
+- Verificar configuración IP:
+
+root@merry:~# ip add sh
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:21:5e:c7:9c:47 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.7.164/24 brd 192.168.7.255 scope global eth0
+    inet6 fe80::221:5eff:fec7:9c47/64 scope link 
+       valid_lft forever preferred_lft forever
+root@merry:~# 
+
+Se observa que IPv6 esta activo, se necesita desactivar, editar /etc/sysctl.conf y agregar al final las siguientes lineas:
+
+#disable ipv6
+net.ipv6.conf.all.disable_ipv6 = 1
+
+Listo! reboot
+
+4.- Verificar en primer arranque
+
+root@merry:~# ip add sh
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:21:5e:c7:9c:47 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.7.164/24 brd 192.168.7.255 scope global eth0
+root@merry:~# 
+
+OK ya esta desactivado IPv6
+
+verificar los FQDN
+
+root@merry:~# ping merry -c 1
+PING merry.caschile.cl (192.168.7.164) 56(84) bytes of data.
+64 bytes from merry.caschile.cl (192.168.7.164): icmp_req=1 ttl=64 time=0.018 ms
+
+--- merry.caschile.cl ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.018/0.018/0.018/0.000 ms
+root@merry:~#
+
+Ok merry se resuelve en merry.caschile.cl
+
+5.- Obtener el software que no esta disponible en los repositorios Debian Squeeze:
+
+5a.- Zimbra
+
+mkdir ~/zimbra
+cd ~/zimbra
+
+Obtener ZCS desde http://www.zimbra.com/downloads/os-downloads.html la version zcs-8.0.7 para Ubuntu 12.04 LTS 64bit x86
+
+wget http://files2.zimbra.com/downloads/8.0.7_GA/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz
+
+
+root@merry:~/zimbra# wget http://files2.zimbra.com/downloads/8.0.7_GA/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz
+--2014-08-04 17:20:21--  http://files2.zimbra.com/downloads/8.0.7_GA/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz
+Resolving files2.zimbra.com... 54.230.58.77, 54.230.58.99, 54.230.58.14, ...
+Connecting to files2.zimbra.com|54.230.58.77|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 852409463 (813M) [binary/octet-stream]
+Saving to: `zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz'
+
+100%[============================================================================================================>] 852,409,463  110K/s   in 2h 22m  
+
+2014-08-04 19:42:58 (97.3 KB/s) - `zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz' saved [852409463/852409463]
+
+5b.- Descargar el paquete dpkg de Ubunto en directorio root
+
+cd ~/
+
+wget http://security.ubuntu.com/ubuntu/pool/main/d/dpkg/dpkg_1.15.5.6ubuntu4.5_amd64.deb
+
+6.- Comenzar con la instalación
+
+cd ~/zimbra
+tar xvfz zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz
+
+
+root@merry:~/zimbra# tar xvfz zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908.tgz
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-apache_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-core_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-ldap_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-logger_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-memcached_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-mta_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-proxy_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-snmp_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-spell_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/packages/zimbra-store_8.0.7.GA.6021.UBUNTU12.64_amd64.deb
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/bin/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/bin/get_plat_tag.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/bin/zmdbintegrityreport
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/data/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/data/versions-init.sql
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/YPL.txt
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/zcl.txt
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/zimbra_public_eula_2.4.txt
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/oracle_jdk_eula.txt
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/admin.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Fedora Server Config.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Import_Wizard_Outlook.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Migration_Exch_Admin.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Migration_Exch_User.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/MigrationWizard_Domino.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/MigrationWizard.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/OSmultiserverinstall.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/quick_start.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/RNZCSO_2005Beta.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/User Instructions for ZCS Import Wizard.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Zimbra iCalendar Migration Guide.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Zimbra_Release_Note.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/Zimbra Schema.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/docs/en_US/zimbra_user_guide.pdf
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/modules/
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/modules/getconfig.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/modules/packages.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/modules/postinstall.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/addUser.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/globals.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/util/utilfunc.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/readme_source_en_US.txt
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/readme_binary_en_US.txt
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/install.sh
+zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908/README.txt
+root@merry:~/zimbra# 
+
+root@merry:~/zimbra# cd zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908
+
+/* Lo siguiente no corre
+Edite el archivo util/utilfunc.sh. Buscar la primera instancia de la siguiente linea:
+
+util/utilfunc.sh
+
+    PREREQ_PACKAGES=”sudo libidn11 libgmp3 libstdc++6”
+
+Cambiar la linea para que concuerde con lo siguiente:
+
+util/utilfunc.sh
+
+    PREREQ_PACKAGES=”sudo libidn11 libgmp3c2 libstdc++6”
+*/
+
+Instalar dependencias
+
+apt-get install sudo libpcre3 libgmp3c2 lib32gmp3-dev libgmp3-dev sysstat libexpat1 libidn11 perl-modules lzma wget
+
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# apt-get install sudo libpcre3 libgmp3c2 lib32gmp3-dev libgmp3-dev sysstat libexpat1 libidn11 perl-modules lzma wget
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+wget is already the newest version.
+The following extra packages will be installed:
+  binutils bzip2 cpp-4.3 g++-4.3 gcc-4.3 gcc-4.3-base lib32gcc1 lib32gmp3 lib32gmpxx4 lib32stdc++6 libc-dev-bin libc6-dev libc6-i386 libdb4.7
+  libgmpxx4ldbl libgomp1 libmpfr4 libstdc++6-4.3-dev linux-libc-dev manpages-dev perl ucf
+Suggested packages:
+  binutils-doc bzip2-doc gcc-4.3-locales g++-4.3-multilib gcc-4.3-doc libstdc++6-4.3-dbg gcc-4.3-multilib libmudflap0-4.3-dev libgcc1-dbg
+  libgomp1-dbg libmudflap0-dbg libgmp3-doc libmpfr-dev glibc-doc libstdc++6-4.3-doc perl-doc libterm-readline-gnu-perl libterm-readline-perl-perl
+  make isag
+Recommended packages:
+  gcc c-compiler libstdc++-dev
+The following NEW packages will be installed:
+  binutils bzip2 cpp-4.3 g++-4.3 gcc-4.3 gcc-4.3-base lib32gcc1 lib32gmp3 lib32gmp3-dev lib32gmpxx4 lib32stdc++6 libc-dev-bin libc6-dev libc6-i386
+  libdb4.7 libexpat1 libgmp3-dev libgmp3c2 libgmpxx4ldbl libgomp1 libidn11 libmpfr4 libpcre3 libstdc++6-4.3-dev linux-libc-dev lzma manpages-dev
+  perl perl-modules sudo sysstat ucf
+0 upgraded, 32 newly installed, 0 to remove and 0 not upgraded.
+Need to get 38.1 MB of archives.
+After this operation, 122 MB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+Ok Ahora instalar Zimbra
+
+./install.sh --platform-override
+
+Do you agree with the terms of the software license agreement? [N]y
+
+Do you agree with the terms of the software license agreement? [N]y
+Checking for prerequisites...
+     FOUND: NPTL
+     FOUND: sudo-1.7.4p4-2.squeeze.4
+     FOUND: libidn11-1.15-2
+     FOUND: libgmp3c2-2:4.3.2+dfsg-1
+     FOUND: libstdc++6-4.4.5-8
+
+Checking for suggested prerequisites...
+Prerequisite check complete.
+
+Checking for installable packages
+
+Found zimbra-core
+Found zimbra-ldap
+Found zimbra-logger
+Found zimbra-mta
+Found zimbra-snmp
+Found zimbra-store
+Found zimbra-apache
+Found zimbra-spell
+Found zimbra-memcached
+Found zimbra-proxy
+
+
+Select the packages to install
+
+Install zimbra-ldap [Y] 
+
+Install zimbra-logger [Y] 
+
+Install zimbra-mta [Y] 
+
+Install zimbra-snmp [Y] 
+
+Install zimbra-store [Y] 
+
+Install zimbra-apache [Y] 
+
+Install zimbra-spell [Y] 
+
+Install zimbra-memcached [N] 
+
+Install zimbra-proxy [N] 
+
+
+esponder yes a lo sgte:
+
+You appear to be installing packages on a platform different
+than the platform for which they were built.
+
+This platform is DEBIAN6_64
+Packages found: UBUNTU12_64
+This may or may not work.
+
+Using packages for a platform in which they were not designed for
+may result in an installation that is NOT usable. Your support
+options may be limited if you choose to continue.
+
+
+Install anyway? [N] 
+
+Install anyway? [N] Y
+
+The system will be modified.  Continue? [N] 
+
+
+
+
+
+-----
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# apt-get install libperl5.10
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  libperl5.10
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 1160 B of archives.
+After this operation, 41.0 kB of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ squeeze/main libperl5.10 amd64 5.10.1-17squeeze6 [1160 B]
+Fetched 1160 B in 0s (68.3 kB/s)      
+Selecting previously deselected package libperl5.10.
+(Reading database ... 68571 files and directories currently installed.)
+Unpacking libperl5.10 (from .../libperl5.10_5.10.1-17squeeze6_amd64.deb) ...
+Setting up libperl5.10 (5.10.1-17squeeze6) ...
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# 
+
+root@merry:/usr/lib/perl/5.10# apt-get install libthreads-shared-perl                   
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following NEW packages will be installed:
+  libthreads-shared-perl
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 37.9 kB of archives.
+After this operation, 152 kB of additional disk space will be used.
+Get:1 http://ftp.cl.debian.org/debian/ squeeze/main libthreads-shared-perl amd64 1.32-1 [37.9 kB]
+Fetched 37.9 kB in 0s (888 kB/s)                 
+Selecting previously deselected package libthreads-shared-perl.
+(Reading database ... 68596 files and directories currently installed.)
+Unpacking libthreads-shared-perl (from .../libthreads-shared-perl_1.32-1_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up libthreads-shared-perl (1.32-1) ...
+root@merry:/usr/lib/perl/5.10#
+
+
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# apt-get install libthreads-shared-perl libthreads-perl                             
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+libthreads-shared-perl is already the newest version.
+The following NEW packages will be installed:
+  libthreads-perl
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 45.3 kB of archives.
+After this operation, 160 kB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+Get:1 http://ftp.cl.debian.org/debian/ squeeze/main libthreads-perl amd64 1.74-1 [45.3 kB]
+Fetched 45.3 kB in 0s (364 kB/s)        
+Selecting previously deselected package libthreads-perl.
+(Reading database ... 68609 files and directories currently installed.)
+Unpacking libthreads-perl (from .../libthreads-perl_1.74-1_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up libthreads-perl (1.74-1) ...
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# 
+
+
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# apt-get install libthreads-shared-perl libthreads-perl libthread-serialize-perl libthread-queue-any-perllibthread-pool-simple-perl
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+E: Unable to locate package libthread-queue-any-perllibthread-pool-simple-perl
+root@merry:~/zimbra/zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908# apt-get install libthreads-shared-perl libthreads-perl libthread-serialize-perl libthread-queue-any-perl libthread-pool-simple-perl
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+libthreads-perl is already the newest version.
+libthreads-shared-perl is already the newest version.
+The following extra packages will be installed:
+  libload-perl
+The following NEW packages will be installed:
+  libload-perl libthread-pool-simple-perl libthread-queue-any-perl libthread-serialize-perl
+0 upgraded, 4 newly installed, 0 to remove and 0 not upgraded.
+Need to get 53.5 kB of archives.
+After this operation, 324 kB of additional disk space will be used.
+Do you want to continue [Y/n]? 
+
+
+

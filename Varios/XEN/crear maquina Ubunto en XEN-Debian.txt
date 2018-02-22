@@ -1,0 +1,210 @@
+root@frodo:/etc/xen# xen-create-image --hostname=gollum --dist=natty --mirror=http://old-releases.ubuntu.com --vcpus=2 --size=100Gb --swap=1Gb --memory=4096Mb --ip=192.168.7.167 --mac=00:21:5e:c7:9c:51 --memory=4096Mb --arch=amd64
+
+
+root@frodo:/etc/xen# xm create gollum.cfg 
+
+
+root@frodo:/etc/xen# ln -s /etc/xen/gollum.cfg /etc/xen/auto
+
+----
+Para nueva máquina BBB(Ubuntu) en Morgul
+
+xen-create-image --hostname=smeagol --dist=lucid --mirror=http://old-releases.ubuntu.com/ubuntu/ --vcpus=2 --size=100Gb --swap=1Gb --memory=2048Mb --ip=192.168.7.169 --mac=00:1c:c0:8f:3d:09 --arch=amd64
+
+root@morgul:/etc# xen-create-image --hostname=smeagol --dist=lucid --mirror=http://old-releases.ubuntu.com/ubuntu/ --vcpus=2 --size=100Gb --swap=1Gb --memory=2048Mb --ip=192.168.7.169 --mac=00:1c:c0:8f:3d:09 --arch=amd64
+
+General Information
+--------------------
+Hostname       :  smeagol
+Distribution   :  lucid
+Mirror         :  http://old-releases.ubuntu.com/ubuntu/
+Partitions     :  swap            1Gb   (swap)
+                  /               100Gb (ext3)
+Image type     :  full
+Memory size    :  2048Mb
+Bootloader     :  pygrub
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.7.169 [MAC: 00:1c:c0:8f:3d:09]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.7.255
+Gateway        : 192.168.7.131
+
+
+Creating swap on /dev/vg0/smeagol-swap
+Done
+
+Creating ext3 filesystem on /dev/vg0/smeagol-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/smeagol.log
+
+Installation Summary
+---------------------
+Hostname        :  smeagol
+Distribution    :  lucid
+MAC Address     :  00:1c:c0:8f:3d:09
+IP Address(es)  :  192.168.7.169 
+RSA Fingerprint :  4c:2c:70:83:75:72:52:d9:f1:1d:81:68:a3:10:4c:3e
+Root Password   :  bYttVAxUPC98wt7ZP8rJXQ6
+
+root@morgul:/etc# 
+
+----
+
+
+
+root@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  45.3MB/s   01:37    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso root@192.168.7.169:~/
+root@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  49.9MB/s   01:28    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso root@192.168.7.169:~/
+root@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  49.9MB/s   01:28    
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso root@192.168.7.169:~/
+root@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  49.9MB/s   01:28    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso root@192.168.7.169:~/
+root@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  49.9MB/s   01:28    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso root@192.168.7.169:~/
+root@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  47.7MB/s   01:32    
+mcampos@mail:~$ 
+
+
+----------------------
+
+xen-create-image --hostname=deagol --dist=trusty --mirror=http://mx.archive.ubuntu.com/ubuntu/ --vcpus=2 --size=100Gb --swap=1Gb --memory=2048Mb --ip=192.168.7.169 --mac=00:1c:c0:8f:3d:10 --arch=amd64
+
+General Information
+--------------------
+Hostname       :  deagol
+Distribution   :  trusty
+Mirror         :  http://mx.archive.ubuntu.com/ubuntu/
+Partitions     :  swap            1Gb   (swap)
+                  /               100Gb (ext3)
+Image type     :  full
+Memory size    :  2048Mb
+Bootloader     :  pygrub
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.7.169 [MAC: 00:1c:c0:8f:3d:10]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.7.255
+Gateway        : 192.168.7.131
+
+
+Creating swap on /dev/vg0/deagol-swap
+Done
+
+Creating ext3 filesystem on /dev/vg0/deagol-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+No role scripts were specified.  Skipping
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/deagol.log
+
+Installation Summary
+---------------------
+Hostname        :  deagol
+Distribution    :  trusty
+MAC Address     :  00:1c:c0:8f:3d:10
+IP Address(es)  :  192.168.7.169 
+RSA Fingerprint :  36:c8:c9:8b:c8:b4:bd:0a:68:e3:58:d8:4f:2c:87:ee
+Root Password   :  qH3qsuhRfqCYx43FJdaa4Nw
+
+
+
+------------------------
+
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  44.3MB/s   01:39    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  47.2MB/s   01:33    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Permission denied, please try again.
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  47.2MB/s   01:33    
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ 
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  32.8MB/s   02:14    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  45.3MB/s   01:37    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  45.7MB/s   01:36    
+mcampos@mail:~$ 
+
+-------------------------------------
+
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  35.7MB/s   02:03    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  48.2MB/s   01:31    
+mcampos@mail:~$ scp Fedora-20-x86_64-DVD.iso mcampos@192.168.7.169:~/
+mcampos@192.168.7.169's password: 
+Fedora-20-x86_64-DVD.iso                                                                                            100% 4390MB  49.3MB/s   01:29    
+mcampos@mail:~$ ip l l
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP qlen 1000
+    link/ether 00:26:55:57:c3:06 brd ff:ff:ff:ff:ff:ff
+mcampos@mail:~$ 
+
+-----------------------------
+
+
+TCP ports 80, 1935, 9123 are accessible
+UDP ports 16384 - 32768 are accessible
+

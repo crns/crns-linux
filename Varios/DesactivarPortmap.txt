@@ -1,0 +1,12 @@
+Just do the following in /etc/default/portmap to stop portmap from listening on the external interface:
+
+# If you want portmap to listen only to the loopback
+# interface, uncomment the following line (it will be
+# uncommented automatically if you configure this
+# through debconf).
+OPTIONS="-i 127.0.0.1"
+
+Then do:
+
+/etc/init.d/portmap restart
+

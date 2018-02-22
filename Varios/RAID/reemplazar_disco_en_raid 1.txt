@@ -1,0 +1,44 @@
+Falla sda en raid 1 con sdb
+
+
+sfdisk -d /dev/sdb | sfdisk /dev/sdc
+
+Falló:
+ md0 sda1  sdb1 -> sdc1
+
+ md1 sda2* sdb2 -> sdc2
+
+ md2 sda3  sdb3 -> sdc3
+
+ md3 sda4* sdb4 -> sdc4
+
+Chequear con:
+
+mdadm --detail /dev/md0
+
+
+Agregar particion a raid:
+
+mdadm --manage /dev/md0 --add /dev/sdc1
+mdadm --manage /dev/md1 --add /dev/sdc2
+mdadm --manage /dev/md2 --add /dev/sdc3
+mdadm --manage /dev/md3 --add /dev/sdc4
+
+Marcar fail en disco/partcion:
+
+mdadm --manage /dev/md0 --fail /dev/sda1
+mdadm --manage /dev/md2 --fail /dev/sda3
+
+Remover la particion en disco con falla:
+
+mdadm --manage /dev/md0 --remove /dev/sda1
+mdadm --manage /dev/md1 --remove /dev/sda2
+mdadm --manage /dev/md2 --remove /dev/sda3
+mdadm --manage /dev/md3 --remove /dev/sda4
+
+auto:
+boromir
+faramir
+lobelia
+
+

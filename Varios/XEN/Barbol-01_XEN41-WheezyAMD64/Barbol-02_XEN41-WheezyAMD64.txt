@@ -1,0 +1,257 @@
+Configurar la Red (Instalando OpenVSwitch)
+
+
+Se instalará openvswitch-datapath-dkms debido a que no se necesita hacer nada despues de una actualización de sistema:
+
+Primero se instalan las dependencias de openvswitch con:
+
+apt-get install build-essential module-assistant linux-headers-`uname -r`
+
+root@barbol:~# apt-get install build-essential module-assistant linux-headers-`uname -r`
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  binutils cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl libalgorithm-diff-xs-perl
+  libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2 libmpfr4 libquadmath0
+  libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev make manpages-dev
+Paquetes sugeridos:
+  binutils-doc cpp-doc gcc-4.6-locales gcc-4.7-locales debian-keyring g++-multilib g++-4.7-multilib gcc-4.7-doc libstdc++6-4.7-dbg gcc-multilib
+  autoconf automake1.9 libtool flex bison gdb gcc-doc gcc-4.6-multilib libmudflap0-4.6-dev gcc-4.6-doc libgcc1-dbg libgomp1-dbg libquadmath0-dbg
+  libmudflap0-dbg binutils-gold gcc-4.7-multilib libmudflap0-4.7-dev libitm1-dbg libcloog-ppl0 libppl-c2 libppl7 glibc-doc libstdc++6-4.7-doc
+  make-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils build-essential cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl
+  libalgorithm-diff-xs-perl libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2
+  libmpfr4 libquadmath0 libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-amd64 linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev
+  make manpages-dev module-assistant
+0 actualizados, 35 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 54,6 MB de archivos.
+Se utilizarán 147 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+
+Ahora instalar el soporte de opevswitch en el kernel con:
+
+1.- Repositorios:
+Asegurese de tener los repositorios de debian y de openstack para debian bien configurados. Los de OpenStack se agregan así:
+
+a.- Agregue las siguientes líneas a /etc/apt/sources.list:
+
+nano /etc/apt/sources.list
+
+deb http://archive.gplhost.com/debian havana main
+deb http://archive.gplhost.com/debian havana-backports main
+
+b.- Importe la llave del repositorio
+
+cd /tmp
+wget http://archive.gplhost.com/debian/repository_key.asc
+apt-key add repository_key.asc
+cd /
+
+Actualizar: (Nota: Debe tener las ramas "main contrib non-free" activas en los repositorios principales y de updates).
+
+apt-get update
+
+root@barbol:~# apt-get upgrade
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se actualizarán los siguientes paquetes:
+  libusb-1.0-0
+1 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 53,7 kB de archivos.
+Se utilizarán 63,5 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+
+-----------------------------
+
+
+apt-cache search openvswitch-datapath
+
+root@deimos:~# apt-cache search openvswitch-datapath
+openvswitch-datapath-dkms - Open vSwitch datapath module source - DKMS version
+openvswitch-datapath-source - Open vSwitch datapath module source - module-assistant version
+root@deimos:~# 
+
+
+
+apt-get install openvswitch-common openvswitch-controller python-openvswitch openvswitch-test openvswitch-switch openvswitch-datapath-dkms
+
+root@barbol:~# apt-get install openvswitch-common openvswitch-controller python-openvswitch openvswitch-test openvswitch-switch openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dkms menu openvswitch-pki python-openssl python-pam python-pkg-resources python-serial python-twisted-bin python-twisted-core python-twisted-web
+  python-zope.interface uuid-runtime
+Paquetes sugeridos:
+  menu-l10n gksu kdebase-bin kdebase-runtime ktsuss sux openvswitch-datapath-module python-openssl-doc python-openssl-dbg python-distribute
+  python-distribute-doc python-wxgtk2.8 python-wxgtk2.6 python-wxgtk python-twisted-bin-dbg python-tk python-gtk2 python-glade2 python-qt3
+Se instalarán los siguientes paquetes NUEVOS:
+  dkms menu openvswitch-common openvswitch-controller openvswitch-datapath-dkms openvswitch-pki openvswitch-switch openvswitch-test python-openssl
+  python-openvswitch python-pam python-pkg-resources python-serial python-twisted-bin python-twisted-core python-twisted-web python-zope.interface
+  uuid-runtime
+0 actualizados, 18 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 8.511 kB de archivos.
+Se utilizarán 37,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+...
+
+
+
+...
+Creating controllerca...
+Creating switchca...
+Configurando openvswitch-controller (2.0.1-1~bpo70+1) ...
+[....] Starting ovs-controller : ovs-controller2015-03-20T20:53:40Z|00001|stream_ssl|INFO|Trusting CA cert from /etc/openvswitch-controller/cacert.pem (/C=US/ST=CA/O=Open vSwitch/OU=switchca/CN=OVS switchca CA Certificate (2015 mar 20 17:53:39)) (fingerprint c4:37:d0:b6:df:14:4c:e6:cc:56:35:a5:ac:cf:20:ae:72:1f:2b:38)
+. ok 
+Configurando openvswitch-datapath-dkms (2.0.1-1~bpo70+1) ...
+
+Creating symlink /var/lib/dkms/openvswitch/2.0.1/source ->
+                 /usr/src/openvswitch-2.0.1
+
+DKMS: add completed.
+
+Kernel preparation unnecessary for this kernel.  Skipping...
+
+Building module:
+cleaning build area....(bad exit status: 2)
+./configure --with-linux='/lib/modules/3.2.0-4-amd64/build' && make -C datapath/linux.........
+cleaning build area....(bad exit status: 2)
+
+DKMS: build completed.
+
+openvswitch:
+Running module version sanity check.
+ - Original module
+   - No original module exists within this kernel
+ - Installation
+   - Installing to /lib/modules/3.2.0-4-amd64/updates/dkms/
+
+depmod.....
+
+DKMS: install completed.
+Configurando openvswitch-switch (2.0.1-1~bpo70+1) ...
+Inserting openvswitch module.
+/etc/openvswitch/conf.db does not exist ... (warning).
+Creating empty database /etc/openvswitch/conf.db.
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+Configurando openvswitch-test (2.0.1-1~bpo70+1) ...
+Configurando python-openvswitch (2.0.1-1~bpo70+1) ...
+Procesando disparadores para menu ...
+Procesando disparadores para python-support ...
+root@barbol:~# 
+
+
+
+Chequeo final con:
+
+/etc/init.d/openvswitch-switch restart
+
+
+root@barbol:~# /etc/init.d/openvswitch-switch restart
+Killing ovs-vswitchd (16642).
+Killing ovsdb-server (16631).
+Starting ovsdb-server.
+Configuring Open vSwitch system IDs.
+Starting ovs-vswitchd.
+Enabling remote OVSDB managers.
+root@barbol:~# 
+
+
+Y comprobamos que todo esta ok:
+
+/etc/init.d/openvswitch-switch status
+
+root@barbol:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 16733
+ovs-vswitchd is running with pid 16744
+root@barbol:~# 
+
+
+
+Presto!
+
+Reiniciar para asegura que todo carge por default:
+
+
+---
+
+Agregamos una definición de bond:
+
+editar /etc/network/interfaces
+
+auto bond0
+allow-br0 bond0
+iface bond0 inet manual
+	ovs_bridge br0
+	ovs_type OVSBond
+   	ovs_bonds eth0 eth1
+   	ovs_options bond_mode=balance-tcp lacp=active
+   	bond-miimon 100
+
+auto eth0
+iface eth0 inet manual
+  	bond-master bond0
+
+auto eth1
+iface eth1 inet manual
+  	bond-master bond0
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+   	address 172.16.20.1
+   	netmask 255.255.255.0
+   	ovs_type OVSBridge
+   	ovs_ports bond0
+	bridge-ports bond0
+
+La última linea permite que el bridge levante automáticamente sin problemas la configuración IP en el arranque todo OK. 
+
+---
+
+Ahora activar el bridge patra gestionarlo por OVS:
+
+
+Revisar:
+
+ovs-vsctl add-br br0
+
+root@barbol:~# ovs-vsctl show
+b79423b5-9955-4382-9767-a6a64023c6bc
+    ovs_version: "2.0.1"
+root@barbol:~# 
+
+root@barbol:~# ovs-vsctl add-br br0
+root@barbol:~# ovs-vsctl add-port br0 bond0
+root@barbol:~# 
+
+root@barbol:~# ovs-vsctl show
+b79423b5-9955-4382-9767-a6a64023c6bc
+    Bridge "br0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+        Port "bond0"
+            Interface "bond0"
+    ovs_version: "2.0.1"
+root@barbol:~# 
+
+
+
+Se puede activar ahora con ifup br0 o reboot para asegurarnos que todo arranca automaticamente:
+
+Reboot and enjoy, happy hack!!
+
+------------------------
+

@@ -1,0 +1,112 @@
+Instalando el software:
+
+root@boromir:~# apt-get install bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  bridge-utils
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 35,5 kB de archivos.
+Se utilizarán 145 kB de espacio de disco adicional después de esta operación.
+Des:1 http://debian.insacom.cl/debian/ wheezy/main bridge-utils i386 1.5-6 [35,5 kB]
+Descargados 35,5 kB en 0seg. (316 kB/s)
+Seleccionando el paquete bridge-utils previamente no seleccionado.
+(Leyendo la base de datos ... 24708 ficheros o directorios instalados actualmente.)
+Desempaquetando bridge-utils (de .../bridge-utils_1.5-6_i386.deb) ...
+Procesando disparadores para man-db ...
+Configurando bridge-utils (1.5-6) ...
+root@boromir:~# 
+
+Configuring bridging in /etc/network/interfaces:
+
+...
+
+ # Set up interfaces manually, avoiding conflicts with, e.g., network manager
+ iface eth0 inet manual
+
+ iface eth1 inet manual
+
+ # Bridge setup
+ iface br0 inet dhcp
+        bridge_ports eth0 eth1
+
+
+
+ebtables -A FORWARD -s 00:11:22:33:44:55 -j DROP
+
+ebtables -A FORWARD -s 00:15:5d:0a:02:39 -j DROP
+
+Monitoreo data en el bridge:
+
+root@boromir:~# apt-get install wireshark
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dbus fontconfig fontconfig-config hicolor-icon-theme libasound2 libatk1.0-0 libatk1.0-data libavahi-client3 libavahi-common-data libavahi-common3
+  libc-ares2 libcairo2 libcap2-bin libcups2 libdatrie1 libdbus-1-3 libffi5 libfontconfig1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libglib2.0-0
+  libglib2.0-data libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libjack-jackd2-0 libjasper1 libjbig0 libjpeg8 liblua5.1-0 libpam-cap libpango1.0-0
+  libpcap0.8 libpixman-1-0 libpng12-0 libportaudio2 libsamplerate0 libsmi2ldbl libsystemd-login0 libthai-data libthai0 libtiff4 libwireshark-data
+  libwireshark2 libwiretap2 libwsutil2 libxcb-render0 libxcb-shm0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxft2 libxi6 libxinerama1
+  libxrandr2 libxrender1 shared-mime-info ttf-dejavu-core wireshark-common
+Paquetes sugeridos:
+  dbus-x11 libasound2-plugins libcap-dev cups-common librsvg2-common gvfs jackd2 libjasper-runtime ttf-baekmuk ttf-arphic-gbsn00lp
+  ttf-arphic-bsmi00lp ttf-arphic-gkai00mp ttf-arphic-bkai00mp snmp-mibs-downloader wireshark-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  dbus fontconfig fontconfig-config hicolor-icon-theme libasound2 libatk1.0-0 libatk1.0-data libavahi-client3 libavahi-common-data libavahi-common3
+  libc-ares2 libcairo2 libcap2-bin libcups2 libdatrie1 libdbus-1-3 libffi5 libfontconfig1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libglib2.0-0
+  libglib2.0-data libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libjack-jackd2-0 libjasper1 libjbig0 libjpeg8 liblua5.1-0 libpam-cap libpango1.0-0
+  libpcap0.8 libpixman-1-0 libpng12-0 libportaudio2 libsamplerate0 libsmi2ldbl libsystemd-login0 libthai-data libthai0 libtiff4 libwireshark-data
+  libwireshark2 libwiretap2 libwsutil2 libxcb-render0 libxcb-shm0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxft2 libxi6 libxinerama1
+  libxrandr2 libxrender1 shared-mime-info ttf-dejavu-core wireshark wireshark-common
+0 actualizados, 61 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 33,5 MB de archivos.
+Se utilizarán 123 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Filtrando trafico con ebtables:
+
+root@boromir:~# apt-get install ebtables
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  ebtables
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 101 kB de archivos.
+Se utilizarán 341 kB de espacio de disco adicional después de esta operación.
+Des:1 http://debian.insacom.cl/debian/ wheezy/main ebtables i386 2.0.10.4-1 [101 kB]
+Descargados 101 kB en 0seg. (499 kB/s)
+Seleccionando el paquete ebtables previamente no seleccionado.
+(Leyendo la base de datos ... 26720 ficheros o directorios instalados actualmente.)
+Desempaquetando ebtables (de .../ebtables_2.0.10.4-1_i386.deb) ...
+Procesando disparadores para man-db ...
+Configurando ebtables (2.0.10.4-1) ...
+update-rc.d: warning: default start runlevel arguments (2 3 4 5) do not match ebtables Default-Start values (S)
+root@boromir:~# 
+
+Filtrar por IP (IPv4)
+
+Bloquear destino
+
+#ebtables -I FORWARD -p IPv4 --ip-destination 190.98.195.11 -j DROP
+ebtables -I FORWARD -p IPv4 --ip-destination 92.105.83.148 -j DROP
+
+Bloquear por destino y port
+# ebtables -D FORWARD -i eth0 -p IPv4 --ip-destination 192.168.7.120 --ip-protocol TCP --ip-destination-port 445 -j DROP
+
+
+
+Cargar reglas al startup:
+
+Guardar reglas actuales:
+#ebtables --atomic-file /etc/ebtables/ebtables.up.rules -t nat --atomic-save
+
+Editar /etc/rc.local
+export EBTABLES_ATOMIC_FILE=/etc/ebtables/ebtables.up.rules
+/sbin/ebtables -t nat --atomic-commit
+unset EBTABLES_ATOMIC_FILE
+
+

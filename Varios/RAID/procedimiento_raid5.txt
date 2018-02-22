@@ -1,0 +1,25 @@
+Reensamblar Raid
+
+vgchange -a n vg0
+
+mdadm --stop /dev/md2
+
+#
+mdadm --create /dev/md2 --assume-clean --level=5 --raid-devices=4 /dev/sdc4 /dev/sde4 missing /dev/sdb4 
+#
+mdadm --create /dev/md2 --assume-clean --level=5 --raid-devices=4 /dev/sdd4 /dev/sdb4 /dev/sdc4 /dev/sde4 
+
+mdadm --readwrite /dev/md2
+
+pvcreate -u 2SyiYO-NL12-dPJN-Pdru-1ze6-RkZd-8Ube3n /dev/md2
+
+vgcfgrestore --file vg0 --test vg0
+vgcfgrestore --file vg0 vg0
+
+vgchange -a y vg0
+
+testdisk /dev/mapper/vg0-lv0
+
+
+
+

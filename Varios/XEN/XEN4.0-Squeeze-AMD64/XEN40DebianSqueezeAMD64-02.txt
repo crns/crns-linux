@@ -1,0 +1,397 @@
+Securizar acceso ssh:
+
+Continuar -> SecurizarSSHD.txt
+
+Desactivar portmap en interfaces fisicas -> DesactivarPortmap.txt (no es valido en Wheezy)
+
+Configurar la Red (Instalando OpenVSwitch)
+
+root@frodo:~# apt-cache search openvswitch-datapath
+openvswitch-datapath-dkms - Open vSwitch datapath module source - DKMS version
+openvswitch-datapath-source - Open vSwitch datapath module source - module-assistant version
+root@frodo:~# 
+
+Se instalará openvswitch-datapath-dkms debido a que no se necesita hacer nada despues de una actualización de sistema:
+
+Pirmero se instalan las dependencias de openvswitch con:
+
+apt-get install build-essential module-assistant linux-headers-`uname -r`
+
+root@frodo:~# apt-get install build-essential module-assistant linux-headers-`uname -r`
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  binutils bzip2 cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl libalgorithm-diff-xs-perl
+  libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2 libmpfr4 libquadmath0
+  libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev make manpages-dev
+Paquetes sugeridos:
+  binutils-doc bzip2-doc cpp-doc gcc-4.6-locales gcc-4.7-locales debian-keyring g++-multilib g++-4.7-multilib gcc-4.7-doc libstdc++6-4.7-dbg
+  gcc-multilib autoconf automake1.9 libtool flex bison gdb gcc-doc gcc-4.6-multilib libmudflap0-4.6-dev gcc-4.6-doc libgcc1-dbg libgomp1-dbg
+  libquadmath0-dbg libmudflap0-dbg binutils-gold gcc-4.7-multilib libmudflap0-4.7-dev libitm1-dbg libcloog-ppl0 libppl-c2 libppl7 glibc-doc
+  libstdc++6-4.7-doc make-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils build-essential bzip2 cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl
+  libalgorithm-diff-xs-perl libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2
+  libmpfr4 libquadmath0 libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-amd64 linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev
+  make manpages-dev module-assistant
+0 actualizados, 36 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 54,6 MB de archivos.
+Se utilizarán 154 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+Nos aseguramos de tener desintalado el paquete bridge-utils:
+
+
+root@frodo:~# apt-get remove --purge bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Package 'bridge-utils' is not installed, so not removed
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@frodo:~# 
+
+
+
+Ahora instalar el soporte de opevswitch en el kernel con:
+
+root@frodo:~# apt-get install openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dkms menu
+Paquetes sugeridos:
+  menu-l10n gksu kdebase-bin kdebase-runtime ktsuss sux
+Se instalarán los siguientes paquetes NUEVOS:
+  dkms menu openvswitch-datapath-dkms
+0 actualizados, 3 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 2.516 kB de archivos.
+Se utilizarán 14,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+---
+
+apt-get install openvswitch-brcompat openvswitch-common openvswitch-switch
+
+root@frodo:~# apt-get install openvswitch-brcompat openvswitch-common openvswitch-switch
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  bridge-utils openssl uuid-runtime
+Paquetes sugeridos:
+  ca-certificates openvswitch-datapath-module
+Se instalarán los siguientes paquetes NUEVOS:
+  bridge-utils openssl openvswitch-brcompat openvswitch-common openvswitch-switch uuid-runtime
+0 actualizados, 6 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 2.999 kB de archivos.
+Se utilizarán 6.517 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+...
+Configurando openvswitch-common (1.4.2+git20120612-9.1~deb7u1) ...
+Configurando openvswitch-switch (1.4.2+git20120612-9.1~deb7u1) ...
+[ ok ] Inserting openvswitch module.
+[warn] /var/lib/openvswitch/conf.db does not exist ... (warning).
+[ ok ] Creating empty database /var/lib/openvswitch/conf.db.
+[ ok ] Starting ovsdb-server.
+[ ok ] Configuring Open vSwitch system IDs.
+[ ok ] Starting ovs-vswitchd.
+Configurando openvswitch-brcompat (1.4.2+git20120612-9.1~deb7u1) ...
+[ ok ] ovsdb-server is already running.
+[ ok ] ovs-vswitchd is already running.
+root@frodo:~# 
+
+----->>>
+
+Procesando disparadores para man-db ...
+Configurando bridge-utils (1.5-6) ...
+Configurando uuid-runtime (2.20.1-5.3) ...
+Configurando openvswitch-common (1.4.2+git20120612-9.1~deb7u1) ...
+Configurando openvswitch-switch (1.4.2+git20120612-9.1~deb7u1) ...
+[FAIL] Inserting openvswitch module ... failed!
+Module has probably not been built for this kernel.
+Install the openvswitch-datapath-source package, then read
+/usr/share/doc/openvswitch-datapath-source/README.Debian
+Configurando openvswitch-brcompat (1.4.2+git20120612-9.1~deb7u1) ...
+root@crn-hip:/etc/default#
+
+
+root@crn-hip:/etc/default# apt-get install openvswitch-datapath-source
+
+
+root@crn-hip:/etc/default# apt-get install openvswitch-datapath-source
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  autopoint debhelper gettext git git-man html2text intltool-debian libcroco3 libcurl3-gnutls liberror-perl libffi5 libgettextpo0 libglib2.0-0 libglib2.0-data
+  libmail-sendmail-perl librtmp0 libssh2-1 libsys-hostname-long-perl libunistring0 po-debconf rsync shared-mime-info
+Paquetes sugeridos:
+  dh-make gettext-doc git-daemon-run git-daemon-sysvinit git-doc git-el git-arch git-cvs git-svn git-email git-gui gitk gitweb libmail-box-perl
+Se instalarán los siguientes paquetes NUEVOS:
+  autopoint debhelper gettext git git-man html2text intltool-debian libcroco3 libcurl3-gnutls liberror-perl libffi5 libgettextpo0 libglib2.0-0 libglib2.0-data
+  libmail-sendmail-perl librtmp0 libssh2-1 libsys-hostname-long-perl libunistring0 openvswitch-datapath-source po-debconf rsync shared-mime-info
+0 actualizados, 23 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 19,2 MB de archivos.
+Se utilizarán 45,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main libffi5 amd64 3.0.10-3 [24,8 kB]
+Des:2 http://security.debian.org/ wheezy/updates/main libcurl3-gnutls amd64 7.26.0-1+wheezy12 [322 kB]
+Des:3 http://ftp.cl.debian.org/debian/ wheezy/main libglib2.0-0 amd64 2.33.12+really2.32.4-5 [1.838 kB]
+Des:4 http://ftp.cl.debian.org/debian/ wheezy/main libcroco3 amd64 0.6.6-2 [134 kB]
+Des:5 http://ftp.cl.debian.org/debian/ wheezy/main librtmp0 amd64 2.4+20111222.git4e06e21-1 [62,3 kB]
+Des:6 http://ftp.cl.debian.org/debian/ wheezy/main libssh2-1 amd64 1.4.2-1.1 [133 kB]
+Des:7 http://ftp.cl.debian.org/debian/ wheezy/main libunistring0 amd64 0.9.3-5 [434 kB]
+Des:8 http://ftp.cl.debian.org/debian/ wheezy/main libgettextpo0 amd64 0.18.1.1-9 [145 kB]
+Des:9 http://ftp.cl.debian.org/debian/ wheezy/main liberror-perl all 0.17-1 [23,6 kB]                                                                                          
+Des:10 http://ftp.cl.debian.org/debian/ wheezy/main git-man all 1:1.7.10.4-1+wheezy1 [1.074 kB]                                                                                
+Des:11 http://ftp.cl.debian.org/debian/ wheezy/main git amd64 1:1.7.10.4-1+wheezy1 [6.683 kB]                                                                                  
+Des:12 http://ftp.cl.debian.org/debian/ wheezy/main autopoint all 0.18.1.1-9 [629 kB]                                                                                          
+Des:13 http://ftp.cl.debian.org/debian/ wheezy/main html2text amd64 1.3.2a-15 [103 kB]                                                                                         
+Des:14 http://ftp.cl.debian.org/debian/ wheezy/main gettext amd64 0.18.1.1-9 [1.975 kB]                                                                                        
+Des:15 http://ftp.cl.debian.org/debian/ wheezy/main intltool-debian all 0.35.0+20060710.1 [30,8 kB]                                                                            
+Des:16 http://ftp.cl.debian.org/debian/ wheezy/main po-debconf all 1.0.16+nmu2 [224 kB]                                                                                        
+Des:17 http://ftp.cl.debian.org/debian/ wheezy/main debhelper all 9.20120909 [705 kB]                                                                                          
+Des:18 http://ftp.cl.debian.org/debian/ wheezy/main libglib2.0-data all 2.33.12+really2.32.4-5 [1.607 kB]                                                                      
+Des:19 http://ftp.cl.debian.org/debian/ wheezy/main libsys-hostname-long-perl all 1.4-2 [11,3 kB]                                                                              
+Des:20 http://ftp.cl.debian.org/debian/ wheezy/main libmail-sendmail-perl all 0.79.16-1 [26,6 kB]                                                                              
+Des:21 http://ftp.cl.debian.org/debian/ wheezy/main rsync amd64 3.0.9-4 [369 kB]                                                                                               
+Des:22 http://ftp.cl.debian.org/debian/ wheezy/main shared-mime-info amd64 1.0-1+b1 [595 kB]                                                                                   
+Des:23 http://ftp.cl.debian.org/debian/ wheezy/main openvswitch-datapath-source all 1.4.2+git20120612-9.1~deb7u1 [2.021 kB]                                                    
+Descargados 19,2 MB en 21seg. (877 kB/s)                                                                                                                                       
+Seleccionando el paquete libffi5:amd64 previamente no seleccionado.
+(Leyendo la base de datos ... 39437 ficheros o directorios instalados actualmente.)
+Desempaquetando libffi5:amd64 (de .../libffi5_3.0.10-3_amd64.deb) ...
+Seleccionando el paquete libglib2.0-0:amd64 previamente no seleccionado.
+Desempaquetando libglib2.0-0:amd64 (de .../libglib2.0-0_2.33.12+really2.32.4-5_amd64.deb) ...
+Seleccionando el paquete libcroco3:amd64 previamente no seleccionado.
+Desempaquetando libcroco3:amd64 (de .../libcroco3_0.6.6-2_amd64.deb) ...
+Seleccionando el paquete librtmp0:amd64 previamente no seleccionado.
+Desempaquetando librtmp0:amd64 (de .../librtmp0_2.4+20111222.git4e06e21-1_amd64.deb) ...
+Seleccionando el paquete libssh2-1:amd64 previamente no seleccionado.
+Desempaquetando libssh2-1:amd64 (de .../libssh2-1_1.4.2-1.1_amd64.deb) ...
+Seleccionando el paquete libcurl3-gnutls:amd64 previamente no seleccionado.
+Desempaquetando libcurl3-gnutls:amd64 (de .../libcurl3-gnutls_7.26.0-1+wheezy12_amd64.deb) ...
+Seleccionando el paquete libunistring0:amd64 previamente no seleccionado.
+Desempaquetando libunistring0:amd64 (de .../libunistring0_0.9.3-5_amd64.deb) ...
+Seleccionando el paquete libgettextpo0:amd64 previamente no seleccionado.
+Desempaquetando libgettextpo0:amd64 (de .../libgettextpo0_0.18.1.1-9_amd64.deb) ...
+Seleccionando el paquete liberror-perl previamente no seleccionado.
+Desempaquetando liberror-perl (de .../liberror-perl_0.17-1_all.deb) ...
+Seleccionando el paquete git-man previamente no seleccionado.
+Desempaquetando git-man (de .../git-man_1%3a1.7.10.4-1+wheezy1_all.deb) ...
+Seleccionando el paquete git previamente no seleccionado.
+Desempaquetando git (de .../git_1%3a1.7.10.4-1+wheezy1_amd64.deb) ...
+Seleccionando el paquete autopoint previamente no seleccionado.
+Desempaquetando autopoint (de .../autopoint_0.18.1.1-9_all.deb) ...
+Seleccionando el paquete html2text previamente no seleccionado.
+Desempaquetando html2text (de .../html2text_1.3.2a-15_amd64.deb) ...
+Seleccionando el paquete gettext previamente no seleccionado.
+Desempaquetando gettext (de .../gettext_0.18.1.1-9_amd64.deb) ...
+Seleccionando el paquete intltool-debian previamente no seleccionado.
+Desempaquetando intltool-debian (de .../intltool-debian_0.35.0+20060710.1_all.deb) ...
+Seleccionando el paquete po-debconf previamente no seleccionado.
+Desempaquetando po-debconf (de .../po-debconf_1.0.16+nmu2_all.deb) ...
+Seleccionando el paquete debhelper previamente no seleccionado.
+Desempaquetando debhelper (de .../debhelper_9.20120909_all.deb) ...
+Seleccionando el paquete libglib2.0-data previamente no seleccionado.
+Desempaquetando libglib2.0-data (de .../libglib2.0-data_2.33.12+really2.32.4-5_all.deb) ...
+Seleccionando el paquete libsys-hostname-long-perl previamente no seleccionado.
+Desempaquetando libsys-hostname-long-perl (de .../libsys-hostname-long-perl_1.4-2_all.deb) ...
+Seleccionando el paquete libmail-sendmail-perl previamente no seleccionado.
+Desempaquetando libmail-sendmail-perl (de .../libmail-sendmail-perl_0.79.16-1_all.deb) ...
+Seleccionando el paquete rsync previamente no seleccionado.
+Desempaquetando rsync (de .../rsync_3.0.9-4_amd64.deb) ...
+Seleccionando el paquete shared-mime-info previamente no seleccionado.
+Desempaquetando shared-mime-info (de .../shared-mime-info_1.0-1+b1_amd64.deb) ...
+Seleccionando el paquete openvswitch-datapath-source previamente no seleccionado.
+Desempaquetando openvswitch-datapath-source (de .../openvswitch-datapath-source_1.4.2+git20120612-9.1~deb7u1_all.deb) ...
+Procesando disparadores para man-db ...
+Procesando disparadores para mime-support ...
+Procesando disparadores para install-info ...
+Configurando libffi5:amd64 (3.0.10-3) ...
+Configurando libglib2.0-0:amd64 (2.33.12+really2.32.4-5) ...
+No se encontró ningún archivo de esquemas: sin hacer nada.
+Configurando libcroco3:amd64 (0.6.6-2) ...
+Configurando librtmp0:amd64 (2.4+20111222.git4e06e21-1) ...
+Configurando libssh2-1:amd64 (1.4.2-1.1) ...
+Configurando libcurl3-gnutls:amd64 (7.26.0-1+wheezy12) ...
+Configurando libunistring0:amd64 (0.9.3-5) ...
+Configurando libgettextpo0:amd64 (0.18.1.1-9) ...
+Configurando liberror-perl (0.17-1) ...
+Configurando git-man (1:1.7.10.4-1+wheezy1) ...
+Configurando git (1:1.7.10.4-1+wheezy1) ...
+Configurando autopoint (0.18.1.1-9) ...
+Configurando html2text (1.3.2a-15) ...
+Configurando gettext (0.18.1.1-9) ...
+Configurando intltool-debian (0.35.0+20060710.1) ...
+Configurando po-debconf (1.0.16+nmu2) ...
+Configurando debhelper (9.20120909) ...
+Configurando libglib2.0-data (2.33.12+really2.32.4-5) ...
+Configurando libsys-hostname-long-perl (1.4-2) ...
+Configurando libmail-sendmail-perl (0.79.16-1) ...
+Configurando rsync (3.0.9-4) ...
+update-rc.d: using dependency based boot sequencing
+Configurando shared-mime-info (1.0-1+b1) ...
+Configurando openvswitch-datapath-source (1.4.2+git20120612-9.1~deb7u1) ...
+
+root@crn-hip:~# module-assistant auto-install openvswitch-datapath
+
+root@crn-hip:~# apt-get install libssl1*
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «libsslcommon2-dev» para la expresión regular «libssl1*»
+Nota, seleccionando «libsslcommon2» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-ocaml-dev-l8h98» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-ocaml» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-ocaml-dev» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-ocaml-l8h98» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-dev» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-doc» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl1.0.0-dbg» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl0.9.8-dbg» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl0.9.8» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl1.0.0» para la expresión regular «libssl1*»
+Nota, seleccionando «libssl-ocaml» en lugar de «libssl-ocaml-l8h98»
+Nota, seleccionando «libssl-ocaml-dev» en lugar de «libssl-ocaml-dev-l8h98»
+libssl-dev ya está en su versión más reciente.
+libssl-doc ya está en su versión más reciente.
+fijado libssl-doc como instalado manualmente.
+libssl1.0.0 ya está en su versión más reciente.
+Se instalarán los siguientes paquetes extras:
+  camlp4 ledit libboost-filesystem1.49.0 libboost-program-options1.49.0 libboost-system1.49.0 libfindlib-ocaml libfindlib-ocaml-dev libncurses5-dev libnspr4 libnss3
+  libqpidcommon2 libqpidtypes1 libtinfo-dev ocaml-base-nox ocaml-findlib ocaml-interp ocaml-nox uuid-dev
+Paquetes sugeridos:
+  ncurses-doc ocaml-findlib-wizard ocaml-doc libgdbm-dev tuareg-mode ocaml-mode
+Se instalarán los siguientes paquetes NUEVOS:
+  camlp4 ledit libboost-filesystem1.49.0 libboost-program-options1.49.0 libboost-system1.49.0 libfindlib-ocaml libfindlib-ocaml-dev libncurses5-dev libnspr4 libnss3
+  libqpidcommon2 libqpidtypes1 libssl-ocaml libssl-ocaml-dev libssl1.0.0-dbg libsslcommon2 libsslcommon2-dev libtinfo-dev ocaml-base-nox ocaml-findlib ocaml-interp ocaml-nox
+  uuid-dev
+0 actualizados, 23 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 33,8 MB de archivos.
+Se utilizarán 113 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+-------->>>>
+Ahora activar el modulo brcomp en el arranque
+
+nano /etc/default/openvswitch-switch
+
+BRCOMPAT=yes
+
+Ahora verificamos que el modulo de compatibilidad no esta cargado:
+
+root@frodo:~# lsmod |grep brcomp
+root@frodo:~# 
+
+Lo cargamos con modprobe brcompat_mod:
+
+root@frodo:~# modprobe brcompat_mod
+root@frodo:~# 
+
+Comprobamos que el modulo este cargado:
+
+root@frodo:~# lsmod |grep brcomp
+brcompat_mod           13031  0 
+openvswitch_mod        67972  1 brcompat_mod
+root@frodo:~#
+
+Chequeo final con:
+
+/etc/init.d/openvswitch-switch status
+
+root@frodo:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 17478
+ovs-vswitchd is running with pid 17529
+ovs-brcompatd is not running
+root@frodo:~# 
+
+Brcompat esta deshabilitado, reiniamos:
+
+root@frodo:~# /etc/init.d/openvswitch-switch restart
+[ ok ] ovs-brcompatd is not running.
+[ ok ] Killing ovs-vswitchd (17529).
+[ ok ] Killing ovsdb-server (17478).
+[ ok ] Starting ovsdb-server.
+[ ok ] Configuring Open vSwitch system IDs.
+[ ok ] Starting ovs-vswitchd.
+[ ok ] Starting ovs-brcompatd.
+
+Y comprobamos que todo esta ok:
+
+root@frodo:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 17789
+ovs-vswitchd is running with pid 17840
+ovs-brcompatd is running with pid 17864
+root@frodo:~# 
+
+
+Presto!
+
+Reiniciar para asegura que todo carge por default:
+
+
+---
+Agregamos una definición de bond:
+
+editar /etc/network/interfaces
+
+auto bond0
+allow-br0 bond0
+iface bond0 inet manual
+	ovs_bridge br0
+	ovs_type OVSBond
+   	ovs_bonds eth0 eth1
+   	ovs_options bond_mode=balance-tcp lacp=active
+   	bond-miimon 100
+
+auto eth0
+iface eth0 inet manual
+  	bond-master bond0
+
+auto eth1
+iface eth1 inet manual
+  	bond-master bond0
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+   	address 172.16.20.1
+   	netmask 255.255.255.0
+   	ovs_type OVSBridge
+   	ovs_ports bond0
+	bridge-ports bond0
+
+La última linea permite que el bridge levante automáticamente sin problemas la configuración IP en el arranque todo OK. 
+
+---
+
+Ahora activar el bridge patra gestionarlo por OVS:
+
+ovs-vsctl add-br br0
+ovs-vsctl add-port br0 bond0
+
+Revisar:
+
+ovs-vsctl show
+
+root@frodo:~# ovs-vsctl show
+f88d3cd2-3864-4a74-a979-b497ae836bfe
+    Bridge "br0"
+        Port "bond0"
+            Interface "bond0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+    ovs_version: "1.4.2"
+root@frodo:~# 
+
+Se puede activar ahora con ifup br0 o reboot para asegurarnos que todo arranca automaticamente:
+
+Reboot and enjoy, happy hack!!
+
+------------------------
+

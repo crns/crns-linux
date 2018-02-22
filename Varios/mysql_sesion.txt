@@ -1,0 +1,34 @@
+UPDATE table SET my_field = CONCAT(my_field, '" . mysql_real_escape_string($buffer) . "') WHERE Id = " . $id;
+
+UPDATE table SET my_field = CONCAT(my_field, '" . mysql_real_escape_string($buffer) . "') WHERE Id = " . $id;
+
+jos_users
+
+id = 62
+
+UPDATE jos_users SET password = 21232f297a57a5a743894a0e4a801fc3 WHERE id = 62;
+
+
+UPDATE jos_users SET password = e10adc3949ba59abbe56e057f20f883e WHERE id = 62;
+
+
+e6717be88dc936a63e92450f56b165ab   old
+
+21232f297a57a5a743894a0e4a801fc3   new
+
+________sewsion______________
+
+use transparencia_lampa;
+select * from jos_users;
+UPDATE jos_users SET password = '21232f297a57a5a743894a0e4a801fc3' WHERE id = 62;
+use transparencia_colina;
+
+
+
+Viernes.----
+ad2013
+e6717be88dc936a63e92450f56b165ab
+
+gestay@lampa.cl
+
+

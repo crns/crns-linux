@@ -1,0 +1,259 @@
+Realizar instalación limpia/básica/utilidades estandar
+
+Configurar sources.list
+
+instalat firmware-linux-nonfree ifenslave ethtool
+
+ejecutar egrep '(vmx|svm)' --color=always /proc/cpuinfo
+y si aparece vmx en intel o svm en amd y destacado en rojo se puede continuar, de lo contrario "game over"
+
+root@frodo:~# egrep '(vmx|svm)' --color=always /proc/cpuinfo
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 sse4_2 popcnt lahf_lm tpr_shadow vnmi flexpriority ept vpid
+
+
+Bien, las 8 cpu lo soportan :)
+
+
+reboot
+
+Tunning:
+
+Ahora -> crear_bonding_debian.txt
+
+Securizar acceso ssh:
+
+Continuar -> SecurizarSSHD.txt
+
+Desactivar portmap en interfaces fisicas -> DesactivarPortmap.txt
+
+Reboot:
+
+Instalar XEN 4.1
+
+apt-get autoremove
+
+apt-get install bridge-utils
+
+install xen-linux-system-amd64
+
+
+root@frodo:~# apt-get install xen-linux-system-amd64
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  ca-certificates gawk libaio1 libcurl3-gnutls libffi5 libglib2.0-0 libglib2.0-data libiscsi1 librtmp0 libsigsegv2 libssh2-1 libxen-4.1
+  libxenstore3.0 openssl qemu-keymaps qemu-utils shared-mime-info sharutils xen-hypervisor-4.1-amd64 xen-linux-system-3.2.0-4-amd64 xen-system-amd64
+  xen-utils-4.1 xen-utils-common xenstore-utils
+Paquetes sugeridos:
+  gawk-doc debootstrap xen-docs-4.1
+Paquetes recomendados:
+  xen-hypervisor-4.1
+Se instalarán los siguientes paquetes NUEVOS:
+  ca-certificates gawk libaio1 libcurl3-gnutls libffi5 libglib2.0-0 libglib2.0-data libiscsi1 librtmp0 libsigsegv2 libssh2-1 libxen-4.1
+  libxenstore3.0 openssl qemu-keymaps qemu-utils shared-mime-info sharutils xen-hypervisor-4.1-amd64 xen-linux-system-3.2.0-4-amd64
+  xen-linux-system-amd64 xen-system-amd64 xen-utils-4.1 xen-utils-common xenstore-utils
+0 actualizados, 25 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 10,3 MB de archivos.
+Se utilizarán 30,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+root@frodo:~# cd /etc/grub.d/
+root@frodo:/etc/grub.d# ln -s 20_linux_xen 09_linux_xen
+
+root@frodo:/etc/grub.d# apt-get install libvirt-bin 
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  augeas-lenses dbus dnsmasq-base ebtables ipxe-qemu libasound2 libasyncns0 libaugeas0 libavahi-client3 libavahi-common-data libavahi-common3
+  libbluetooth3 libbrlapi0.5 libcaca0 libcap-ng0 libdbus-1-3 libdevmapper-event1.02.1 libdirectfb-1.2-9 libflac8 libice6 libjpeg8 libjson0 libnetcf1
+  libnetfilter-conntrack3 libnl1 libnuma1 libogg0 libparted0debian1 libpcap0.8 libpciaccess0 libpixman-1-0 libpng12-0 libpulse0 libreadline5
+  libsdl1.2debian libsm6 libsndfile1 libspice-server1 libsystemd-login0 libts-0.0-0 libusbredirparser0 libvdeplug2 libvirt0 libvorbis0a
+  libvorbisenc2 libx11-xcb1 libxi6 libxml2-utils libxslt1.1 libxtst6 libyajl2 lvm2 netcat-openbsd parted qemu-kvm seabios tsconf vgabios x11-common
+Paquetes sugeridos:
+  augeas-doc dbus-x11 libasound2-plugins augeas-tools libparted0-dev libparted0-i18n pulseaudio policykit-1 radvd parted-doc debootstrap vde2 samba
+Se instalarán los siguientes paquetes NUEVOS:
+  augeas-lenses dbus dnsmasq-base ebtables ipxe-qemu libasound2 libasyncns0 libaugeas0 libavahi-client3 libavahi-common-data libavahi-common3
+  libbluetooth3 libbrlapi0.5 libcaca0 libcap-ng0 libdbus-1-3 libdevmapper-event1.02.1 libdirectfb-1.2-9 libflac8 libice6 libjpeg8 libjson0 libnetcf1
+  libnetfilter-conntrack3 libnl1 libnuma1 libogg0 libparted0debian1 libpcap0.8 libpciaccess0 libpixman-1-0 libpng12-0 libpulse0 libreadline5
+  libsdl1.2debian libsm6 libsndfile1 libspice-server1 libsystemd-login0 libts-0.0-0 libusbredirparser0 libvdeplug2 libvirt-bin libvirt0 libvorbis0a
+  libvorbisenc2 libx11-xcb1 libxi6 libxml2-utils libxslt1.1 libxtst6 libyajl2 lvm2 netcat-openbsd parted qemu-kvm seabios tsconf vgabios x11-common
+0 actualizados, 60 se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 15,9 MB/16,1 MB de archivos.
+Se utilizarán 39,6 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+root@frodo:/etc/grub.d# gpasswd -a mcampos libvirt
+Añadiendo al usuario mcampos al grupo libvirt
+root@frodo:/etc/grub.d# gpasswd -a mcampos libvirt-qemu
+Añadiendo al usuario mcampos al grupo libvirt-qemu
+root@frodo:/etc/grub.d# 
+
+
+xend-address
+
+
+
+apt-get install virt-goodies ssh-askpass ssh-askpass-gnome
+
+root@frodo:/etc/grub.d# apt-get install virt-goodies ssh-askpass ssh-askpass-gnome
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  fontconfig fontconfig-config hicolor-icon-theme libatk1.0-0 libatk1.0-data libcairo2 libcups2 libdatrie1 libfontconfig1 libgdk-pixbuf2.0-0
+  libgdk-pixbuf2.0-common libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libio-multiplex-perl libio-socket-inet6-perl libjasper1 libjbig0
+  liblist-moreutils-perl libnet-cidr-perl libnet-server-perl libnet-snmp-perl libpango1.0-0 libsocket6-perl libthai-data libthai0 libtiff4
+  libxcb-render0 libxcb-shm0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxft2 libxinerama1 libxrandr2 libxrender1 libxt6 munin-common
+  munin-node munin-plugins-core munin-plugins-extra python-libvirt ttf-dejavu-core uuid-runtime
+Paquetes sugeridos:
+  cups-common librsvg2-common gvfs libjasper-runtime libio-socket-ssl-perl liblog-log4perl-perl libnet-ssleay-perl libcrypt-des-perl
+  libdigest-hmac-perl ttf-baekmuk ttf-arphic-gbsn00lp ttf-arphic-bsmi00lp ttf-arphic-gkai00mp ttf-arphic-bkai00mp munin munin-plugins-java
+  libwww-perl liblwp-useragent-determined-perl libnet-irc-perl mysql-client smartmontools ruby libdbd-pg-perl libdbd-mysql-perl libcache-cache-perl
+  hdparm libcrypt-ssleay-perl libtext-csv-xs-perl libxml-simple-perl logtail libnet-netmask-perl libnet-telnet-perl
+Se instalarán los siguientes paquetes NUEVOS:
+  fontconfig fontconfig-config hicolor-icon-theme libatk1.0-0 libatk1.0-data libcairo2 libcups2 libdatrie1 libfontconfig1 libgdk-pixbuf2.0-0
+  libgdk-pixbuf2.0-common libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libio-multiplex-perl libio-socket-inet6-perl libjasper1 libjbig0
+  liblist-moreutils-perl libnet-cidr-perl libnet-server-perl libnet-snmp-perl libpango1.0-0 libsocket6-perl libthai-data libthai0 libtiff4
+  libxcb-render0 libxcb-shm0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxft2 libxinerama1 libxrandr2 libxrender1 libxt6 munin-common
+  munin-node munin-plugins-core munin-plugins-extra python-libvirt ssh-askpass ssh-askpass-gnome ttf-dejavu-core uuid-runtime virt-goodies
+0 actualizados, 48 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 14,2 MB de archivos.
+Se utilizarán 51,0 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Configurar la Red (Instalando OpenVSwitch)
+
+aptitude search openvswitch |grep openvswitch-datapath
+
+apt-get install build-essential module-assistant linux-headers-`uname -r`
+
+root@frodo:~# apt-get install build-essential module-assistant linux-headers-`uname -r`
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  binutils bzip2 cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl libalgorithm-diff-xs-perl
+  libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2 libmpfr4 libquadmath0
+  libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev make manpages-dev
+Paquetes sugeridos:
+  binutils-doc bzip2-doc cpp-doc gcc-4.6-locales gcc-4.7-locales debian-keyring g++-multilib g++-4.7-multilib gcc-4.7-doc libstdc++6-4.7-dbg
+  gcc-multilib autoconf automake1.9 libtool flex bison gdb gcc-doc gcc-4.6-multilib libmudflap0-4.6-dev gcc-4.6-doc libgcc1-dbg libgomp1-dbg
+  libquadmath0-dbg libmudflap0-dbg binutils-gold gcc-4.7-multilib libmudflap0-4.7-dev libitm1-dbg libcloog-ppl0 libppl-c2 libppl7 glibc-doc
+  libstdc++6-4.7-doc make-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils build-essential bzip2 cpp cpp-4.6 cpp-4.7 dpkg-dev fakeroot g++ g++-4.7 gcc gcc-4.6 gcc-4.6-base gcc-4.7 libalgorithm-diff-perl
+  libalgorithm-diff-xs-perl libalgorithm-merge-perl libc-dev-bin libc6-dev libdpkg-perl libfile-fcntllock-perl libgmp10 libgomp1 libitm1 libmpc2
+  libmpfr4 libquadmath0 libstdc++6-4.7-dev libtimedate-perl linux-headers-3.2.0-4-amd64 linux-headers-3.2.0-4-common linux-kbuild-3.2 linux-libc-dev
+  make manpages-dev module-assistant
+0 actualizados, 36 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 54,6 MB de archivos.
+Se utilizarán 154 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+
+apt-get install openvswitch-datapath-dkms
+
+root@frodo:~# apt-get install openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dkms menu
+Paquetes sugeridos:
+  menu-l10n gksu kdebase-bin kdebase-runtime ktsuss sux
+Se instalarán los siguientes paquetes NUEVOS:
+  dkms menu openvswitch-datapath-dkms
+0 actualizados, 3 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 2.516 kB de archivos.
+Se utilizarán 14,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+apt-get install openvswitch-brcompat openvswitch-common
+
+root@frodo:~# apt-get install openvswitch-brcompat openvswitch-common
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  openvswitch-switch
+Paquetes sugeridos:
+  openvswitch-datapath-module
+Se instalarán los siguientes paquetes NUEVOS:
+  openvswitch-brcompat openvswitch-common openvswitch-switch
+0 actualizados, 3 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 2.202 kB de archivos.
+Se utilizarán 5.182 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+Des:1 http://ftp.cl.debian.org/debian/ wheezy/main openvswitch-common amd64 1.4.2+git20120612-9.1~deb7u1 [561 kB]
+Des:2 http://ftp.cl.debian.org/debian/ wheezy/main openvswitch-switch amd64 1.4.2+git20120612-9.1~deb7u1 [1.300 kB]
+Des:3 http://ftp.cl.debian.org/debian/ wheezy/main openvswitch-brcompat amd64 1.4.2+git20120612-9.1~deb7u1 [341 kB]
+Descargados 2.202 kB en 0seg. (2.264 kB/s)
+Seleccionando el paquete openvswitch-common previamente no seleccionado.
+(Leyendo la base de datos ... 47031 ficheros o directorios instalados actualmente.)
+Desempaquetando openvswitch-common (de .../openvswitch-common_1.4.2+git20120612-9.1~deb7u1_amd64.deb) ...
+Seleccionando el paquete openvswitch-switch previamente no seleccionado.
+Desempaquetando openvswitch-switch (de .../openvswitch-switch_1.4.2+git20120612-9.1~deb7u1_amd64.deb) ...
+Seleccionando el paquete openvswitch-brcompat previamente no seleccionado.
+Desempaquetando openvswitch-brcompat (de .../openvswitch-brcompat_1.4.2+git20120612-9.1~deb7u1_amd64.deb) ...
+Procesando disparadores para man-db ...
+Configurando openvswitch-common (1.4.2+git20120612-9.1~deb7u1) ...
+Configurando openvswitch-switch (1.4.2+git20120612-9.1~deb7u1) ...
+[ ok ] Inserting openvswitch module.
+[warn] /var/lib/openvswitch/conf.db does not exist ... (warning).
+[ ok ] Creating empty database /var/lib/openvswitch/conf.db.
+[ ok ] Starting ovsdb-server.
+[ ok ] Configuring Open vSwitch system IDs.
+[ ok ] Starting ovs-vswitchd.
+Configurando openvswitch-brcompat (1.4.2+git20120612-9.1~deb7u1) ...
+[ ok ] ovsdb-server is already running.
+[ ok ] ovs-vswitchd is already running.
+root@frodo:~# 
+
+root@frodo:~# apt-get remove --purge bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Los siguientes paquetes se ELIMINARÁN:
+  bridge-utils*
+0 actualizados, 0 se instalarán, 1 para eliminar y 0 no actualizados.
+Se liberarán 146 kB después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+
+nano /etc/default/openvswitch-switch
+
+BRCOMPAT=yes
+
+
+Reiniciar para asegura que todo carge por default:
+
+----
+
+
+
+-------
+Agregar en /etc/nerworking/interfaces
+
+auto xenbr0
+iface xenbr0 inet manual
+    bridge_fd 0
+    bridge_helo 0
+    bridge_maxwait 0
+    bridge_stp off
+    bridge_ports eth1
+

@@ -1,0 +1,32 @@
+yum install libfprint fprint-pam fprint_demo
+
+[root@crn ~]# yum install gksu-polkit
+Complementos cargados:langpacks, refresh-packagekit
+Resolviendo dependencias
+--> Ejecutando prueba de transacción
+---> Paquete gksu-polkit.x86_64 0:0.0.3-8.gitf8ce834c.fc20 debe ser instalado
+--> Procesando dependencias: gksu-polkit-libs(x86-64) = 0.0.3-8.gitf8ce834c.fc20 para el paquete: gksu-polkit-0.0.3-8.gitf8ce834c.fc20.x86_64
+--> Procesando dependencias: libgksu-polkit.so.0(LIBGKSU_POLKIT)(64bit) para el paquete: gksu-polkit-0.0.3-8.gitf8ce834c.fc20.x86_64
+--> Procesando dependencias: libgksu-polkit.so.0()(64bit) para el paquete: gksu-polkit-0.0.3-8.gitf8ce834c.fc20.x86_64
+--> Ejecutando prueba de transacción
+---> Paquete gksu-polkit-libs.x86_64 0:0.0.3-8.gitf8ce834c.fc20 debe ser instalado
+--> Resolución de dependencias finalizada
+
+Dependencias resueltas
+
+===============================================================================================================================
+ Package                          Arquitectura           Versión                                  Repositorio            Tamaño
+===============================================================================================================================
+Instalando:
+ gksu-polkit                      x86_64                 0.0.3-8.gitf8ce834c.fc20                 fedora                  26 k
+Instalando para las dependencias:
+ gksu-polkit-libs                 x86_64                 0.0.3-8.gitf8ce834c.fc20                 fedora                  22 k
+
+Resumen de la transacción
+===============================================================================================================================
+Instalar  1 Paquete (+1 Paquete dependiente)
+
+Tamaño total de la descarga: 48 k
+Tamaño instalado: 105 k
+Is this ok [y/d/N]: y
+

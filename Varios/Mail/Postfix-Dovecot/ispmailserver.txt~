@@ -1,0 +1,961 @@
+1.- Instalar Paquetes
+
+apt-get install postfix postfix-mysql
+
+root@deb01:~# apt-get install postfix postfix-mysql
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+El paquete indicado a continuación se instaló de forma automática y ya no es necesarios.
+  libperl5.10
+Utilice «apt-get autoremove» para eliminarlos.
+Se instalarán los siguientes paquetes extras:
+  libperl5.10
+Paquetes sugeridos:
+  postfix-pgsql postfix-ldap postfix-pcre sasl2-bin resolvconf postfix-cdb ufw
+Los siguientes paquetes se ELIMINARÁN:
+  exim4 exim4-base exim4-config exim4-daemon-light
+Se instalarán los siguientes paquetes NUEVOS:
+  libperl5.10 postfix postfix-mysql
+0 actualizados, 3 se instalarán, 4 para eliminar y 21 no actualizados.
+1 no instalados del todo o eliminados.
+Necesito descargar 2005 kB de archivos.
+Se utilizarán 672 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+apt-get --purge remove 'exim4*
+
+root@deb01:~# apt-get --purge remove exim4*
+
+apt-get install mysql-server
+
+apt-get install dovecot-pop3d dovecot-imapd
+
+root@deb01:~# apt-get install dovecot-pop3d dovecot-imapd
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dovecot-common
+Paquetes sugeridos:
+  ntp
+Se instalarán los siguientes paquetes NUEVOS:
+  dovecot-common dovecot-imapd dovecot-pop3d
+0 actualizados, 3 se instalarán, 0 para eliminar y 21 no actualizados.
+1 no instalados del todo o eliminados.
+Necesito descargar 7275 kB de archivos.
+Se utilizarán 13,9 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+apt-get install roundcube
+
+root@deb01:~# apt-get install roundcube
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  fontconfig-config javascript-common libfontconfig1 libgd2-xpm libjpeg62 libjs-jquery libmcrypt4 libpng12-0 libsqlite0 libt1-5 libxpm4
+  php-auth php-auth-sasl php-mail-mime php-mail-mimedecode php-mdb2 php-mdb2-driver-sqlite php-net-smtp php-net-socket php-pear php5-gd
+  php5-mcrypt php5-pspell php5-sqlite roundcube-core roundcube-sqlite sqlite tinymce ttf-dejavu-core wwwconfig-common
+Paquetes sugeridos:
+  libgd-tools libmcrypt-dev mcrypt php-log php-soap php5-dev sqlite-doc postgresql-client apache apache-ssl
+Se instalarán los siguientes paquetes NUEVOS:
+  fontconfig-config javascript-common libfontconfig1 libgd2-xpm libjpeg62 libjs-jquery libmcrypt4 libpng12-0 libsqlite0 libt1-5 libxpm4
+  php-auth php-auth-sasl php-mail-mime php-mail-mimedecode php-mdb2 php-mdb2-driver-sqlite php-net-smtp php-net-socket php-pear php5-gd
+  php5-mcrypt php5-pspell php5-sqlite roundcube roundcube-core roundcube-sqlite sqlite tinymce ttf-dejavu-core wwwconfig-common
+0 actualizados, 31 se instalarán, 0 para eliminar y 21 no actualizados.
+1 no instalados del todo o eliminados.
+Necesito descargar 4962 kB de archivos.
+Se utilizarán 18,5 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+apt-get install phpmyadmin
+
+root@deb01:~# apt-get install phpmyadmin
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libjs-mootools
+Se instalarán los siguientes paquetes NUEVOS:
+  libjs-mootools phpmyadmin
+0 actualizados, 2 se instalarán, 0 para eliminar y 21 no actualizados.
+1 no instalados del todo o eliminados.
+Necesito descargar 4597 kB de archivos.
+Se utilizarán 18,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]
+
+apt-get install mutt
+
+root@deb01:~# apt-get install mutt
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+mutt ya está en su versión más reciente.
+0 actualizados, 0 se instalarán, 0 para eliminar y 21 no actualizados.
+1 no instalados del todo o eliminados.
+Se utilizarán 0 B de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+2.- Preparar bases de datos
+
+mysqladmin -p create mailserver
+
+root@deb01:~# mysqladmin -p create mailserver
+Enter password: 
+
+mysql -p mailserver
+
+GRANT SELECT ON mailserver.*
+TO 'mailuser'@'127.0.0.1'
+IDENTIFIED BY 'mailuser2011';
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> GRANT SELECT ON mailserver.*
+    -> TO 'mailuser'@'127.0.0.1'
+    -> IDENTIFIED BY 'cronos23';
+Query OK, 0 rows affected (0.00 sec)
+
+
+CREATE TABLE `virtual_domains` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+mysql> CREATE TABLE `virtual_domains` (
+    ->   `id` int(11) NOT NULL auto_increment,
+    ->   `name` varchar(50) NOT NULL,
+    ->   PRIMARY KEY (`id`)
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.12 sec)
+
+CREATE TABLE `virtual_users` (
+  `id` int(11) NOT NULL auto_increment,
+  `domain_id` int(11) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+mysql> CREATE TABLE `virtual_users` (
+    ->   `id` int(11) NOT NULL auto_increment,
+    ->   `domain_id` int(11) NOT NULL,
+    ->   `password` varchar(32) NOT NULL,
+    ->   `email` varchar(100) NOT NULL,
+    ->   PRIMARY KEY (`id`),
+    ->   UNIQUE KEY `email` (`email`),
+    ->   FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.09 sec)
+
+CREATE TABLE `virtual_aliases` (
+  `id` int(11) NOT NULL auto_increment,
+  `domain_id` int(11) NOT NULL,
+  `source` varchar(100) NOT NULL,
+  `destination` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+mysql> CREATE TABLE `virtual_aliases` (
+    ->   `id` int(11) NOT NULL auto_increment,
+    ->   `domain_id` int(11) NOT NULL,
+    ->   `source` varchar(100) NOT NULL,
+    ->   `destination` varchar(100) NOT NULL,
+    ->   PRIMARY KEY (`id`),
+    ->   FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.15 sec)
+
+3.- Creando cuentas de prueba
+
+INSERT INTO `mailserver`.`virtual_domains` (
+  `id` ,
+  `name`
+)
+VALUES (
+  '1', 'example.org'
+);
+
+
+INSERT INTO `mailserver`.`virtual_domains` (
+  `id` ,
+  `name`
+)
+VALUES (
+  '2', 'sifim.cl'
+);
+
+
+mysql> INSERT INTO `mailserver`.`virtual_domains` (
+    ->   `id` ,
+    ->   `name`
+    -> )
+    -> VALUES (
+    ->   '1', 'example.org'
+    -> );
+Query OK, 1 row affected (0.06 sec)
+
+INSERT INTO `mailserver`.`virtual_users` (
+  `id` ,
+  `domain_id` ,
+  `password` ,
+  `email`
+)
+VALUES (
+  '1', '1', MD5( 'summersun' ) , 'john@example.org'
+);
+
+
+______________________________________________________________
+
+INSERT INTO virtual_users (id, domain_id, password, email)
+VALUES (2, 2, MD5( 'ad0811az' ) , 'adiaz@sifim.cl'),
+(3, 2, MD5( 'cr1169os' ) , 'mcampos@sifim.cl'),
+(4, 2, MD5( 'as0911en' ) , 'asetien@sifim.cl'),
+(5, 2, MD5( 'as1011ez' ) , 'asantibanez@sifim.cl'),
+(6, 2, MD5( 'cl1108ez' ) , 'claudio.valdez@sifim.cl'),
+(7, 2, MD5( 'cr1109na' ) , 'cristian.acuna@sifim.cl'),
+(8, 2, MD5( 'cg1110ez' ) , 'cgalvez@sifim.cl'),
+(9, 2, MD5( 'el1211so' ) , 'elias.reinoso@sifim.cl'),
+(10, 2, MD5( 'eb1311te' ) , 'ebustamante@sifim.cl'),
+(11, 2, MD5( 'fa1112na' ) , 'facuna@sifim.cl'),
+(12, 2, MD5( 'fd1113az' ) , 'fdiaz@sifim.cl'),
+(13, 2, MD5( 'gs1114to' ) , 'gsoto@sifim.cl'),
+(14, 2, MD5( 'gp1115ao' ) , 'gpaillao@sifim.cl'),
+(15, 2, MD5( 'gi1116pe' ) , 'giusseppe.fortunato@sifim.cl'),
+(16, 2, MD5( 'he1117ao' ) , 'hernancollao@sifim.cl'),
+(17, 2, MD5( 'hp1118la' ) , 'hpinilla@sifim.cl'),
+(18, 2, MD5( 'jc1119es' ) , 'jcaceres@sifim.cl'),
+(19, 2, MD5( 'jc1120ro' ) , 'jcastro@sifim.cl'),
+(20, 2, MD5( 'jo1121ce' ) , 'jonnathan.oyarce@sifim.cl'),
+(21, 2, MD5( 'jo1122ir' ) , 'jorge.millaquir@sifim.cl'),
+(22, 2, MD5( 'jo1123as' ) , 'jose.contreras@sifim.cl'),
+(23, 2, MD5( 'ju1124no' ) , 'juan.carreno@sifim.cl'),
+(24, 2, MD5( 'ju1125do' ) , 'juan.alvarado@sifim.cl'),
+(25, 2, MD5( 'jp1126za' ) , 'jpenaloza@sifim.cl'),
+(26, 2, MD5( 'lr1127as' ) , 'lrojas@sifim.cl'),
+(27, 2, MD5( 'lu1128es' ) , 'luis.rosales@sifim.cl'),
+(28, 2, MD5( 'lu1129az' ) , 'luis.diaz@sifim.cl'),
+(29, 2, MD5( 'mc1130ro' ) , 'mcastro@sifim.cl'),
+(30, 2, MD5( 'mb1131za' ) , 'mbaeza@sifim.cl'),
+(31, 2, MD5( 'mv1131al' ) , 'mvidal@sifim.cl'),
+(32, 2, MD5( 'ma1132do' ) , 'matias.toledo@sifim.cl'),
+(33, 2, MD5( 'mp1133ez' ) , 'mperez@sifim.cl'),
+(34, 2, MD5( 'mc1134as' ) , 'mcontreras@sifim.cl'),
+(35, 2, MD5( 'mi3511ez' ) , 'mipsy.hernandez@sifim.cl'),
+(36, 2, MD5( 'na3611ni' ) , 'nadia.luoni@sifim.cl'),
+(37, 2, MD5( 'os3711ta' ) , 'osanita@sifim.cl'),
+(38, 2, MD5( 'ra1138ez' ) , 'raul.yanez@sifim.cl'),
+(39, 2, MD5( 'rm1139za' ) , 'rmeza@sifim.cl'),
+(40, 2, MD5( 'rc1140ro' ) , 'rcastro@sifim.cl'),
+(41, 2, MD5( 'rt1141es' ) , 'rtorres@sifim.cl'),
+(42, 2, MD5( 'rc1142no' ) , 'r.carreno@sifim.cl'),
+(43, 2, MD5( 'zo1143as' ) , 'zoltan.rojas@sifim.cl');
+_________________________________________________________
+
+
+mysql> INSERT INTO `mailserver`.`virtual_users` (
+    ->   `id` ,
+    ->   `domain_id` ,
+    ->   `password` ,
+    ->   `email`
+    -> )
+    -> VALUES (
+    ->   '1', '1', MD5( 'summersun' ) , 'john@example.org'
+    -> );
+Query OK, 1 row affected (0.00 sec)
+
+INSERT INTO `mailserver`.`virtual_aliases` (
+  `id`,
+  `domain_id`,
+  `source`,
+  `destination`
+)
+VALUES (
+  '1', '1', 'jack@example.org', 'john@example.org'
+);
+
+
+
+
+mysql> INSERT INTO `mailserver`.`virtual_aliases` (
+    ->   `id`,
+    ->   `domain_id`,
+    ->   `source`,
+    ->   `destination`
+    -> )
+    -> VALUES (
+    ->   '1', '1', 'jack@example.org', 'john@example.org'
+    -> );
+Query OK, 1 row affected (0.06 sec)
+
+Configurando Postfix
+crear el siguiente archivo
+
+nano /etc/postfix/mysql-virtual-mailbox-domains.cf
+
+y pegar lo siguiente:
+
+user = mailuser
+password = cronos23
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT 1 FROM virtual_domains WHERE name='%s'
+
+ejecutar lo suguiente:
+
+postconf -e virtual_mailbox_domains=mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+
+postmap -q example.org mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+
+root@deb01:~# postmap -q example.org mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+1
+
+ou should get '1' as a result. Your first mapping is working. Great. Get straight to the second one.
+
+Ahora virtual_mailbox_maps
+
+crear /etc/postfix/mysql-virtual-mailbox-maps.cf
+
+nano /etc/postfix/mysql-virtual-mailbox-maps.cf
+
+pegar el siguiente contenido
+
+user = mailuser
+password = cronos23
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT 1 FROM virtual_users WHERE email='%s'
+
+postconf -e virtual_mailbox_maps=mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+
+root@deb01:~# postconf -e virtual_mailbox_maps=mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+
+postmap -q john@example.org mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+
+root@deb01:~# postmap -q john@example.org mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+1
+
+You should get "1" back which means that john@example.org is an existing virtual mailbox user on your server. 
+
+Ahora virtual_alias_maps
+
+crear /etc/postfix/mysql-virtual-alias-maps.cf
+
+nano /etc/postfix/mysql-virtual-alias-maps.cf
+
+Pegar el siguiente contenido:
+
+user = mailuser
+password = cronos23
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT destination FROM virtual_aliases WHERE source='%s'
+
+postconf -e virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+
+root@deb01:~# postconf -e virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+
+postmap -q jack@example.org mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+
+root@deb01:~# postmap -q jack@example.org mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+john@example.org
+
+Opcional: Black Magic
+
+crear /etc/postfix/mysql-email2email.cf
+
+nano /etc/postfix/mysql-email2email.cf
+
+copiar el siguiente contenido:
+
+user = mailuser
+password = cronos23
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT email FROM virtual_users WHERE email='%s'
+
+Chequear:
+postmap -q john@example.org mysql:/etc/postfix/mysql-email2email.cf
+
+postconf -e virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf,mysql:/etc/postfix/mysql-email2email.cf
+
+chgrp postfix /etc/postfix/mysql-*.cf
+chmod u=rw,g=r,o= /etc/postfix/mysql-*.cf
+
+
+Setting up Dovecot
+
+groupadd -g 5000 vmail
+useradd -g vmail -u 5000 vmail -d /var/vmail -m
+
+chown -R vmail:vmail /var/vmail
+chmod u+w /var/vmail
+
+root@deb01:/etc/postfix# groupadd -g 5000 vmail
+root@deb01:/etc/postfix# useradd -g vmail -u 5000 vmail -d /var/vmail -m
+root@deb01:/etc/postfix# chown -R vmail:vmail /var/vmail
+root@deb01:/etc/postfix# chmod u+w /var/vmail
+root@deb01:/etc/postfix# 
+
+respaldar /etc/dovecot/dovecot.conf
+
+cp /etc/dovecot/dovecot.conf ~/
+
+Editar /etc/dovecot/dovecot.conf y relizar las siguientes configuraciones:
+
+nano /etc/dovecot/dovecot.conf
+
+protocols = imap imaps pop3 pop3s   OK
+disable_plaintext_auth = no
+mail_location = maildir:/var/vmail/%d/%n/Maildir
+
+
+There is already a section "namespace private" in your dovecot.conf which is commented out by "#" characters. The "private" namespace is the personal mailbox of a certain user. You can leave this section disabled and get a maildir directory schema like:
+
+/var/vmail/christoph.haas/email/Maildir/.spam
+
+If you followed previous ISPmail tutorials then your directories may be different. If you rather have:
+
+/var/vmail/christoph.haas/email/Maildir/.INBOX.spam
+
+then you need to declare that in the "namespace private" section as follows. Enable this section and make sure these variables are set:
+
+    namespace private {
+        separator = .
+        inbox = yes
+    }
+
+mechanisms = plain login
+
+passdb sql {
+    args = /etc/dovecot/dovecot-sql.conf
+}
+
+userdb static {
+    args = uid=5000 gid=5000 home=/var/vmail/%d/%n/Maildir allow_all_users=yes
+}
+
+
+socket listen {
+    master {
+        path = /var/run/dovecot/auth-master
+        mode = 0600
+        user = vmail
+    }
+
+    client {
+        path = /var/spool/postfix/private/auth
+        mode = 0660
+        user = postfix
+        group = postfix
+    }
+}
+
+
+protocol lda {
+    auth_socket_path = /var/run/dovecot/auth-master
+    postmaster_address = postmaster@example.com
+    mail_plugins = sieve
+    log_path =
+}
+
+Finally edit the /etc/dovecot/dovecot-sql.conf and change these settings:
+
+nano /etc/dovecot/dovecot-sql.conf
+
+driver = mysql
+connect = host=127.0.0.1 dbname=mailserver user=mailuser password=cronos23
+default_pass_scheme = PLAIN-MD5
+password_query = SELECT email as user, password FROM virtual_users WHERE email='%u';
+
+Restart Dovecot:
+
+    /etc/init.d/dovecot restart
+
+root@deb01:~# /etc/init.d/dovecot restart
+Restarting IMAP/POP3 mail server: dovecotIf you have trouble with authentication failures,
+enable auth_debug setting. See http://wiki.dovecot.org/WhyDoesItNotWork
+This message goes away after the first successful login.
+.
+
+
+Now look at your /var/log/mail.log logfile. You should see:
+
+... dovecot: Dovecot v1.2.15 starting up (core dumps disabled)
+... dovecot: auth-worker(default): mysql: Connected to 127.0.0.1 (mailserver)
+
+root@deb01:~# cat /var/log/mail.log
+Oct 20 15:26:13 deb01 postfix/master[3964]: daemon started -- version 2.7.1, configuration /etc/postfix
+Oct 20 15:36:13 deb01 dovecot: Dovecot v1.2.15 starting up (core dumps disabled)
+Oct 20 15:36:13 deb01 dovecot: Generating Diffie-Hellman parameters for the first time. This may take a while..
+Oct 20 15:36:14 deb01 dovecot: Killed with signal 15 (by pid=4721 uid=0 code=kill)
+Oct 20 15:36:14 deb01 dovecot: Dovecot v1.2.15 starting up (core dumps disabled)
+Oct 20 15:36:14 deb01 dovecot: Generating Diffie-Hellman parameters for the first time. This may take a while..
+Oct 20 15:36:15 deb01 dovecot: Killed with signal 15 (by pid=4755 uid=0 code=kill)
+Oct 20 15:36:15 deb01 dovecot: Dovecot v1.2.15 starting up (core dumps disabled)
+Oct 20 15:36:15 deb01 dovecot: Generating Diffie-Hellman parameters for the first time. This may take a while..
+Oct 20 17:19:10 deb01 dovecot: Killed with signal 15 (by pid=6549 uid=0 code=kill)
+Oct 20 17:19:10 deb01 dovecot: Dovecot v1.2.15 starting up (core dumps disabled)
+Oct 20 17:19:10 deb01 dovecot: auth-worker(default): mysql: Connected to 127.0.0.1 (mailserver)
+root@deb01:~# 
+
+
+
+
+chgrp vmail /etc/dovecot/dovecot.conf
+chmod g+r /etc/dovecot/dovecot.conf
+
+chown root:root /etc/dovecot/dovecot-sql.conf
+chmod go= /etc/dovecot/dovecot-sql.conf
+
+
+Make Postfix talk to Dovecot
+
+Editar /etc/postfix/master.cf
+
+nano /etc/postfix/master.cf
+
+Agregar al final:
+
+dovecot unix - n n - - pipe
+  flags=DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -f ${sender} -d ${recipient}
+
+Restart Postfix:
+
+    postfix reload
+
+root@deb01:~# postfix reload
+postfix/postfix-script: refreshing the Postfix mail system
+
+Ejecutar:
+
+postconf -e virtual_transport=dovecot
+postconf -e dovecot_destination_recipient_limit=1
+
+Pruebas de email:
+
+root@deb01:~# find /var/vmail
+/var/vmail
+/var/vmail/.bash_logout
+/var/vmail/.bashrc
+/var/vmail/.profile
+
+root@deb01:~# echo test | mail john@example.org
+
+root@deb01:~# find /var/vmail
+/var/vmail
+/var/vmail/.bash_logout
+/var/vmail/.bashrc
+/var/vmail/example.org
+/var/vmail/example.org/john
+/var/vmail/example.org/john/Maildir
+/var/vmail/example.org/john/Maildir/dovecot-uidvalidity
+/var/vmail/example.org/john/Maildir/dovecot.index.log
+/var/vmail/example.org/john/Maildir/cur
+/var/vmail/example.org/john/Maildir/tmp
+/var/vmail/example.org/john/Maildir/dovecot-uidvalidity.4ea0b344
+/var/vmail/example.org/john/Maildir/dovecot-uidlist
+/var/vmail/example.org/john/Maildir/new
+/var/vmail/example.org/john/Maildir/new/1319154500.M170390P6712.deb01,S=346,W=356
+/var/vmail/.profile
+
+ver log:
+cat /var/log/mail.log
+
+root@deb01:~# cat /var/log/mail.log
+...
+...
+Oct 20 20:48:19 deb01 postfix/pickup[6689]: EDBE743921: uid=0 from=<root>
+Oct 20 20:48:20 deb01 postfix/cleanup[6704]: EDBE743921: message-id=<20111020234819.EDBE743921@deb01.caschile.cl>
+Oct 20 20:48:20 deb01 postfix/qmgr[6688]: EDBE743921: from=<root@deb01.caschile.cl>, size=285, nrcpt=1 (queue active)
+Oct 20 20:48:20 deb01 dovecot: deliver(john@example.org): msgid=<20111020234819.EDBE743921@deb01.caschile.cl>: saved mail to INBOX
+Oct 20 20:48:20 deb01 postfix/pipe[6711]: EDBE743921: to=<john@example.org>, relay=dovecot, delay=0.37, delays=0.2/0.05/0/0.13, dsn=2.0.0, status=sent (delivered via dovecot service)
+Oct 20 20:48:20 deb01 postfix/qmgr[6688]: EDBE743921: removed
+
+
+----pruebas con mut ----
+
+Authenticated SMTP:
+Enabling SMTP authentication in Postfix:
+
+postconf -e smtpd_sasl_type=dovecot
+postconf -e smtpd_sasl_path=private/auth
+postconf -e smtpd_sasl_auth_enable=yes
+postconf -e smtpd_recipient_restrictions=" \
+  permit_mynetworks \
+  permit_sasl_authenticated \
+  reject_unauth_destination"
+
+postconf -e smtpd_recipient_restrictions="permit_mynetworks permit_sasl_authenticated reject_unauth_destination"
+
+
+
+Optional: Content scanning with AMaViS
+
+apt-get install amavisd-new spamassassin clamav clamav-daemon arj zoo nomarch cpio lzop cabextract apt-listchanges libnet-ldap-perl libauthen-sasl-perl  libdbi-perl libmail-dkim-perl p7zip rpm unrar-free libsnmp-perl
+
+
+root@deb01:~# apt-get install amavisd-new spamassassin clamav clamav-daemon arj zoo nomarch cpio lzop cabextract apt-listchanges libnet-ldap-perl libauthen-sasl-perl  libdbi-perl libmail-dkim-perl p7zip rpm unrar-free libsnmp-perl
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+apt-listchanges ya está en su versión más reciente.
+cpio ya está en su versión más reciente.
+libdbi-perl ya está en su versión más reciente.
+fijado libdbi-perl como instalado manualmente.
+Se instalarán los siguientes paquetes extras:
+  binutils clamav-base clamav-freshclam cpp cpp-4.4 fancontrol gcc gcc-4.4 libarchive-zip-perl libberkeleydb-perl libc-dev-bin libc6-dev
+  libclamav6 libcompress-raw-zlib-perl libconvert-asn1-perl libconvert-binhex-perl libconvert-tnef-perl libconvert-uulib-perl
+  libcrypt-openssl-bignum-perl libcrypt-openssl-rsa-perl libdigest-hmac-perl libdigest-sha1-perl libelf1 liberror-perl libfont-afm-perl
+  libgmp3c2 libgomp1 libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libio-multiplex-perl
+  libio-socket-inet6-perl libio-stringy-perl liblua5.1-0 liblzo2-2 libmail-spf-perl libmailtools-perl libmime-tools-perl libmpfr4
+  libnet-cidr-perl libnet-dns-perl libnet-ip-perl libnet-server-perl libnetaddr-ip-perl libnspr4-0d libnss3-1d librpm1 librpmbuild1
+  librpmio1 libsensors4 libsnmp-base libsnmp15 libsocket6-perl libsys-hostname-long-perl libtimedate-perl libtommath0 libunix-syslog-perl
+  liburi-perl libwww-perl linux-libc-dev lm-sensors make manpages-dev pax re2c rpm-common rpm2cpio spamc
+Paquetes sugeridos:
+  lha unrar dspam binutils-doc clamav-docs daemon cpp-doc gcc-4.4-locales gcc-multilib autoconf automake1.9 libtool flex bison gdb
+  gcc-doc gcc-4.4-multilib libmudflap0-4.4-dev gcc-4.4-doc libgcc1-dbg libgomp1-dbg libmudflap0-dbg libcloog-ppl0 libppl-c2 libppl7
+  libgssapi-perl glibc-doc libclamunrar6 libdata-dump-perl libio-socket-ssl-perl libxml-parser-perl libxml-sax-perl snmp-mibs-downloader
+  sensord read-edid i2c-tools make-doc p7zip-full alien elfutils rpm-i18n razor libnet-ident-perl pyzor pike
+Se instalarán los siguientes paquetes NUEVOS:
+  amavisd-new arj binutils cabextract clamav clamav-base clamav-daemon clamav-freshclam cpp cpp-4.4 fancontrol gcc gcc-4.4
+  libarchive-zip-perl libauthen-sasl-perl libberkeleydb-perl libc-dev-bin libc6-dev libclamav6 libcompress-raw-zlib-perl
+  libconvert-asn1-perl libconvert-binhex-perl libconvert-tnef-perl libconvert-uulib-perl libcrypt-openssl-bignum-perl
+  libcrypt-openssl-rsa-perl libdigest-hmac-perl libdigest-sha1-perl libelf1 liberror-perl libfont-afm-perl libgmp3c2 libgomp1
+  libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libio-multiplex-perl libio-socket-inet6-perl
+  libio-stringy-perl liblua5.1-0 liblzo2-2 libmail-dkim-perl libmail-spf-perl libmailtools-perl libmime-tools-perl libmpfr4
+  libnet-cidr-perl libnet-dns-perl libnet-ip-perl libnet-ldap-perl libnet-server-perl libnetaddr-ip-perl libnspr4-0d libnss3-1d librpm1
+  librpmbuild1 librpmio1 libsensors4 libsnmp-base libsnmp-perl libsnmp15 libsocket6-perl libsys-hostname-long-perl libtimedate-perl
+  libtommath0 libunix-syslog-perl liburi-perl libwww-perl linux-libc-dev lm-sensors lzop make manpages-dev nomarch p7zip pax re2c rpm
+  rpm-common rpm2cpio spamassassin spamc unrar-free zoo
+0 actualizados, 85 se instalarán, 0 para eliminar y 21 no actualizados.
+1 no instalados del todo o eliminados.
+Necesito descargar 70,7 MB de archivos.
+Se utilizarán 135 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+Luego editar edit /etc/postfix/master.cf y agregar estos dos servicios
+
+nano /etc/postfix/master.cf
+
+smtp-amavis unix -      -       n     -       2  smtp
+    -o smtp_data_done_timeout=1200
+    -o smtp_send_xforward_command=yes
+    -o disable_dns_lookups=yes
+    -o max_use=20
+127.0.0.1:10025 inet n    -       n       -       -     smtpd
+    -o content_filter=
+    -o smtpd_delay_reject=no
+    -o smtpd_client_restrictions=permit_mynetworks,reject
+    -o smtpd_helo_restrictions=
+    -o smtpd_sender_restrictions=
+    -o smtpd_recipient_restrictions=permit_mynetworks,reject
+    -o smtpd_data_restrictions=reject_unauth_pipelining
+    -o smtpd_end_of_data_restrictions=
+    -o smtpd_restriction_classes=
+    -o mynetworks=127.0.0.0/8
+    -o smtpd_error_sleep_time=0
+    -o smtpd_soft_error_limit=1001
+    -o smtpd_hard_error_limit=1000
+    -o smtpd_client_connection_count_limit=0
+    -o smtpd_client_connection_rate_limit=0
+    -o receive_override_options=no_header_body_checks,no_unknown_recipient_checks,no_milters
+    -o local_header_rewrite_clients=
+
+postfix reload
+
+root@deb01:~# postfix reload
+postfix/postfix-script: refreshing the Postfix mail system
+root@deb01:~# 
+
+postconf -e content_filter=smtp-amavis:[127.0.0.1]:10024
+postconf -e receive_override_options=no_address_mappings
+
+Configuring AMaViS
+
+editar /etc/amavis/conf.d/15-content_filter_mode
+
+nano /etc/amavis/conf.d/15-content_filter_mode 
+
+y remover el "#" de:
+
+    #@bypass_virus_checks_maps = (
+    #   \%bypass_virus_checks, \@bypass_virus_checks_acl, \$bypass_virus_checks_re);
+
+    #@bypass_spam_checks_maps = (
+    #   \%bypass_spam_checks, \@bypass_spam_checks_acl, \$bypass_spam_checks_re);
+
+
+
+adduser clamav amavis
+/etc/init.d/clamav-daemon restart
+
+root@deb01:~# adduser clamav amavis
+Añadiendo al usuario `clamav' al grupo `amavis' ...
+Añadiendo al usuario clamav al grupo amavis
+Hecho.
+root@deb01:~# /etc/init.d/clamav-daemon restart
+Stopping ClamAV daemon: clamd.
+Starting ClamAV daemon: clamd Bytecode: Security mode set to "TrustSigned".
+.
+root@deb01:~# 
+
+editar opciones solo en este archivo /etc/amavis/conf.d/50-user:
+ 
+nano /etc/amavis/conf.d/50-user
+
+$sa_spam_subject_tag=undef;
+$sa_tag_level_deflt=undef;
+$final_spam_destiny=D_PASS;
+
+/etc/init.d/amavis restart
+
+root@deb01:~# /etc/init.d/amavis restart
+Stopping amavisd: amavisd-new.
+Starting amavisd: amavisd-new.
+root@deb01:~# 
+ 
+
+Make sure that AMaViS is listening on TCP port 10024:
+
+    netstat -nap | grep 10024
+
+root@deb01:~# netstat -nap | grep 10024
+tcp        0      0 127.0.0.1:10024         0.0.0.0:*               LISTEN      27327/amavisd (mast
+root@deb01:~# 
+
+Testing
+
+sendmail john@example.com < /usr/share/doc/spamassassin/examples/sample-spam.txt
+
+cat /var/log/mail.log
+
+
+postsuper -r ALL
+postfix flush
+
+------
+postconf -e soft_bounce=yes
+
+
+--------
+
+SMTPd restrictions, SPF, DKIM and greylisting
+
+Realtime blacklists (RBL)
+
+editar /etc/postfix/main.cf y agregar:
+
+smtpd_recipient_restrictions =
+   permit_mynetworks
+   reject_rbl_client dnsbl.sorbs.net
+   reject_rbl_client bl.spamcop.net
+   reject_rbl_client zen.spamhaus.org
+   reject_rbl_client dnsbl-1.uceprotect.net
+   reject_unauth_destination
+
+reject_unknown_client_hostname
+reject_unknown_sender_domain
+reject_unauth_pipelining
+
+
+Checking DKIM signatures of incoming email
+
+apt-get install dkim-filter
+root@deb01:~# apt-get install dkim-filter
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libmilter1.0.1
+Se instalarán los siguientes paquetes NUEVOS:
+  dkim-filter libmilter1.0.1
+0 actualizados, 2 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 496 kB de archivos.
+Se utilizarán 995 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+Edit your /etc/default/dkim-filter and add
+
+    SOCKET="inet:54321@localhost"
+
+/etc/init.d/dkim-filter restart
+
+root@deb01:~# /etc/init.d/dkim-filter restart
+Restarting DKIM Filter: dkim-filter: /etc/dkim-filter.conf: at least one selector and key required for signing mode
+See /usr/share/doc/dkim-filter/README.Debian for help
+Starting for DKIM verification only
+
+root@deb01:~# netstat -nap | grep 54321
+tcp        0      0 127.0.0.1:54321         0.0.0.0:*               LISTEN      27898/dkim-filter
+
+postconf -e smtpd_milters=inet:127.0.0.1:54321
+postconf -e non_smtpd_milters=inet:127.0.0.1:54321
+
+Setting up DKIM for sending emails
+
+--Aqui quede ---
+http://workaround.org/ispmail/squeeze/postfix-smtpd-restrictions
+Setting up DKIM for sending emails
+
+----pendiente -----
+
+
+Greylisting
+
+apt-get install tumgreyspf
+
+root@deb01:~# apt-get install tumgreyspf
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libspf2-2 python-dns python-spf spfquery
+Paquetes sugeridos:
+  python-yaml
+Se instalarán los siguientes paquetes NUEVOS:
+  libspf2-2 python-dns python-spf spfquery tumgreyspf
+0 actualizados, 5 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 190 kB de archivos.
+Se utilizarán 864 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+Ahora editar /etc/postfix/master.cf:
+
+nano /etc/postfix/master.cf y agregar:
+
+tumgreyspf unix  -      n       n       -       -       spawn
+    user=tumgreyspf argv=/usr/bin/tumgreyspf
+
+agregar a /etc/postfix/main.cf
+
+smtpd_recipient_restrictions =
+    permit_mynetworks
+    permit_sasl_authenticated
+    reject_rbl_client bl.spamcop.net
+    check_policy_service unix:private/tumgreyspf
+    reject_unauth_destination
+
+
+Finally restart Postfix:
+
+    postfix reload
+
+y To customize the behavior of tumgreyspf you can alter the files in /etc/tumgreyspf.
+
+Getting statistics
+
+apt-get install pflogsumm
+
+root@deb01:~# apt-get install pflogsumm
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libbit-vector-perl libcarp-clan-perl libdate-calc-perl
+Se instalarán los siguientes paquetes NUEVOS:
+  libbit-vector-perl libcarp-clan-perl libdate-calc-perl pflogsumm
+0 actualizados, 4 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 517 kB de archivos.
+Se utilizarán 1651 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+run this program on your log file:
+
+    pflogsumm /var/log/mail.log
+
+
+Blocking script kiddies with fail2ban
+
+apt-get install fail2ban
+
+root@deb01:~# apt-get install fail2ban
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Paquetes sugeridos:
+  python-gamin
+Se instalarán los siguientes paquetes NUEVOS:
+  fail2ban
+0 actualizados, 1 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 96,8 kB de archivos.
+Se utilizarán 676 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian/ squeeze/main fail2ban all 0.8.4-3 [96,8 kB]
+Descargados 96,8 kB en 2seg. (33,0 kB/s)
+Seleccionando el paquete fail2ban previamente no seleccionado.
+(Leyendo la base de datos ... 37703 ficheros o directorios instalados actualmente.)
+Desempaquetando fail2ban (de .../fail2ban_0.8.4-3_all.deb) ...
+Procesando disparadores para man-db ...
+Configurando fail2ban (0.8.4-3) ...
+Procesando disparadores para python-central ...
+root@deb01:~# 
+
+Add a file "/etc/fail2ban/filter.d/dovecot-pop3imap.conf" containing
+
+[Definition]
+failregex = (?: pop3-login|imap-login): .*(?:Authentication failure|Aborted login \(auth failed|Aborted login \(tried to use disabled|Disconnected \(auth failed).*rip=(?P<host>\S*),.*
+ignoreregex =
+
+Then edit the "/etc/fail2ban/jail.conf" file
+
+nano /etc/fail2ban/jail.conf
+
+    [postfix]
+    enabled  = true
+    port     = smtp,ssmtp
+    filter   = postfix
+    logpath  = /var/log/mail.log
+
+Also add a section for the Dovecot configuration you added earlier.
+
+    [dovecot-pop3imap]
+    enabled = true
+    port = pop3,pop3s,imap,imaps
+    filter = dovecot-pop3imap
+    logpath = /var/log/mail.log
+
+Restart fail2ban:
+
+    /etc/init.d/fail2ban restart
+
+root@deb01:~# /etc/init.d/fail2ban restart
+Restarting authentication failure monitor: fail2ban.
+root@deb01:~# 
+
+Probar configuracion:
+
+Now you can wait for kids to try their luck. But to check that everything works you can also fake an attack by sending manually crafted log entries:
+
+    logger -p mail.info -t dovecot "imap-login: Aborted login (auth failed, 2 attempts): user=<hanswaltergeorgfoo>, method=PLAIN, rip=10.20.30.40, lip=1.2.3.4, TLS"
+
+Run the above command three times so that fail2ban triggers its action. If everything went as desires then your /var/log/fail2ban.log will read:
+
+    fail2ban.actions: WARNING [dovecot-pop3imap] Ban 10.20.30.40
+
+Now attackers can do no more than three attacks within ten minutes. Nice, isn't it?
+
+root@deb01:~# tail -f /var/log/fail2ban.log
+2011-10-24 16:31:28,746 fail2ban.actions: INFO   Set banTime = 600
+2011-10-24 16:31:28,976 fail2ban.jail   : INFO   Creating new jail 'postfix'
+2011-10-24 16:31:28,976 fail2ban.jail   : INFO   Jail 'postfix' uses poller
+2011-10-24 16:31:28,990 fail2ban.filter : INFO   Added logfile = /var/log/mail.log
+2011-10-24 16:31:28,993 fail2ban.filter : INFO   Set maxRetry = 3
+2011-10-24 16:31:28,997 fail2ban.filter : INFO   Set findtime = 600
+2011-10-24 16:31:28,999 fail2ban.actions: INFO   Set banTime = 600
+2011-10-24 16:31:29,027 fail2ban.jail   : INFO   Jail 'dovecot-pop3imap' started
+2011-10-24 16:31:29,045 fail2ban.jail   : INFO   Jail 'ssh' started
+2011-10-24 16:31:29,082 fail2ban.jail   : INFO   Jail 'postfix' started
+
+
+
+
+2011-10-24 16:37:01,790 fail2ban.actions: WARNING [dovecot-pop3imap] Ban 10.20.30.40
+2011-10-24 16:37:12,905 fail2ban.actions: WARNING [dovecot-pop3imap] 10.20.30.40 already banned
+
+

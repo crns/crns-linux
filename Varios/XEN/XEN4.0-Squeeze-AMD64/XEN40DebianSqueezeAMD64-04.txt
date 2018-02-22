@@ -1,0 +1,123 @@
+ Imagen de Ubuntu
+
+Para rear una imagen de Ubuntu en lugar de Debian (cambiar lucid por la versión deseada, p.e. natty)
+
+xen-create-image --passwd --hostname=xen-server-ubuntu.salud.gob.sv  --dist lucid \
+--mirror=http://sv.archive.ubuntu.com  --vcpus=4 --size=100Gb --swap=1Gb --ip=10.10.20.46 \
+--bridge=xenbr2 --memory=4096Mb --arch=amd64 --role=udev
+
+Es posible que falten algunos paquetes útiles para que todo quede bien, que por supuesto pueden instalarse normalmente una vez arrancada la máquina:
+
+apt-get install wget language-pack-es aptitude vim
+
+- Usado para crear servidor Merry
+
+xen-create-image --hostname=merry --dist=lucid --mirror=http://sv.archive.ubuntu.com --vcpus=2 --size=100Gb --swap=1Gb --memory=4096Mb --ip=192.168.7.164 --mac=00:21:5e:c7:9c:47 --memory=4096Mb --arch=amd64 --role=udev
+
+root@frodo:~# xen-create-image --hostname=merry --dist=lucid --mirror=http://sv.archive.ubuntu.com --vcpus=2 --size=100Gb --swap=1Gb --memory=4096Mb --ip=192.168.7.164 --mac=00:21:5e:c7:9c:47 --memory=4096Mb --arch=amd64 --role=udev
+
+WARNING
+-------
+
+  You appear to have a missing vif-script, or network-script, in the
+ Xen configuration file /etc/xen/xend-config.sxp.
+
+  Please fix this and restart Xend, or your guests will not be able
+ to use any networking!
+
+
+General Information
+--------------------
+Hostname       :  merry
+Distribution   :  lucid
+Mirror         :  http://sv.archive.ubuntu.com
+Partitions     :  swap            1Gb   (swap)
+                  /               100Gb (ext3)
+Image type     :  full
+Memory size    :  4096Mb
+Kernel path    :  /boot/vmlinuz-3.2.0-4-amd64
+Initrd path    :  /boot/initrd.img-3.2.0-4-amd64
+
+Networking Information
+----------------------
+IP Address 1   : 192.168.7.164 [MAC: 00:21:5e:c7:9c:47]
+Netmask        : 255.255.255.0
+Broadcast      : 192.168.7.255
+Gateway        : 192.168.7.131
+
+
+Creating swap on /dev/xen-vol/merry-swap
+Done
+
+Creating ext3 filesystem on /dev/xen-vol/merry-disk
+Done
+Installation method: debootstrap
+Done
+
+Running hooks
+Done
+
+Role: udev
+	File: /etc/xen-tools/role.d/udev
+Role script completed.
+
+Creating Xen configuration file
+Done
+
+No role scripts were specified.  Skipping
+Setting up root password
+Generating a password for the new guest.
+All done
+
+
+Logfile produced at:
+	 /var/log/xen-tools/merry.log
+
+Installation Summary
+---------------------
+Hostname        :  merry
+Distribution    :  lucid
+IP-Address(es)  :  192.168.7.164 
+RSA Fingerprint :  fb:21:69:55:55:49:69:61:5d:8f:f3:17:8c:ab:e3:eb
+Root Password   :  eG67Z7pm
+
+
+- Arrancar la máquina Ubuntu
+
+xm create /etc/xen/merry.cfg
+
+
+- Configurar arranque automático
+
+ln -s /etc/xen/sam.cfg /etc/xen/auto
+
+
+- Varios
+
+root@merry:~# uname -a
+Linux merry 2.6.32-64-server #128-Ubuntu SMP Tue Jul 15 08:41:58 UTC 2014 x86_64 GNU/Linux
+
+
+- Instalar paquetes importantes
+
+root@merry:~# apt-get install wget language-pack-es aptitude vim
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  firefox-locale-es language-pack-es-base libpython2.6 python2.6 python2.6-minimal vim-common vim-runtime vim-tiny
+Suggested packages:
+  aptitude-doc-en aptitude-doc debtags python2.6-doc python2.6-profiler binutils binfmt-support ctags vim-doc vim-scripts indent
+The following NEW packages will be installed:
+  firefox-locale-es language-pack-es language-pack-es-base libpython2.6 vim vim-runtime wget
+The following packages will be upgraded:
+  aptitude python2.6 python2.6-minimal vim-common vim-tiny
+5 upgraded, 7 newly installed, 0 to remove and 80 not upgraded.
+Need to get 19.2MB of archives.
+After this operation, 46.8MB of additional disk space will be used.
+Do you want to continue [Y/n]? y
+
+
+------
+root@frodo:~# xen-create-image --hostname=gollum --dist=natty --mirror=http://sv.archive.ubuntu.com --vcpus=2 --size=100Gb --swap=1Gb --memory=4096Mb --ip=192.168.7.167 --mac=00:21:5e:c7:9c:51 --memory=4096Mb --arch=amd64
+

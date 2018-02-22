@@ -1,0 +1,8 @@
+iptables -A INPUT -m mac --mac-source 10:0F:2b:4c:59:23 -j ACCEPT
+
+00:1a:4b:46:ca:70
+
+
+iptables -I INPUT -m mac --mac-source 00:1a:4b:46:ca:70 -j DROP
+
+iptables -I FORWARD -m mac --mac-source 00:1a:4b:46:ca:70 -j DROP

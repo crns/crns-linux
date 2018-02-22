@@ -1,0 +1,942 @@
+https://workaround.org/ispmail/jessie/install-software-packages
+
+
+Instalar pqtes:
+
+
+apt-get install pwgen
+
+root@gimli:~# pwgen -s 20 1
+P7wupSxBeRDt4nnqliOf
+
+root@hayala:~# pwgen -s 20 1
+iUF51fvNizOez2Jkh5Gq
+
+apt-get install mysql-server
+
+root@hayala:~# apt-get install mysql-server
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libaio1 libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libterm-readkey-perl mysql-client-5.5 mysql-common mysql-server-5.5
+  mysql-server-core-5.5
+Paquetes sugeridos:
+  libclone-perl libmldbm-perl libnet-daemon-perl libsql-statement-perl libipc-sharedcache-perl tinyca
+Se instalarán los siguientes paquetes NUEVOS:
+  libaio1 libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libterm-readkey-perl mysql-client-5.5 mysql-common mysql-server
+  mysql-server-5.5 mysql-server-core-5.5
+0 actualizados, 11 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 8.676 kB de archivos.
+Se utilizarán 95,8 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+apt-get install postfix postfix-mysql
+
+apt-get --purge remove 'exim4*'
+
+
+apt-get install spamassassin spamass-milter
+
+apt-get install swaks
+
+Instalar Dovecot:
+
+apt-get install dovecot-mysql dovecot-pop3d dovecot-imapd dovecot-managesieved dovecot-lmtpd
+
+Instalar RoundCube:
+
+nano /etc/apt/sources.list.d/jessie-backports.list
+
+Agregar
+
+deb http://http.debian.net/debian jessie-backports main
+
+
+apt-get update
+
+apt-get install roundcube roundcube-plugins
+
+
+------
+Desde aqui solo Hayala:
+
+Crear No-cost certificate from StartSSL
+
+Create a 4096 bit key file:
+
+    openssl genrsa -out /etc/ssl/private/mailserver.pem 4096
+
+root@hayala:~# openssl genrsa -out /etc/ssl/private/mailserver.pem 4096
+Generating RSA private key, 4096 bit long modulus
+................++
+................++
+e is 65537 (0x10001)
+root@hayala:~# 
+
+Create a certificate signing request (CSR) file from that key:
+
+    openssl req -new -key /etc/ssl/private/mailserver.pem -out /etc/ssl/certs/mailserver.csr
+
+root@hayala:~# openssl req -new -key /etc/ssl/private/mailserver.pem -out /etc/ssl/certs/mailserver.csr
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:cl
+State or Province Name (full name) [Some-State]:Santiago
+Locality Name (eg, city) []:Santiago
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Caschile S.A. de I.
+Organizational Unit Name (eg, section) []:Stecnico
+Common Name (e.g. server FQDN or YOUR name) []:hayala.e-com.cl
+Email Address []:postmaster@e-com.cl
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:Caschile
+root@hayala:~#
+
+
+root@hayala:/etc/ssl/certs# cat mailserver.csr 
+
+-----BEGIN CERTIFICATE REQUEST-----
+MIIFATCCAukCAQAwgaIxCzAJBgNVBAYTAmNsMREwDwYDVQQIDAhTYW50aWFnbzER
+MA8GA1UEBwwIU2FudGlhZ28xHDAaBgNVBAoME0NBU0NISUxFIFMuQS4gZGUgSS4x
+ETAPBgNVBAsMCFNURUNOSUNPMRgwFgYDVQQDDA9oYXlhbGEuZS1jb20uY2wxIjAg
+BgkqhkiG9w0BCQEWE3Bvc3RtYXN0ZXJAZS1jb20uY2wwggIiMA0GCSqGSIb3DQEB
+AQUAA4ICDwAwggIKAoICAQD09cNRLfq81i/IfHt/l3l+DyI75qjTFIUy0kY8He9m
+ObzJC/A9DZpQXDWn4/0ioWDwxK8nT/6Kk5MEG5CJLuOMd2/zGxtjj4QvO5yxNuHY
+A6rocsbkjjwoPu0zSFaYue6YNccOeJ+DqFXtcUF7AH7WoeV0p0liUxYBjuefd4Yg
+eK3nl+aXwxwqKSkLb01BUF5wPRVGOHrkQuGodlLron0a0DLN+Th+3u//j9Dn9xZP
+/jfEHALw13P99KwoNLz8FNXpZTAuUEM0qjXYH6AKKah+gZPI3rRgAKb0M1cmLXz6
+GZN9s+ZykEPmB5jn/3PqSQgYCpgFSGRm8DYBO/WOcG1tfi1eEUQPpPknFMdn7szo
+31XNTH4MrItIGltl1mmRycBB5cdcren1wNv8gFxouLnV1E9ilDwBm06k42v4HTT/
+VH8WeHDrwfy1A7wK7ArQAH303czpTbJuNVDTA63Y1UN6oYebt6gMmwkNaPisxyA9
+RnNXH27s+uMp+hreq1wrE4O/7pdfvC5qScMCF4nBuPeqjlMtqCG8eggh73VajI6v
+bN5PJJenC13by5c50Il+vkwXejG53tlBjQl4mnnSvV+WcKY9XLOIHT0UHeUjXmPE
+AXR1MZr+u/khmCzEJ3BGSoG7i8KXRdBLXuKYcJ+GZf/15qdJ3BpdynycatimJE0L
+KwIDAQABoBkwFwYJKoZIhvcNAQkCMQoMCENhc2NoaWxlMA0GCSqGSIb3DQEBCwUA
+A4ICAQA5Z9jm/Wao0SYa1CGYPEQPlTAeF3q0zbtu07E6ejgh5W+nGUE8J7bC6wm1
+TEnwZaJ65qOukPWdZYAgHpUiH7G3Rk51toT2oYTdshnxYIay15pouwbi6oprnqAC
+FWU/tE1di4jCi5/3uTvYOMUHy3udGn1nkBH4TcKRmue2yl/iY7/o5lfoi1RkY2DN
+fjTuN7zf2uuWy/2JOdMb5/kunFgyhQD41padsEYo24NCcLfIFYIPYzvMIr4AzAeU
+He1Zo3oP2/WPdrFnghrFVLxpj26ELOLAOOTFuOOuVXH1SYZgNgEq4EvUa3dvWJIM
+9iYtDiOk88T62R7HRcjMqmAypOLdi7lINpFavORo86et86zlQyqLq1G6WClLs4Tt
+wXDQ3wr+sspNXvGcOlQrMyZS/v21hryQ/gRmeRphx2TQZQIi66sSXEoOfakLLDh9
+13V2zR5yCSqroi0f1bHGZLDH0464fTM8Zs0fsbECD/zfwv52PmMZwx4xgQEgSv9B
+l7rcCBv+yRcy+3UAFJdvDbzvN6ImR1Pm7O92fZwIHC39Nzexmqkean/DQTuBkKgp
+hMceHDZ5QfAnfS1REKXkYYqPHOD6uIf+nHfZkqJjQjFB9gIEy1EIQdkODrWCbqL0
+ecZz7XwJnjYScA7wkwx29UQN9A5WjXVwmU5unEvt9poL+54CuA==
+-----END CERTIFICATE REQUEST-----
+
+
+nano /etc/ssl/private/mailserver.pem
+
+ejemplo Apache:
+
+LoadModule ssl_module modules/mod_ssl.so
+
+Listen 443
+
+<VirtualHost _default_:443>
+   DocumentRoot /home/httpd/private
+   ErrorLog /usr/local/apache/logs/error_log
+   TransferLog /usr/local/apache/logs/access_log
+   SSLEngine on
+   SSLProtocol all -SSLv2 -SSLv3
+   SSLCipherSuite ALL:!DH:!EXPORT:!RC4:+HIGH:+MEDIUM:!LOW:!aNULL:!eNULL
+
+   SSLCertificateFile   /usr/local/apache/conf/domain.crt(it is from the apache.zip)
+   SSLCertificateKeyFile  /usr/local/apache/conf/private.key
+   SSLCertificateChainFile    /usr/local/apache/conf/1_root_bundle.crt(it is from the apache.zip)
+   CustomLog   /usr/local/apache/logs/ssl_request_log \
+    "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+</VirtualHost>
+
+Ejemplo NGINX:
+
+ NGINX Server
+(Thanks to Ingmar Steen for the instructions)
+
+First, use the StartSSL™ Control Panel to create a private key and certificate and transfer them to your server. Then execute the following steps (if you use a class 2 certificate replace class1 by class2 in the instructions below):
+
+    Decrypt the private key by using the password you entered when you created your key:
+
+openssl rsa -in ssl.key -out /etc/nginx/conf/ssl.key
+
+Alternatively you can also use the Tool Box decryption tool of your StartSSL™ account.
+
+    Protect your key from prying eyes:
+
+chmod 600 /etc/nginx/conf/ssl.key
+
+    Configure your nginx server to use the certificate is from the nginx.zip:
+
+ssl on;
+ssl_certificate /etc/nginx/conf/1_domain_bundle.crt;
+ssl_certificate_key /etc/nginx/conf/ssl.key;
+ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+ssl_ciphers ALL:!DH:!EXPORT:!RC4:+HIGH:+MEDIUM:!LOW:!aNULL:!eNULL;
+
+    Tell nginx to reload its configuration:
+
+killall -HUP nginx
+
+And you’re done!
+
+---------------------
+NginxVarnishApacheSSL.txt
+
+---------------------
+Ahora MySQL
+
+mysql 
+
+CREATE DATABASE mailserver;
+
+mysql> CREATE DATABASE mailserver;
+Query OK, 1 row affected (0.00 sec)
+
+GRANT SELECT,INSERT,UPDATE,DELETE ON mailserver.* TO 'mailuser'@'127.0.0.1' IDENTIFIED BY 'mai1203ver';
+
+
+mysql> GRANT SELECT,INSERT,UPDATE,DELETE ON mailserver.* TO 'mailuser'@'127.0.0.1' IDENTIFIED BY 'mai1203ver';
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+USE mailserver;
+
+CREATE TABLE IF NOT EXISTS `virtual_domains` (
+`id` int(11) NOT NULL auto_increment,
+`name` varchar(50) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+mysql> USE mailserver;
+Database changed
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS `virtual_domains` (
+    -> `id` int(11) NOT NULL auto_increment,
+    -> `name` varchar(50) NOT NULL,
+    -> PRIMARY KEY (`id`)
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.00 sec)
+
+
+mysql> describe virtual_domains;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name  | varchar(50) | NO   |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+
+
+
+USE mailserver;
+
+CREATE TABLE IF NOT EXISTS `virtual_users` (
+`id` int(11) NOT NULL auto_increment,
+`domain_id` int(11) NOT NULL,
+`email` varchar(100) NOT NULL,
+`password` varchar(150) NOT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY `email` (`email`),
+FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+mysql> USE mailserver;
+Database changed
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS `virtual_users` (
+    -> `id` int(11) NOT NULL auto_increment,
+    -> `domain_id` int(11) NOT NULL,
+    -> `email` varchar(100) NOT NULL,
+    -> `password` varchar(150) NOT NULL,
+    -> PRIMARY KEY (`id`),
+    -> UNIQUE KEY `email` (`email`),
+    -> FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> describe virtual_users;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| id        | int(11)      | NO   | PRI | NULL    | auto_increment |
+| domain_id | int(11)      | NO   | MUL | NULL    |                |
+| email     | varchar(100) | NO   | UNI | NULL    |                |
+| password  | varchar(150) | NO   |     | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+
+
+
+USE mailserver;
+
+CREATE TABLE IF NOT EXISTS `virtual_aliases` (
+`id` int(11) NOT NULL auto_increment,
+`domain_id` int(11) NOT NULL,
+`source` varchar(100) NOT NULL,
+`destination` varchar(100) NOT NULL,
+PRIMARY KEY (`id`),
+FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+mysql> USE mailserver;
+Database changed
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS `virtual_aliases` (
+    -> `id` int(11) NOT NULL auto_increment,
+    -> `domain_id` int(11) NOT NULL,
+    -> `source` varchar(100) NOT NULL,
+    -> `destination` varchar(100) NOT NULL,
+    -> PRIMARY KEY (`id`),
+    -> FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> describe virtual_aliases;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| id          | int(11)      | NO   | PRI | NULL    | auto_increment |
+| domain_id   | int(11)      | NO   | MUL | NULL    |                |
+| source      | varchar(100) | NO   |     | NULL    |                |
+| destination | varchar(100) | NO   |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+-----------------------------
+
+cronos2929
+
+REPLACE INTO `mailserver`.`virtual_domains` ( `id` , `name` ) VALUES ( '1', 'example.org' );
+REPLACE INTO `mailserver`.`virtual_users` ( `id` , `domain_id` , `password` , `email` ) VALUES ('1', '1', '{SHA256-CRYPT}$5$L2g4hnUqklUNTi90$7O6WF7FmibD8.pTP5DDho4KZ4Dr289hdX8rKs8QLHL2' , 'john@example.org');
+REPLACE INTO `mailserver`.`virtual_aliases` (`id`,`domain_id`,`source`,`destination`) VALUES ('1', '1', 'jack@example.org', 'john@example.org');
+
+
+
+
+mysql> REPLACE INTO `mailserver`.`virtual_domains` ( `id` , `name` ) VALUES ( '1', 'example.org' );
+Query OK, 1 row affected (0.00 sec)
+
+mysql> REPLACE INTO `mailserver`.`virtual_users` ( `id` , `domain_id` , `password` , `email` ) VALUES ('1', '1', '{SHA256-CRYPT}$5$L2g4hnUqklUNTi90$7O6WF7FmibD8.pTP5DDho4KZ4Dr289hdX8rKs8QLHL2' , 'john@example.org');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> REPLACE INTO `mailserver`.`virtual_aliases` (`id`,`domain_id`,`source`,`destination`) VALUES ('1', '1', 'jack@example.org', 'john@example.org');
+Query OK, 1 row affected (0.00 sec)
+
+
+
+mysql> select * from virtual_domains;
++----+-------------+
+| id | name        |
++----+-------------+
+|  1 | example.org |
++----+-------------+
+1 row in set (0.00 sec)
+
+
+mysql> select * from virtual_users;
++----+-----------+------------------+-------------------------------------------------------------------------------+
+| id | domain_id | email            | password                                                                      |
++----+-----------+------------------+-------------------------------------------------------------------------------+
+|  1 |         1 | john@example.org | {SHA256-CRYPT}$5$L2g4hnUqklUNTi90$7O6WF7FmibD8.pTP5DDho4KZ4Dr289hdX8rKs8QLHL2 |
++----+-----------+------------------+-------------------------------------------------------------------------------+
+1 row in set (0.01 sec)
+
+
+mysql> select * from virtual_aliases;
++----+-----------+------------------+------------------+
+| id | domain_id | source           | destination      |
++----+-----------+------------------+------------------+
+|  1 |         1 | jack@example.org | john@example.org |
++----+-----------+------------------+------------------+
+1 row in set (0.00 sec)
+
+-----------------------------
+
+Plugear postfix a MySQL:
+
+
+virtual_mailbox_domains:
+
+
+nano /etc/postfix/mysql-virtual-mailbox-domains.cf
+
+user = mailuser
+password = mai1203ver​    <- use your own database password here
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT 1 FROM virtual_domains WHERE name='%s'
+
+
+postconf virtual_mailbox_domains=mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+
+
+Probar:
+
+postmap -q example.org mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+
+
+root@hayala:~# postmap -q example.org mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+1
+
+OK
+
+virtual_mailbox_maps:
+
+
+nano /etc/postfix/mysql-virtual-mailbox-maps.cf
+
+postconf virtual_mailbox_maps=mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+
+Probar:
+
+postmap -q john@example.org mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+
+root@hayala:~# postmap -q john@example.org mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+1
+
+
+virtual_alias_maps:
+
+nano /etc/postfix/mysql-virtual-alias-maps.cf
+
+user = mailuser
+password = mai1203ver
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT destination FROM virtual_aliases WHERE source='%s'
+
+
+Crear mapeo:
+
+postconf virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+
+
+Probar:
+root@hayala:~# postmap -q jack@example.org mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+john@example.org
+
+
+Catch-all aliases email2email:
+
+nano /etc/postfix/mysql-email2email.cf
+
+user = mailuser
+password = mai1203ver
+hosts = 127.0.0.1
+dbname = mailserver
+query = SELECT email FROM virtual_users WHERE email='%s'
+
+
+Probar:
+
+postmap -q john@example.org mysql:/etc/postfix/mysql-email2email.cf
+
+root@hayala:~# postmap -q john@example.org mysql:/etc/postfix/mysql-email2email.cf
+john@example.org
+
+Ahora activar:
+
+postconf virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf,mysql:/etc/postfix/mysql-email2email.cf
+
+Proteger maps:
+
+chgrp postfix /etc/postfix/mysql-*.cf
+chmod u=rw,g=r,o= /etc/postfix/mysql-*.cf
+
+-------------------------------
+
+Configurando Dovecot:
+
+groupadd -g 5000 vmail
+useradd -g vmail -u 5000 vmail -d /var/vmail -m
+
+chown -R vmail.vmail /var/vmail
+
+--------
+
+conf.d/
+
+cd /etc/dovecot/conf.d
+
+nano 10-auth.conf
+
+auth_mechanisms = plain
+
+dejar:
+
+auth_mechanisms = plain login
+
+
+AL final dejar el sgte bloque asi:
+#!include auth-system.conf.ext
+!include auth-sql.conf.ext
+#!include auth-ldap.conf.ext
+#!include auth-passwdfile.conf.ext
+#!include auth-checkpassword.conf.ext
+#!include auth-vpopmail.conf.ext
+#!include auth-static.conf.ext
+
+Now edit the SQL configuration file:
+
+nano auth-sql.conf.ext
+
+comentar:
+
+descomentar al final:
+
+userdb {
+  driver = static
+  args = uid=vmail gid=vmail home=/var/vmail/%u
+}
+
+y modificar:
+userdb {
+  driver = static
+  args = uid=vmail gid=vmail home=/var/vmail/%d/%n
+}
+
+
+10-mail.conf:
+
+nano 10-mail.conf
+
+En la seccion “namespace inbox” descomentar y dejar
+
+separator = .
+
+10-master.conf
+
+nano 10-master.conf
+
+
+10-ssl.conf:
+
+nano 10-ssl.conf
+
+ssl = yes
+ssl_cert = </etc/nginx/conf/1_domain_bundle.crt
+ssl_key = </etc/nginx/conf/ssl.key
+
+
+15-mailboxes.conf
+
+nano 15-mailboxes.conf
+
+ mailbox INBOX.Junk {
+  auto = subscribe
+  special_use = \Junk
+ }
+ mailbox INBOX.Trash {
+  auto = subscribe
+  special_use = \Trash
+ }
+
+/etc/dovecot/dovecot-sql.conf.ext:
+
+nano /etc/dovecot/dovecot-sql.conf.ext
+
+driver = mysql
+connect = host=127.0.0.1 dbname=mailserver user=mailuser password=mai1203ver
+default_pass_scheme = SHA256-CRYPT
+password_query = SELECT email as user, password FROM virtual_users WHERE email='%u';
+
+
+
+chown root:root /etc/dovecot/dovecot-sql.conf.ext
+chmod go= /etc/dovecot/dovecot-sql.conf.ext
+
+service dovecot restart
+
+tail -f /var/log/mail.log
+
+Jan 31 01:23:10 hayala dovecot: master: Dovecot v2.2.13 starting up for imap, lmtp, sieve, pop3 (core dumps disabled)
+
+OK
+
+-------------------------
+Tell Dovecot where to listen for LMTP connections from Postfix
+
+
+el pqte dovecot-lmtpd debe estar instalado
+
+nano 10-master.conf
+
+
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    group = postfix
+    mode = 0600
+    user = postfix
+  }
+}
+
+
+
+
+-----------------------------
+
+
+Tell Postfix to deliver emails to Dovecot using LMTP
+
+postconf virtual_transport=lmtp:unix:private/dovecot-lmtp
+
+
+----------------------------
+
+Enable server-side mail rules
+
+nano /etc/dovecot/conf.d/20-lmtp.conf
+
+protocol lmtp {
+  # Space separated list of plugins to load (default is global mail_plugins).
+  #mail_plugins = $mail_plugins
+  mail_plugins = $mail_plugins sieve
+}
+
+service dovecot restart
+
+-------------------------------
+aqui quede: -> https://workaround.org/ispmail/jessie/roundcube
+
+
+crear em site-avalaible:
+
+hayala.e-com.cl.conf
+
+<VirtualHost *:8080>
+        ServerName hayala.e-com.cl
+        ServerAdmin webmaster@localhost
+
+        DocumentRoot /var/www/html
+        Include /etc/roundcube/apache.conf
+        Alias / /var/lib/roundcube/
+
+        # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+        # error, crit, alert, emerg.
+        # It is also possible to configure the loglevel for particular
+        # modules, e.g.
+        #LogLevel info ssl:warn
+
+        ErrorLog ${APACHE_LOG_DIR}/hayala.e-com.cl-error.log
+        CustomLog ${APACHE_LOG_DIR}/hayala.e-com.cl-access.log combined
+
+        # For most configuration files from conf-available/, which are
+        # enabled or disabled at a global level, it is possible to
+        # include a line for only one particular virtual host. For example the
+        # following line enables the CGI configuration for this host only
+        # after it has been globally disabled with "a2disconf".
+        #Include conf-available/serve-cgi-bin.conf
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+
+ahora activar:
+
+root@hayala:~# a2ensite hayala.e-com.cl.conf
+Enabling site hayala.e-com.cl.
+To activate the new configuration, you need to run:
+  service apache2 reload
+
+y desactivar el sitio por default:
+
+root@hayala:~# a2dissite 000-default.conf 
+Site 000-default disabled.
+To activate the new configuration, you need to run:
+  service apache2 reload
+
+root@hayala:~# service apache2 reload
+
+
+service apache2 reload
+
+
+ok ahora ir a hayala.e-com.cl:
+
+editar /etc/roundcube/config.inc.php
+
+nano /etc/roundcube/config.inc.php
+
+buscar $config['default_host'] = '';
+ y insertar:
+
+$config['default_host'] = 'localhost';
+
+
+Plugins:
+
+nano /etc/roundcube/config.inc.php
+
+Buscar
+
+$config['plugins'] = array(
+'archive',
+'zipdownload',
+);
+
+Editar:
+
+$config['plugins'] = array(
+'archive',
+'zipdownload',
+'managesieve',  
+'password',
+);
+
+Agregar al final de archivo:
+
+//CRN OPTIONS
+$config['session_lifetime'] = 60;
+
+// LOGO
+// You just need to copy that image file by that name to /var/lib/roundcube/ispmail-logo.png.
+// The logo should be 177×49 pixels large
+// chmod a+r /var/lib/roundcube/ispmail-logo.png
+//$config['skin_logo'] = './ispmail-logo.png';
+
+
+Configuring the managesieve plugin:
+
+cp /usr/share/roundcube/plugins/managesieve/config.inc.php.dist /etc/roundcube/plugins/managesieve/config.inc.php
+
+Configuring the password plugin:
+
+cp /usr/share/roundcube/plugins/password/config.inc.php.dist /etc/roundcube/plugins/password/config.inc.php
+
+Editar /etc/roundcube/plugins/password/config.inc.php
+
+nano /etc/roundcube/plugins/password/config.inc.php
+
+
+-----------------------------
+
+Make Postfix use Dovecot for authentication:
+
+postconf smtpd_sasl_type=dovecot
+postconf smtpd_sasl_path=private/auth
+postconf smtpd_sasl_auth_enable=yes
+
+Enable encryption:
+
+postconf smtpd_tls_security_level=may
+postconf smtpd_tls_auth_only=yes
+postconf smtpd_tls_cert_file=/etc/nginx/certs/1_hayala.e-com.cl_bundle.crt
+postconf smtpd_tls_key_file=/etc/nginx/certs/ssl.key
+
+The submission port:
+
+nano /etc/postfix/master.cf
+
+submission inet n - - - - smtpd
+ -o syslog_name=postfix/submission
+ -o smtpd_tls_security_level=encrypt
+ -o smtpd_sasl_auth_enable=yes
+ -o smtpd_sasl_type=dovecot
+ -o smtpd_sasl_path=private/auth
+ -o smtpd_sasl_security_options=noanonymous
+ -o smtpd_sender_login_maps=mysql:/etc/postfix/mysql-email2email.cf
+ -o smtpd_sender_restrictions=reject_sender_login_mismatch
+ -o smtpd_sasl_local_domain=$myhostname
+ -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+ -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject 
+
+
+------------------------------
+Debian bug #739738
+
+nano /usr/share/perl5/Mail/SpamAssassin/Util.pm
+
+reemplazar en linea 288
+
+
+
+    return if !defined $_[0];
+
+por
+
+    return undef if !defined $_[0];
+
+
+---------
+Enable spam scanning with SpamAssassin:
+
+postconf smtpd_milters=unix:/spamass/spamass.sock
+postconf milter_connect_macros="i j {daemon_name} v {if_name} _"
+
+nano /etc/default/spamassassin
+
+OPTIONS="--create-prefs --max-children 5 --helper-home-dir -x -u vmail"
+
+CRON=1
+
+
+root@hayala:~# systemctl enable spamassassin
+Synchronizing state for spamassassin.service with sysvinit using update-rc.d...
+Executing /usr/sbin/update-rc.d spamassassin defaults
+Executing /usr/sbin/update-rc.d spamassassin enable
+
+adduser spamass-milter debian-spamd
+
+root@hayala:~# adduser spamass-milter debian-spamd
+Añadiendo al usuario `spamass-milter' al grupo `debian-spamd' ...
+Añadiendo al usuario spamass-milter al grupo debian-spamd
+Hecho.
+
+
+Restart SpamAssassin:
+
+    service spamassassin restart
+    service spamass-milter restart
+
+root@hayala:~# service spamassassin restart
+root@hayala:~# service spamass-milter restart
+root@hayala:~# 
+
+
+Mira el log de correo:
+
+Jan 31 12:56:10 hayala spamd[21314]: logger: removing stderr method
+Jan 31 12:56:11 hayala spamd[21316]: zoom: able to use 360/360 'body_0' compiled rules (100%)
+Jan 31 12:56:11 hayala spamd[21316]: spamd: server started on IO::Socket::IP [127.0.0.1]:783, IO::Socket::IP [::1]:783 (running version 3.4.0)
+Jan 31 12:56:11 hayala spamd[21316]: spamd: server pid: 21316
+Jan 31 12:56:11 hayala spamd[21316]: spamd: server successfully spawned child process, pid 21317
+Jan 31 12:56:11 hayala spamd[21316]: spamd: server successfully spawned child process, pid 21318
+Jan 31 12:56:11 hayala spamd[21316]: prefork: child states: IS
+Jan 31 12:56:11 hayala spamd[21316]: prefork: child states: II
+Jan 31 12:56:29 hayala spamass-milter[21342]: spamass-milter 0.3.2 starting
+
+
+Testing spam detection:
+
+swaks --to john@example.org --server ip-address --data /usr/share/doc/spamassassin/examples/sample-spam.txt
+
+swaks --to john@example.org --server 190.98.197.122 --data /usr/share/doc/spamassassin/examples/sample-spam.txt
+
+Ver el log:
+
+Jan 31 13:00:05 hayala postfix/smtpd[21353]: connect from hayala.e-com.cl[190.98.197.122]
+Jan 31 13:00:05 hayala spamass-milter[21342]: Could not retrieve sendmail macro "i"!.  Please add it to confMILTER_MACROS_ENVFROM for better spamassassin results
+Jan 31 13:00:05 hayala postfix/smtpd[21353]: 6AA03600AC0: client=hayala.e-com.cl[190.98.197.122]
+Jan 31 13:00:05 hayala postfix/cleanup[21360]: 6AA03600AC0: message-id=<GTUBE1.1010101@example.net>
+Jan 31 13:00:05 hayala spamd[21317]: spamd: connection from localhost [::1]:59290 to port 783, fd 6
+Jan 31 13:00:05 hayala spamd[21317]: spamd: processing message <GTUBE1.1010101@example.net> for john:5000
+Jan 31 13:00:05 hayala spamd[21317]: spamd: identified spam (1001.5/5.0) for john:5000 in 0.3 seconds, 1109 bytes.
+Jan 31 13:00:05 hayala spamd[21317]: spamd: result: Y 1001 - DATE_IN_PAST_96_XX,GTUBE,RP_MATCHES_RCVD,T_HEADER_FROM_DIFFERENT_DOMAINS scantime=0.3,size=1109,user=john,uid=5000,required_score=5.0,rhost=localhost,raddr=::1,rport=59290,mid=<GTUBE1.1010101@example.net>,autolearn=no autolearn_force=no
+Jan 31 13:00:05 hayala postfix/qmgr[21255]: 6AA03600AC0: from=<root@hayala.e-com.cl>, size=3292, nrcpt=1 (queue active)
+Jan 31 13:00:05 hayala postfix/smtpd[21353]: disconnect from hayala.e-com.cl[190.98.197.122]
+Jan 31 13:00:05 hayala dovecot: lmtp(21365): Connect from local
+Jan 31 13:00:05 hayala spamd[21316]: prefork: child states: II
+Jan 31 13:00:05 hayala dovecot: lmtp(21365, john@example.org): C8a1K4UvrlZ1UwAAsjnb9A: sieve: msgid=<GTUBE1.1010101@example.net>: stored mail into mailbox 'INBOX'
+Jan 31 13:00:05 hayala postfix/lmtp[21364]: 6AA03600AC0: to=<john@example.org>, relay=hayala.e-com.cl[private/dovecot-lmtp], delay=0.32, delays=0.3/0/0/0.01, dsn=2.0.0, status=sent (250 2.0.0 <john@example.org> C8a1K4UvrlZ1UwAAsjnb9A Saved)
+Jan 31 13:00:05 hayala dovecot: lmtp(21365): Disconnect from local: Successful quit
+Jan 31 13:00:05 hayala postfix/qmgr[21255]: 6AA03600AC0: removed
+
+
+
+Sending spam to the Junk folder:
+
+nano /etc/dovecot/conf.d/90-sieve.conf
+
+mkdir /etc/dovecot/sieve-after
+
+nano /etc/dovecot/sieve-after/spam-to-folder.sieve
+
+require ["fileinto","mailbox"];
+
+if header :contains "X-Spam-Flag" "YES" {
+ fileinto :create "INBOX.Junk";
+ stop;
+}
+
+sievec /etc/dovecot/sieve-after/spam-to-folder.sieve
+
+root@hayala:~# sievec /etc/dovecot/sieve-after/spam-to-folder.sieve
+root@hayala:~#
+
+That generated a machine-readable file /etc/dovecot/sieve-after/spam-to-folder.svbin.
+
+Restart Dovecot:
+
+    service dovecot restart
+
+Probar nuevamente Spamassasin:
+
+swaks --to john@example.org --server 190.98.197.122 --data /usr/share/doc/spamassassin/examples/sample-spam.txt
+
+Ver el log de correo:
+
+Jan 31 13:10:30 hayala postfix/smtpd[21415]: connect from hayala.e-com.cl[190.98.197.122]
+Jan 31 13:10:30 hayala postfix/smtpd[21415]: 40EB6600AC0: client=hayala.e-com.cl[190.98.197.122]
+Jan 31 13:10:30 hayala postfix/cleanup[21421]: 40EB6600AC0: message-id=<GTUBE1.1010101@example.net>
+Jan 31 13:10:30 hayala spamd[21317]: spamd: connection from localhost [::1]:59300 to port 783, fd 6
+Jan 31 13:10:30 hayala spamd[21317]: spamd: processing message <GTUBE1.1010101@example.net> for john:5000
+Jan 31 13:10:30 hayala spamd[21317]: spamd: identified spam (1001.5/5.0) for john:5000 in 0.3 seconds, 1109 bytes.
+Jan 31 13:10:30 hayala spamd[21317]: spamd: result: Y 1001 - DATE_IN_PAST_96_XX,GTUBE,RP_MATCHES_RCVD,T_HEADER_FROM_DIFFERENT_DOMAINS scantime=0.3,size=1109,user=john,uid=5000,required_score=5.0,rhost=localhost,raddr=::1,rport=59300,mid=<GTUBE1.1010101@example.net>,autolearn=no autolearn_force=no
+Jan 31 13:10:30 hayala postfix/qmgr[21255]: 40EB6600AC0: from=<root@hayala.e-com.cl>, size=3292, nrcpt=1 (queue active)
+Jan 31 13:10:30 hayala postfix/smtpd[21415]: disconnect from hayala.e-com.cl[190.98.197.122]
+Jan 31 13:10:30 hayala dovecot: lmtp(21425): Connect from local
+Jan 31 13:10:30 hayala spamd[21316]: prefork: child states: II
+Jan 31 13:10:30 hayala dovecot: lmtp(21425, john@example.org): k/j1IfYxrlaxUwAAsjnb9A: sieve: msgid=<GTUBE1.1010101@example.net>: stored mail into mailbox 'INBOX.Junk'
+Jan 31 13:10:30 hayala postfix/lmtp[21424]: 40EB6600AC0: to=<john@example.org>, relay=hayala.e-com.cl[private/dovecot-lmtp], delay=0.32, delays=0.3/0/0/0.01, dsn=2.0.0, status=sent (250 2.0.0 <john@example.org> k/j1IfYxrlaxUwAAsjnb9A Saved)
+Jan 31 13:10:30 hayala postfix/qmgr[21255]: 40EB6600AC0: removed
+Jan 31 13:10:30 hayala dovecot: lmtp(21425): Disconnect from local: Successful quit
+
+Todo OK:
+
+
+---------------------------------
+
+root@hayala:/etc# postconf | grep -i size
+berkeley_db_create_buffer_size = 16777216
+berkeley_db_read_buffer_size = 131072
+body_checks_size_limit = 51200
+bounce_size_limit = 50000
+header_size_limit = 102400
+lmdb_map_size = 16777216
+mailbox_size_limit = 0
+message_size_limit = 46080000
+tcp_windowsize = 0
+root@hayala:/etc# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,55 @@
+
+
+Crea el archivo /etc/xen/vfobos.cfg con el siguiente contenido:
+
+name = 'vfobos'
+builder = 'hvm'
+
+memory = 4096
+maxmem = 6144
+shadow_memory = 8
+
+vcpus=2
+acpi=1
+apic=1
+	 
+vif = [ 
+		'bridge=br0, mac=5c:d9:98:bc:46:4d, model=e1000',
+                'bridge=br0, mac=5c:d9:98:bc:46:4e, model=e1000',
+]
+
+disk = [
+		'phy:/dev/vg0/vdeimos-root,hda,w',
+		'phy:/dev/vg0/vdeimos-swap,hdb,w',
+		'phy:/dev/md4,hdc,w',
+		'file:/xen-isos/openfiler-2.3-x86_64-disc1.iso,hdd:cdrom,r'
+]	 
+
+#CRN# No cambiar
+###pvh=1
+#Esto es para el modo PVHVM
+xen_platform_pci=1
+
+boot='cd'
+ 
+## Use VNC para la consola inicial/instalacion.
+vnc=1
+vncunused=0
+vnclisten = '127.0.0.1'
+vncdisplay=2
+vncconsole=1
+vncpasswd='cronos'
+ 
+vncviewer=0
+sdl=0
+ 
+stdvga=0
+serial='pty'
+tsc_mode='default'
+usb=1
+usbdevice='tablet'
+ 
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart'
+

@@ -1,0 +1,45 @@
+ab -g antares10.csv -n 100 -c 5 http://wp.caschile.cl
+
+
+nano plot.p
+
+set terminal png size 600
+set output "antares11.png"
+set title "100 peticiones, 20 peticiones concurrentes"
+set size ratio 0.6
+set grid y
+set xlabel "peticiones"
+set ylabel "tiempo de respuesta (ms)"
+plot "antares11.csv" using 9 smooth sbezier with lines title "wp.caschile.cl"
+
+
+gnuplot plot.p
+
+
+OK
+
+
+--------------------
+
+[mcampos@crn ab]$ ab -g webcast.caschile.cl.pre01.csv -n 100 -c 5 http://webcast.caschile.cl/
+This is ApacheBench, Version 2.3 <$Revision: 1706008 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking webcast.caschile.cl (be patient)...apr_pollset_poll: The timeout specified has expired (70007)
+[mcampos@crn ab]$ ab -g webcast.caschile.cl.pre01.csv -n 100 -c 5 http://webcast.caschile.cl/
+This is ApacheBench, Version 2.3 <$Revision: 1706008 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking webcast.caschile.cl (be patient)...apr_pollset_poll: The timeout specified has expired (70007)
+[mcampos@crn ab]$ ab -g webcast.caschile.cl.pre01.csv -n 100 -c 20 http://webcast.caschile.cl/
+This is ApacheBench, Version 2.3 <$Revision: 1706008 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking webcast.caschile.cl (be patient)...apr_pollset_poll: The timeout specified has expired (70007)
+[mcampos@crn ab]$ 
+
+
+

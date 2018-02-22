@@ -1,0 +1,14 @@
+lvcreate -L 100G -n vdeimos-root vg0
+lvcreate -L 100G -n vdeimos-root vg0
+
+lvremove vdeimos-swap vg0
+
+lvremove -f vg0/vdeimos-swap
+
+lvremove -f vg0/vdeimos-root
+
+
+
+
+Troya.iso 	100% 	5086MB  18.9MB/s   04:29 (toy-storage -> vlegolas) 
+

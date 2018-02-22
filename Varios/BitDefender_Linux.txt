@@ -1,0 +1,26 @@
+BitDefender Security for Samba Servers successfully installed
+
+In order to enable scanning on your samba shares you will need to
+integrate  with your samba version. Please consult
+/opt/BitDefender/share/doc/samba-vfs/INSTALL.samba-vfs in order
+to compile the BitDefender vfs module against your samba version
+and then use the '/opt/BitDefender/bin/bdsafe samba'  command to
+enable it for the shares in your smb.conf file (bdsafe will do this
+automatically without requiring manual editing of smb.conf).
+
+For more information on integrating the BitDefender VFS module,
+please visit: http://kb.bitdefender.com/KB551
+
+root@beta:/home/mcampos# 
+
+apt-get update
+...
+Descargados 4100 B en 13seg. (315 B/s)
+Leyendo lista de paquetes... Hecho
+W: Error de GPG: http://download.bitdefender.com bitdefender Release: Las firmas siguientes no se pudieron verificar porque su llave pública no está disponible: NO_PUBKEY A373FB480EC4FE05
+
+gpg --keyserver subkeys.pgp.net --recv-keys A373FB480EC4FE05
+gpg --export --armor A373FB480EC4FE05 | apt-key add -
+
+apt-get update
+

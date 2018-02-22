@@ -1,0 +1,291 @@
+1.- Securizar Merry
+
+2.- 
+
+Instalat firmware-linux-nonfree ifenslave ethtool
+
+apt-get install firmware-linux-nonfree ifenslave ethtool
+
+root@merry:/etc# apt-get install firmware-linux-nonfree ifenslave ethtool
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «ifenslave-2.6» en lugar de «ifenslave»
+ethtool ya está en su versión más reciente.
+ifenslave-2.6 ya está en su versión más reciente.
+firmware-linux-nonfree ya está en su versión más reciente.
+0 actualizados, 0 se instalarán, 0 para eliminar y 0 no actualizados.
+root@merry:/etc# 
+
+
+Verificar soporte full virtualización:
+
+root@merry:/etc# egrep '(vmx|svm)' --color=always /proc/cpuinfo
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm xsave lahf_lm dtherm tpr_shadow vnmi flexpriority
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm xsave lahf_lm dtherm tpr_shadow vnmi flexpriority
+root@merry:/etc# 
+
+
+OK aparece el flag vmx(Intel) en AMD el flag es svm.
+
+
+Verificar kernels intalados:
+
+root@merry:/etc# dpkg -l | grep linux-image
+ii  linux-image-3.2.0-4-amd64          3.2.60-1+deb7u3               amd64        Linux 3.2 for 64-bit PCs
+ii  linux-image-amd64                  3.2+46                        amd64        Linux for 64-bit PCs (meta-package)
+root@merry:/etc# 
+
+Si se requiere arrancar Squeeze instalado por Dbootstrap se deberá instala el kernel 2.6
+
+apt-get install linux-image-2.6-amd64
+
+Reboot y verificar arranque
+
+[mcampos@crn ~]$ uname -a
+Linux crn 3.15.6-200.fc20.x86_64 #1 SMP Fri Jul 18 02:36:27 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+
+reboot
+-----
+
+root@merry:/etc/default# apt-cache search openvswitch-datapath
+openvswitch-datapath-dkms - Open vSwitch datapath module source - DKMS version
+openvswitch-datapath-source - Open vSwitch datapath module source - module-assistant version
+
+
+root@merry:/etc/default# apt-get install build-essential module-assistant linux-headers-`uname -r`
+
+root@merry:/etc/default# apt-get remove --purge bridge-utils
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Los siguientes paquetes se ELIMINARÁN:
+  bridge-utils*
+0 actualizados, 0 se instalarán, 1 para eliminar y 0 no actualizados.
+Se liberarán 146 kB después de esta operación.
+¿Desea continuar [S/n]? 
+(Leyendo la base de datos ... 43755 ficheros o directorios instalados actualmente.)
+Desinstalando bridge-utils ...
+Purgando ficheros de configuración de bridge-utils ...
+Procesando disparadores para man-db ...
+root@merry:/etc/default# 
+
+root@merry:/etc/default# apt-get install openvswitch-datapath-dkms
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  dkms menu
+Paquetes sugeridos:
+  menu-l10n gksu kdebase-bin kdebase-runtime ktsuss sux
+Se instalarán los siguientes paquetes NUEVOS:
+  dkms menu openvswitch-datapath-dkms
+0 actualizados, 3 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 2.516 kB de archivos.
+Se utilizarán 14,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+Ahora activar el modulo brcomp en el arranque
+
+nano /etc/default/openvswitch-switch
+
+BRCOMPAT=yes
+
+Ahora verificamos que el modulo de compatibilidad no esta cargado:
+
+root@merry:~# lsmod |grep brcomp
+root@merry:~# 
+
+Cargamos módulo y verificamos:
+
+root@merry:~# lsmod |grep brcomp
+root@merry:~# modprobe brcompat_mod
+root@merry:~# lsmod |grep brcomp
+brcompat_mod           13031  0 
+openvswitch_mod        67972  1 brcompat_mod
+root@merry:~# 
+
+
+Chequeo final con:
+
+/etc/init.d/openvswitch-switch status
+
+root@merry:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 13382
+ovs-vswitchd is running with pid 13433
+ovs-brcompatd is not running
+root@merry:~#
+
+Brcompat esta deshabilitado, reiniciamos:
+
+root@merry:~# /etc/init.d/openvswitch-switch restart
+[ ok ] ovs-brcompatd is not running.
+[ ok ] Killing ovs-vswitchd (13433).
+[ ok ] Killing ovsdb-server (13382).
+[ ok ] Starting ovsdb-server.
+[ ok ] Configuring Open vSwitch system IDs.
+[ ok ] Starting ovs-vswitchd.
+[ ok ] Starting ovs-brcompatd.
+root@merry:~# 
+
+
+Y comprobamos que todo esta ok:
+
+root@merry:~# /etc/init.d/openvswitch-switch status
+ovsdb-server is running with pid 13697
+ovs-vswitchd is running with pid 13748
+ovs-brcompatd is running with pid 13772
+root@merry:~# 
+
+----
+
+editar /etc/network/interfaces
+
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+allow-br0 eth0
+iface eth0 inet manual
+	ovs_bridge br0
+   	ovs_type OVSPort
+	
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+	address 192.168.7.164
+	netmask 255.255.255.0
+	network 192.168.7.0
+	broadcast 192.168.7.255
+	gateway 192.168.7.1
+	# dns-* options are implemented by the resolvconf package, if installed
+	dns-nameservers 200.75.0.5
+	dns-search caschile.cl
+	ovs_type OVSBridge
+   	ovs_ports eth0
+	bridge-ports eth0
+
+
+Ahora activar el bridge patra gestionarlo por OVS:
+
+ovs-vsctl add-br br0
+ovs-vsctl add-port br0 eth0
+
+## Aqui puede fallar la conectividar
+
+Revisar:
+
+ovs-vsctl show
+
+root@merry:~# ovs-vsctl show
+e09d7384-1d16-4003-ac28-390718fc4cfc
+    Bridge "br0"
+        Port "eth0"
+            Interface "eth0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+    ovs_version: "1.4.2"
+root@merry:~# 
+
+Salvar y reiniciar para verificar que todo arranca OK:
+
+--------------
+Ahora instalar XEN 4.1
+
+apt-get autoremove
+
+apt-get install xen-linux-system xen-tools
+
+root@merry:~# apt-get install xen-linux-system xen-tools
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «xen-linux-system-amd64» en lugar de «xen-linux-system»
+Se instalarán los siguientes paquetes extras:
+  debootstrap gawk libaio1 libconfig-inifiles-perl libcurl3-gnutls libelf1 libexpect-perl libfile-slurp-perl libio-stty-perl libiscsi1 liblist-moreutils-perl liblua5.1-0
+  libnspr4 libnss3 librpm3 librpmbuild3 librpmio3 librpmsign1 librtmp0 libsigsegv2 libssh2-1 libterm-size-perl libtext-template-perl libxen-4.1 libxenstore3.0 qemu-keymaps
+  qemu-utils rinse rpm rpm-common rpm2cpio sharutils xen-hypervisor-4.1-amd64 xen-linux-system-3.2.0-4-amd64 xen-system-amd64 xen-utils-4.1 xen-utils-common xenstore-utils
+Paquetes sugeridos:
+  gawk-doc alien elfutils rpm-i18n xen-docs-4.1 reiserfsprogs xfsprogs cfengine2 btrfs-tools
+Paquetes recomendados:
+  xen-hypervisor-amd64 xen-hypervisor-i386 xen-hypervisor-i386-pae xen-utils xen-hypervisor-4.1
+Se instalarán los siguientes paquetes NUEVOS:
+  debootstrap gawk libaio1 libconfig-inifiles-perl libcurl3-gnutls libelf1 libexpect-perl libfile-slurp-perl libio-stty-perl libiscsi1 liblist-moreutils-perl liblua5.1-0
+  libnspr4 libnss3 librpm3 librpmbuild3 librpmio3 librpmsign1 librtmp0 libsigsegv2 libssh2-1 libterm-size-perl libtext-template-perl libxen-4.1 libxenstore3.0 qemu-keymaps
+  qemu-utils rinse rpm rpm-common rpm2cpio sharutils xen-hypervisor-4.1-amd64 xen-linux-system-3.2.0-4-amd64 xen-linux-system-amd64 xen-system-amd64 xen-tools xen-utils-4.1
+  xen-utils-common xenstore-utils
+0 actualizados, 40 se instalarán, 0 para eliminar y 0 no actualizados.
+Necesito descargar 14,6 MB de archivos.
+Se utilizarán 28,6 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar [S/n]? 
+
+
+root@merry:~# cd /etc/grub.d/
+root@merry:/etc/grub.d# ls -l
+total 52
+-rwxr-xr-x 1 root root 6728 abr 28  2013 00_header
+-rwxr-xr-x 1 root root 5407 abr 28  2013 05_debian_theme
+-rwxr-xr-x 1 root root 5977 abr 28  2013 10_linux
+-rwxr-xr-x 1 root root 6335 abr 28  2013 20_linux_xen
+-rwxr-xr-x 1 root root 6522 abr 28  2013 30_os-prober
+-rwxr-xr-x 1 root root  214 abr 28  2013 40_custom
+-rwxr-xr-x 1 root root   95 abr 28  2013 41_custom
+-rw-r--r-- 1 root root  483 abr 28  2013 README
+root@merry:/etc/grub.d# ln -s 20_linux_xen 09_linux_xen
+root@merry:/etc/grub.d# ls -l
+total 52
+-rwxr-xr-x 1 root root 6728 abr 28  2013 00_header
+-rwxr-xr-x 1 root root 5407 abr 28  2013 05_debian_theme
+lrwxrwxrwx 1 root root   12 oct 16 13:59 09_linux_xen -> 20_linux_xen
+-rwxr-xr-x 1 root root 5977 abr 28  2013 10_linux
+-rwxr-xr-x 1 root root 6335 abr 28  2013 20_linux_xen
+-rwxr-xr-x 1 root root 6522 abr 28  2013 30_os-prober
+-rwxr-xr-x 1 root root  214 abr 28  2013 40_custom
+-rwxr-xr-x 1 root root   95 abr 28  2013 41_custom
+-rw-r--r-- 1 root root  483 abr 28  2013 README
+root@merry:/etc/grub.d# 
+
+root@merry:~# update-grub
+Generating grub.cfg ...
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found linux image: /boot/vmlinuz-3.2.0-4-amd64
+Found initrd image: /boot/initrd.img-3.2.0-4-amd64
+Found Debian GNU/Linux (5.0.4) on /dev/sda1
+Found Debian GNU/Linux (5.0.4) on /dev/sda2
+done
+root@merry:~#
+
+
+Y reboot
+
+Comprobar con xm dmesg
+
+---------------
+Ahora configurar XEN:
+
+Modificar /etc/xen/xend-config.sxp descomentando y cambiando la opcion:
+
+(xend-http-server yes) linea 60
+(xend-address '') linea 106
+
+En la linea 170 insertar:
+
+(network-script 'network-bridge bridge=br0')
+
+Guardar, salir y reboot	
+
+------
+
+
+

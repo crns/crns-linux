@@ -1,0 +1,210 @@
+Configurar la Red (Instalando OpenVSwitch)
+
+Verificar:
+
+apt-cache search openvswitch
+
+root@fobos:~# apt-cache search openvswitch
+neutron-common - OpenStack virtual network service - common files
+neutron-plugin-openvswitch-agent - OpenStack virtual network service - Open vSwitch agent
+quantum-plugin-openvswitch - transitional dummy package for upgrading quantum-plugin-openvswitch
+quantum-plugin-openvswitch-agent - transitional dummy package for upgrading quantum-plugin-openvswitch-agent
+openstack-proxy-node - Metapackage to install an Openstack proxy node
+openvswitch-common - Open vSwitch common components
+openvswitch-dbg - Debug symbols for Open vSwitch packages
+openvswitch-ipsec - Open vSwitch GRE-over-IPsec support
+openvswitch-pki - Open vSwitch public key infrastructure dependency package
+openvswitch-switch - Open vSwitch switch implementations
+openvswitch-test - Open vSwitch test package
+openvswitch-vtep - Open vSwitch VTEP utilities
+python-openvswitch - Python bindings for Open vSwitch
+
+
+apt-get install python-openvswitch openvswitch-test openvswitch-switch
+
+root@fobos:~# apt-get install openvswitch-test openvswitch-switch python-openvswitch
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  libatomic1 openvswitch-common python-cffi python-characteristic python-cryptography python-openssl python-pam python-ply python-pyasn1
+  python-pyasn1-modules python-pycparser python-serial python-service-identity python-twisted-bin python-twisted-core python-twisted-web
+  python-zope.interface uuid-runtime
+Paquetes sugeridos:
+  python-dev python-cryptography-doc python-cryptography-vectors python-openssl-doc python-openssl-dbg python-ply-doc doc-base cpp python-wxgtk3.0
+  python-wxgtk python-twisted-bin-dbg python-tk python-gtk2 python-glade2 python-qt3
+Paquetes recomendados:
+  python-idna
+Se instalarán los siguientes paquetes NUEVOS:
+  libatomic1 openvswitch-common openvswitch-switch openvswitch-test python-cffi python-characteristic python-cryptography python-openssl
+  python-openvswitch python-pam python-ply python-pyasn1 python-pyasn1-modules python-pycparser python-serial python-service-identity
+  python-twisted-bin python-twisted-core python-twisted-web python-zope.interface uuid-runtime
+0 actualizados, 21 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 3.761 kB de archivos.
+Se utilizarán 20,5 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n]
+
+
+Chequeo final con:
+
+/etc/init.d/openvswitch-switch restart
+
+root@fobos:~# /etc/init.d/openvswitch-switch restart
+[ ok ] Restarting openvswitch-switch (via systemctl): openvswitch-switch.service.
+root@fobos:~# 
+
+Y comprobamos que todo esta ok:
+
+/etc/init.d/openvswitch-switch status
+
+root@fobos:~# /etc/init.d/openvswitch-switch restart
+[ ok ] Restarting openvswitch-switch (via systemctl): openvswitch-switch.service.
+root@fobos:~# /etc/init.d/openvswitch-switch status
+* openvswitch-switch.service - LSB: Open vSwitch switch
+   Loaded: loaded (/etc/init.d/openvswitch-switch)
+   Active: active (running) since Tue 2015-06-23 12:05:33 CLT; 35s ago
+  Process: 7246 ExecStop=/etc/init.d/openvswitch-switch stop (code=exited, status=0/SUCCESS)
+  Process: 7269 ExecStart=/etc/init.d/openvswitch-switch start (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/openvswitch-switch.service
+           |-7306 ovsdb-server: monitoring pid 7307 (healthy)
+           |-7307 ovsdb-server /etc/openvswitch/conf.db -vconsole:emer -vsyslog:err -vfile:info --remote=punix:/var/run/openvswitch/db.sock --priva...
+           |-7316 ovs-vswitchd: monitoring pid 7317 (healthy)
+           `-7317 ovs-vswitchd unix:/var/run/openvswitch/db.sock -vconsole:emer -vsyslog:err -vfile:info --mlockall --no-chdir --log-file=/var/log/...
+
+Jun 23 12:05:33 fobos openvswitch-switch[7269]: Starting ovsdb-server.
+Jun 23 12:05:33 fobos ovs-vsctl[7308]: ovs|00001|vsctl|INFO|Called as ovs-vsctl --no-wait -- init -- set Open_vSwitch . db-version=7.6.0
+Jun 23 12:05:33 fobos ovs-vsctl[7313]: ovs|00001|vsctl|INFO|Called as ovs-vsctl --no-wait set Open_vSwitch . ovs-version=2.3.0 "external-i...jessie\""
+Jun 23 12:05:33 fobos openvswitch-switch[7269]: Configuring Open vSwitch system IDs.
+Jun 23 12:05:33 fobos openvswitch-switch[7269]: Starting ovs-vswitchd.
+Jun 23 12:05:33 fobos openvswitch-switch[7269]: Enabling remote OVSDB managers.
+Hint: Some lines were ellipsized, use -l to show in full.
+root@fobos:~# 
+ 
+
+Presto!
+---------------------
+
+Agregamos una definición de bond:
+
+editar /etc/network/interfaces
+
+auto bond0
+allow-br0 bond0
+iface bond0 inet manual
+	ovs_bridge br0
+	ovs_type OVSBond
+   	ovs_bonds eth0 eth1
+   	ovs_options bond_mode=balance-tcp lacp=active
+   	bond-miimon 100
+
+auto eth0
+iface eth0 inet manual
+  	bond-master bond0
+
+auto eth1
+iface eth1 inet manual
+  	bond-master bond0
+
+auto br0
+allow-ovs br0
+iface br0 inet static
+   	address 192.168.10.180
+   	netmask 255.255.255.0
+   	ovs_type OVSBridge
+   	ovs_ports bond0
+	bridge-ports bond0
+
+La última linea permite que el bridge levante automáticamente sin problemas la configuración IP en el arranque todo OK. 
+
+Rebootear
+
+Comprobar Bonding
+
+root@fobos:~# cat /proc/net/bonding/bond0 
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+
+Bonding Mode: load balancing (round-robin)
+MII Status: up
+MII Polling Interval (ms): 0
+Up Delay (ms): 0
+Down Delay (ms): 0
+
+Slave Interface: eth0
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 9c:b6:54:b3:62:98
+Slave queue ID: 0
+
+Slave Interface: eth1
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 9c:b6:54:b3:62:99
+Slave queue ID: 0
+root@fobos:~# 
+
+
+-----
+Ahora activar el bridge para gestionarlo por OVS:
+
+ovs-vsctl show
+
+root@fobos:~# ovs-vsctl show
+01667874-3698-4092-89ec-1e5c2de03796
+    ovs_version: "2.3.0"
+root@fobos:~#
+
+root@fobos:~# ovs-vsctl add-br br0
+root@fobos:~# ovs-vsctl show
+01667874-3698-4092-89ec-1e5c2de03796
+    Bridge "br0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+    ovs_version: "2.3.0"
+root@fobos:~# 
+
+OK, ahora rebootear para asegurarse que todo arranca por default
+
+Luego de rebootear verificar OVS
+
+ovs-vsctl show
+
+root@fobos:~# ovs-vsctl show
+01667874-3698-4092-89ec-1e5c2de03796
+    Bridge "br0"
+        Port "bond0"
+            Interface "bond0"
+        Port "br0"
+            Interface "br0"
+                type: internal
+    ovs_version: "2.3.0"
+root@fobos:~# 
+
+Todo OK OVS, br0 y bond0
+
+Listar todas las interfaces:
+
+ip link list o ip link show
+
+root@fobos:~# ip l l
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc mq master bond0 state UP mode DEFAULT group default qlen 1000
+    link/ether 9c:b6:54:b3:62:98 brd ff:ff:ff:ff:ff:ff
+3: eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc mq master bond0 state UP mode DEFAULT group default qlen 1000
+    link/ether 9c:b6:54:b3:62:98 brd ff:ff:ff:ff:ff:ff
+4: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 state UP mode DEFAULT group default 
+    link/ether 9c:b6:54:b3:62:98 brd ff:ff:ff:ff:ff:ff
+5: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether 9c:b6:54:b3:62:98 brd ff:ff:ff:ff:ff:ff
+6: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default 
+    link/ether 4e:81:6b:72:dc:72 brd ff:ff:ff:ff:ff:ff
+root@fobos:~#
+
+Enjoy and happy hack!!
+
+
