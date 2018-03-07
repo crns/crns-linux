@@ -1,0 +1,72 @@
+Configurando cadenas
+
+Como en iptables, adjuntas tus reglas a las cadenas. Sin embargo, al contrario del modus operandi de iptables, la infraestructura de nftables no tiene cadenas predefinidas, por lo que debe registrar sus cadenas base en primer lugar antes de poder agregar una regla. Esto permite configuraciones muy flexibles.
+
+...
+
+% nft add table bridge filter
+% nft add chain bridge filter ingress { type filter hook ingres priority -200 \; }
+
+% nft add chain ip filter output { type filter hook output priority 0 \; }
+
+
+--------------
+##############
+
+table ip filter {
+        chain INPUT {
+                type filter hook input priority 0; policy accept;
+        }
+
+        chain FORWARD {
+                type filter hook forward priority 0; policy accept;
+                ip protocol tcp tcp dport 22 ct state new counter packets 0 bytes 0 accept
+        }
+
+        chain OUTPUT {
+                type filter hook output priority 0; policy accept;
+        }
+}
+table bridge filter {
+        chain INPUT {
+                type filter hook input priority -200; policy drop;
+        }
+
+        chain FORWARD {
+                type filter hook forward priority -200; policy drop;
+                ibriport "br0" ether type arp counter packets 1154 bytes 53084 accept
+                ibriport "br1" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br2" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br3" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br4" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br5" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br6" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br7" ether type arp counter packets 0 bytes 0 accept
+                ibriport "br0" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br1" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br2" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br3" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br4" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br5" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br6" ether type ip counter packets 0 bytes 0 accept
+                ibriport "br7" ether type ip counter packets 0 bytes 0 accept
+        }
+
+        chain OUTPUT {
+                type filter hook output priority -200; policy accept;
+        }
+}
+table inet filter {
+        chain input {
+                type filter hook input priority 0; policy accept;
+        }
+
+        chain forward {
+                type filter hook forward priority 0; policy accept;
+        }
+
+        chain output {
+                type filter hook output priority 0; policy accept;
+        }
+}
+
