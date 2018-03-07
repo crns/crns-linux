@@ -1,0 +1,95 @@
+https://www.nireleku.com/2012/07/comprobar-el-rendimiento-benchmark-de-un-sistema-en-linux/
+
+Comprobar el rendimiento (Benchmark) de un sistema en Linux
+28 julio, 2012 Joseba Garay Debian, Linux, Sistemas, Ubuntu	
+
+Habrá ocasiones en las que queramos comprobar el rendimiento de un PC o de una máquina virtual. En los repositorios podemos encontrar una poderosa aplicación que nos permite precisamente hacer esto. Su nombre es sysbench y podemos instalarla desde consola en sistemas debian – ubuntu linux con la siguiente orden:
+sudo apt-get install sysbench
+Test de CPU
+
+Para comprobar el rendimiento de la CPU basta con el siguiente comando:
+sysbench --test=cpu --cpu-max-prime=20000 run
+
+En este comando le indicamos que calcule 20000 números primos. Podemos indicarle un número mayor o menor para hacer más o menos precisa la prueba. El resultado del test nos muestra el tiempo que emplea en calcularlos.
+Test de ficheros
+
+En este test se comprueba el rendimiento de nuestro sistema de ficheros. Este test depende de 3 etapas. La primera preparamos los ficheros con los que haremos el test. Después haremos el test propiamente dicho. Y finalmente borraremos los ficheros de la prueba.
+
+Creamos los ficheros con:
+sysbench --test=fileio --file-total-size=100G prepare
+
+Ejecutamos el test:
+sysbench --test=fileio --file-total-size=100G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run
+
+Y finalmente borramos los ficheros:
+sysbench --test=fileio --file-total-size=100G cleanup
+
+En esta prueba el valor relevante es la velocidad de acceso indicado en KB/sec. Señalar que se usa un valor alto de 100Gb del disco para evitar el uso de la cache del sistema. Pero podemos usar otros valores que consideremos oportunos. El tiempo de ejecución de la prueba sería de 300 segundos aunque podemos cambiarlo por lo que consideremos.
+Test de BB.DD.
+
+Esta prueba me parece muy valiosa ya que pone a prueba la base de datos MySQL. Al igual que en la prueba del sistema de ficheros aquí requerimos de tres pasos. Primero la creación de la base de datos. Luego la prueba propiamente dicha. Y finalmente el borrado de la base de datos usada. Aquí deberemos aportar los datos de acceso a la base de datos, como usuario (en el ejemplo root) y su contraseña.
+
+Creamos la bb.dd.:
+sysbench --test=oltp --oltp-table-size=1000 --mysql-db=test --mysql-user=root --mysql-password=contrasena prepare
+
+Después nos disponemos a hacer la prueba con el comando:
+sysbench --test=oltp --oltp-table-size=1000 --mysql-db=test --mysql-user=root --mysql-password=contrasena --max-time=60 --oltp-read-only=on --max-requests=0 --num-threads=8 run
+
+Y borramos la base de datos con:
+sysbench --test=oltp --mysql-db=test --mysql-user=root --mysql-password=contrasena cleanup
+
+En esta prueba el valor relevante es el número de transacciones totales y cuantas realiza el servidor en un segundo.
+Conclusiones
+
+Con la aplicación podemos valorar el rendimiento de nuestro sistema o mejor, el de un servidor remoto, sea físico o virtualizado. Esta herramienta permite también probar otros componentes del sistema, pero estos, la cpu, disco y base de datos, creo son los más interesantes para un servidor de aplicaciones web.
+
+Debemos recordar que si el sistema que pretendemos poner a prueba esta en producción, con la carga de otras funciones los resultados no serán nada concluyentes.
+
+Disponemos de la documentación accesible en el manual del sistema mediante el cual podemos conocer la totalidad de opciones disponibles en la herramienta.
+man sysbench
+
+Los comandos mostrados han sido probados en un pequeño servidor virtual con Ubuntu Server 12.04.
+
+------------------------------------------
+http://www.dataprix.com/blogs/il-masacratore/mysql-pruebas-rendimiento-parametrizaci-n-usando-mysqlslap
+
+MySql: Pruebas de rendimiento y parametrización usando mysqlslap
+Submitted by il_masacratore on 11 November, 2010 - 12:05
+
+    administracion mysql parametrización Bases de datos 
+
+ 
+
+A MySql le acompaña mysqlslap (creo que a partir de 5.x), un ejecutable que permite hacer ejecuciones de scripts masivas para simular carga la carga de trabajo en el servidor generada por clientes mysql. Le podemos pasar un script de preparación y un script de consultas DML sobre el que medir tiempos. Con esto lo interesante también es que podemos obtener el tiempo mínimo, máximo y medio con distintas concurrencias.
+
+    Podemos empezar con un ejemplo básico con script de creación y de carga.
+    Editamos el fichero create.sql:
+    CREATE TABLE sub_name (sub_id INT NOT NULL PRIMARY KEY, name VARCHAR(30)) engine=ndb;
+    CREATE TABLE sub_age (sub_id INT NOT NULL PRIMARY KEY, age INT) engine=ndb;
+    INSERT INTO sub_name VALUES (1,'Bill'),(2,'Fred'),(3,'Bill'),(4,'Jane'),(5,'Andrew'),(6,'Anne'),
+    (7,'Juliette'),(8,'Awen'),(9,'Leo'),(10,'Bill');
+    INSERT INTO sub_age VALUES (1,40),(2,23),(3,33),(4,19),(5,21),(6,50),(7,31),(8,65),(9,18),
+    (10,101);
+    Después editamos el query.sql:
+    SELECT sub_age.age FROM sub_name, sub_age where sub_name.sub_id=sub_age.sub_id
+    AND sub_name.name='Bill' ORDER BY sub_age.age;
+
+    Finalmente probamos y vemos el resultado:
+    shell> mysqlslap --concurrency=5 --iterations=100 --query=query.sql --create=create.sql
+    Benchmark
+    Average number of seconds to run all queries: 0.132 seconds
+    Minimum number of seconds to run all queries: 0.037 seconds
+    Maximum number of seconds to run all queries: 0.268 seconds
+    Number of clients running queries: 5
+    Average number of queries per client: 1
+     
+    Si queremos simular carga con algo más complejo podemos crear una tabla temporal pero indefinida indicándole parámetros como número y tipos de campos, tipo de carga etc... Un ejemplo sería el siguiente:
+
+    shell>mysqlslap  --concurrency=1 --iterations=10 --number-int-cols=6 --number-char-cols=12 --auto-generate-sql --engine=innodb 
+        --auto-generate-sql-add-autoincrement --auto-generate-sql-load-type=mixed  --number-of-queries=10000  --user=root --password
+     
+    Hasta aquí es sencillo y bastante claro, solo falta pensar otros usos más complejos que se le pueden dar. Si pensamos en algo ambicioso podemos trabajar con las tablas y consultas de producción recogiendo las consultas DML que se ejecutan. Lo podremos usar para probar, mejorar procesos, SELECTs, optimizar INSERTs/UPDATEs, parámetros de la base de datos etc. Bastaría con:
+    -Conseguir un Snapshot de la base de datos de producción (estado inicial)
+    -Recuperar las querys que nos interesen del mysql.log y meterlas en un script(tratándolas si hace falta).
+    -Jugar con mysqlslap!!
+
