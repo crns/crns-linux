@@ -160,6 +160,8 @@ Enter configuration commands, one per line.  End with CNTL/Z.
 (config-if)#switchport trunk allowed vlan add 7
 (config-if)#end
 
+
+ref: https://supportforums.cisco.com/t5/network-infrastructure-documents/how-to-define-the-vlans-allowed-on-a-trunk-link/ta-p/3131083
 ---------
 Configurar Vlan por Port:
 
