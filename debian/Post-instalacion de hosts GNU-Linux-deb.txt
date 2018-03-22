@@ -348,7 +348,7 @@ El resultado debe ser 0 si la CPU soporta la instruccion rdran, entonces activar
 Editar /etc/sysctl.conf y agregar al final:
 
 # Agrega soporte intel rdrand para suministrar entropía por hardware.
-kernel.random.read_wakeup_threshold = 2048
+kernel.random.read_wakeup_threshold = 1024
 kernel.random.write_wakeup_threshold = 3072
 
 

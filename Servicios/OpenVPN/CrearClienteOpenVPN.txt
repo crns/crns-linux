@@ -1,3 +1,67 @@
+
+
+
+
+root@theoden:~/easy-rsa# ./build-key mcampos
+Generating a 4096 bit RSA private key
+.............................++
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................++
+writing new private key to 'mcampos.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [CL]:
+State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [Santiago]:
+Organization Name (eg, company) [CAS-CHILE]:
+Organizational Unit Name (eg, section) [InfraestructuraTi]:
+Common Name (eg, your name or your server's hostname) [mcampos]:
+Name [EasyRSA]:
+Email Address [infraestructura.ti@caschile.cl]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+Using configuration from /root/easy-rsa/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CL'
+stateOrProvinceName   :PRINTABLE:'SANTIAGO'
+localityName          :PRINTABLE:'Santiago'
+organizationName      :PRINTABLE:'CAS-CHILE'
+organizationalUnitName:PRINTABLE:'InfraestructuraTi'
+commonName            :PRINTABLE:'mcampos'
+name                  :PRINTABLE:'EasyRSA'
+emailAddress          :IA5STRING:'infraestructura.ti@caschile.cl'
+Certificate is to be certified until Mar 11 21:37:51 2028 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+~/easy-rsa#
+
+
+
+Verificar certificado creado:
+
+~/easy-rsa# openssl verify -CAfile /root/easy-rsa/keys/ca.crt /root/easy-rsa/keys/mcampos.crt 
+/root/easy-rsa/keys/mcampos.crt: OK
+~/easy-rsa#
+
+
+
+
+##########################
+
 Logearse como root:
 
 root@reverse:~# cd easy-rsa/

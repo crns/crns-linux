@@ -149,7 +149,16 @@ Establecer modo Trunk para permitir Vlan's en la Agregacion:
 # interface Port-channel1
 # switchport mode trunk
 
+Especificar vlan en catalyst y smallBussines (ejemplo):
 
+#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+(config)#int Port-channel3
+(config-if)#switchport trunk encapsulation dot1q
+(config-if)#switchport mode trunk
+(config-if)#switchport trunk allowed vlan remove 5-10,12
+(config-if)#switchport trunk allowed vlan add 7
+(config-if)#end
 
 ---------
 Configurar Vlan por Port:

@@ -1,0 +1,130 @@
+log en theoden.
+
+rrebolledo
+mherbage
+
+# Usuarios definitivos
+ndrouilly
+vsilva
+gvidal
+cmolina
+dalvarez
+
+root@theoden:~# cd easy-rsa
+root@theoden:~/easy-rsa#
+
+
+root@theoden:~/easy-rsa# source ./vars
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+root@theoden:~/easy-rsa#
+
+
+root@theoden:~/easy-rsa# ./build-key rrebolledo 
+Generating a 4096 bit RSA private key
+.................
+.....++
+.........................................++
+writing new private key to 'rrebolledo.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [CL]:State or Province Name (full name) [SANTIAGO]:
+Locality Name (eg, city) [Santiago]:
+Organization Name (eg, company) [CAS-CHILE]:
+Organizational Unit Name (eg, section) [InfraestructuraTi]:
+Common Name (eg, your name or your server's hostname) [rrebolledo]:
+Name [EasyRSA]:
+Email Address [infraestructura.ti@caschile.cl]:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+Using configuration from /root/easy-rsa/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CL'
+stateOrProvinceName   :PRINTABLE:'SANTIAGO'
+localityName          :PRINTABLE:'Santiago'
+organizationName      :PRINTABLE:'CAS-CHILE'
+organizationalUnitName:PRINTABLE:'InfraestructuraTi'
+commonName            :PRINTABLE:'rrebolledo'
+name                  :PRINTABLE:'EasyRSA'
+emailAddress          :IA5STRING:'infraestructura.ti@caschile.cl'
+Certificate is to be certified until Mar 16 18:18:59 2028 GMT (3650 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+root@theoden:~/easy-rsa# 
+
+
+
+
+root@theoden:~/easy-rsa# mkdir ~/rrebolledo
+root@theoden:~/easy-rsa#
+
+root@theoden:~/easy-rsa# cp -pv ~/easy-rsa/keys/rrebolledo.{crt,key} ~/rrebolledo
+'/root/easy-rsa/keys/rrebolledo.crt' -> '/root/rrebolledo/rrebolledo.crt'
+'/root/easy-rsa/keys/rrebolledo.key' -> '/root/rrebolledo/rrebolledo.key'
+root@theoden:~/easy-rsa# 
+
+
+root@theoden:~/easy-rsa# cp -pvr ~/base-certs-cliente/* ~/rrebolledo/
+'/root/base-certs-cliente/ca.crt' -> '/root/rrebolledo/ca.crt'
+'/root/base-certs-cliente/client.ovpn' -> '/root/rrebolledo/client.ovpn'
+'/root/base-certs-cliente/ta.key' -> '/root/rrebolledo/ta.key'
+'/root/base-certs-cliente/win-client' -> '/root/rrebolledo/win-client'
+'/root/base-certs-cliente/win-client/openvpn-install-2.4.5-I601.exe' -> '/root/rrebolledo/win-client/openvpn-install-2.4.5-I601.exe'
+root@theoden:~/easy-rsa# 
+
+
+root@theoden:~/easy-rsa# cd ..
+root@theoden:~#
+
+nano rrebolledo/client.ovpn
+
+#
+cert certificado.crt
+key certificado.key
+#
+
+
+cambiar a 
+
+#
+cert rrebolledo.crt
+key rrebolledo.key
+#
+
+Comprimir:
+
+root@theoden:~# zip -r rrebolledo.zip rrebolledo 
+  adding: rrebolledo/ (stored 0%)
+  adding: rrebolledo/ta.key (deflated 40%)
+  adding: rrebolledo/rrebolledo.key (deflated 24%)
+  adding: rrebolledo/ca.crt (deflated 34%)
+  adding: rrebolledo/win-client/ (stored 0%)
+  adding: rrebolledo/win-client/openvpn-install-2.4.5-I601.exe (deflated 1%)
+  adding: rrebolledo/client.ovpn (deflated 28%)
+  adding: rrebolledo/rrebolledo.crt (deflated 46%)
+root@theoden:~#
+
+
+
+Distibuir rrebolledo.zip
+
+
+
+
+
+
+
