@@ -149,7 +149,8 @@ Establecer modo Trunk para permitir Vlan's en la Agregacion:
 # interface Port-channel1
 # switchport mode trunk
 
-Especificar vlan en catalyst y smallBussines (ejemplo):
+
+Especificar vlan entre Catalyst 2960-X y SG200-26 26-Port Gigabit Smart Switch (ejemplo):
 
 #configure terminal
 Enter configuration commands, one per line.  End with CNTL/Z.
@@ -163,6 +164,7 @@ Enter configuration commands, one per line.  End with CNTL/Z.
 
 ref: https://supportforums.cisco.com/t5/network-infrastructure-documents/how-to-define-the-vlans-allowed-on-a-trunk-link/ta-p/3131083
 ---------
+
 Configurar Vlan por Port:
 
 interface GigabitEthernet 0/1
