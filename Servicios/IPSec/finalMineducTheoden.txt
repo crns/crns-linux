@@ -1,0 +1,264 @@
+
+Conexion Strongswan con Cisco
+
+cat /etc/ipsec.d/mineduc.conf
+
+#
+# Conexion a MINEDUC 
+# Por crns
+#
+
+conn mineduc
+        #
+        # Opciones
+        #
+        type=tunnel
+        aggressive=no
+        compress=no
+        ###auto=add
+        auto=start
+        #
+        # Fase 1.
+        #
+        ikelifetime=24h
+        authby=secret
+        keyexchange=ikev1
+        ike=3des-sha1-modp1024!
+        #
+        # Fase 2.
+        #
+        keylife=60m
+        esp=3des-sha1-modp1024!
+        #
+        # Remoto.
+        #
+        ###rightid=@electrolux.mineduc.cl
+        right=163.247.44.102
+        rightsubnet=10.104.104.0/24,10.113.104.0/24,10.113.24.0/24,10.213.109.0/24,10.100.106.132/32
+        #
+        # Local.
+        #
+        ###leftid=@theoden.caschile.cl
+
+
+
+ipsec.secrets
+
+#
+#mineduc
+#
+190.153.214.146 163.247.44.102 : PSK "P&r2h75x"
+
+
+
+
+root@theoden:~# cat /etc/rc.local 
+
+
+#
+# POLITICA IPSec para red MINEDUC
+#
+/sbin/iptables -t nat -I POSTROUTING -s 192.168.7.0/24 -d 10.104.104.0/24 -m policy --pol ipsec --dir out -j ACCEPT
+/sbin/iptables -t nat -I POSTROUTING -s 192.168.7.0/24 -d 10.113.104.0/24 -m policy --pol ipsec --dir out -j ACCEPT
+/sbin/iptables -t nat -I POSTROUTING -s 192.168.7.0/24 -d 10.113.24.0/24 -m policy --pol ipsec --dir out -j ACCEPT
+/sbin/iptables -t nat -I POSTROUTING -s 192.168.7.0/24 -d 10.213.109.0/24 -m policy --pol ipsec --dir out -j ACCEPT
+/sbin/iptables -t nat -I POSTROUTING -s 192.168.7.0/24 -d 10.100.106.132/32 -m policy --pol ipsec --dir out -j ACCEPT
+
+/sbin/iptables -I FORWARD -d 192.168.7.0/24 -s 10.104.104.0/24 -m policy --pol ipsec --dir in -j ACCEPT
+/sbin/iptables -I FORWARD -d 192.168.7.0/24 -s 10.113.104.0/24 -m policy --pol ipsec --dir in -j ACCEPT
+/sbin/iptables -I FORWARD -d 192.168.7.0/24 -s 10.113.24.0/24 -m policy --pol ipsec --dir in -j ACCEPT
+/sbin/iptables -I FORWARD -d 192.168.7.0/24 -s 10.213.109.0/24 -m policy --pol ipsec --dir in -j ACCEPT
+/sbin/iptables -I FORWARD -d 192.168.7.0/24 -s 10.100.106.132/32 -m policy --pol ipsec --dir in -j ACCEPT
+
+
+exit 0
+
+
+
+-------------------------------
+
+~# ipsec statusall
+Status of IKE charon daemon (strongSwan 5.5.1, Linux 4.9.0-5-amd64, x86_64):
+  uptime: 4 days, since Apr 05 16:01:38 2018
+  malloc: sbrk 2572288, mmap 0, used 479392, free 2092896
+  worker threads: 11 of 16 idle, 5/0/0/0 working, job queue: 0/0/0/0, scheduled: 35
+  loaded plugins: charon aes rc2 sha2 sha1 md5 random nonce x509 revocation constraints pubkey pkcs1 pkcs7 pkcs8 pkcs12 pgp dnskey sshkey pem openssl fips-prf gmp agent xcbc hmac gcm attr kernel-netlink resolve socket-default connmark stroke updown
+Listening IP addresses:
+  192.168.7.172
+  192.168.22.1
+  190.153.214.146
+  10.10.0.1
+  10.9.0.1
+Connections:
+     mineduc:  190.153.214.146...163.247.44.102  IKEv1
+     mineduc:   local:  [190.153.214.146] uses pre-shared key authentication
+     mineduc:   remote: [163.247.44.102] uses pre-shared key authentication
+     mineduc:   child:  192.168.7.0/24 === 10.104.104.0/24 10.113.104.0/24 10.113.24.0/24 10.213.109.0/24 10.100.106.132/32 TUNNEL
+     subdere:  190.153.214.146...190.98.247.22  IKEv1/2
+     subdere:   local:  [190.153.214.146] uses pre-shared key authentication
+     subdere:   remote: [190.98.247.22] uses pre-shared key authentication
+     subdere:   child:  192.168.7.0/24 === 10.111.72.0/27 TUNNEL
+Security Associations (2 up, 0 connecting):
+     mineduc[141]: ESTABLISHED 95 minutes ago, 190.153.214.146[190.153.214.146]...163.247.44.102[163.247.44.102]
+     mineduc[141]: IKEv1 SPIs: 78fffa803f4d8dd5_i d76c81fbb2f9e06a_r*, pre-shared key reauthentication in 22 hours
+     mineduc[141]: IKE proposal: 3DES_CBC/HMAC_SHA1_96/PRF_HMAC_SHA1/MODP_1024
+     mineduc{278}:  INSTALLED, TUNNEL, reqid 73, ESP SPIs: cd01f0d6_i dabf9437_o
+     mineduc{278}:  3DES_CBC/HMAC_SHA1_96/MODP_1024, 284287 bytes_i (3604 pkts, 32s ago), 13866105 bytes_o (10003 pkts, 32s ago), rekeying in 15 minutes
+     mineduc{278}:   192.168.7.0/24 === 10.113.24.0/24
+     subdere[137]: ESTABLISHED 3 hours ago, 190.153.214.146[190.153.214.146]...190.98.247.22[190.98.247.22]
+     subdere[137]: IKEv1 SPIs: 6a8f36db558eeb96_i* c1c7051b2257c130_r, pre-shared key reauthentication in 4 hours
+     subdere[137]: IKE proposal: 3DES_CBC/HMAC_SHA1_96/PRF_HMAC_SHA1/MODP_1024
+     subdere{276}:  REKEYED, TUNNEL, reqid 5, expires in 14 minutes
+     subdere{276}:   192.168.7.0/24 === 10.111.72.0/27
+     subdere{280}:  INSTALLED, TUNNEL, reqid 5, ESP SPIs: c535b366_i 3c5c719a_o
+     subdere{280}:  3DES_CBC/HMAC_SHA1_96/MODP_1024, 423 bytes_i (3 pkts, 45s ago), 120 bytes_o (3 pkts, 45s ago), rekeying in 39 minutes
+     subdere{280}:   192.168.7.0/24 === 10.111.72.0/27
+root@theoden:~# 
+
+
+~# tail -f /var/log/auth.log
+Apr 10 10:17:01 theoden CRON[3876]: pam_unix(cron:session): session closed for user root
+Apr 10 10:20:02 theoden charon: 15[IKE] closing CHILD_SA mineduc{274} with SPIs cd86c045_i (322508 bytes) 412b6585_o (2841246 bytes) and TS 192.168.7.0/24 === 10.113.24.0/24
+Apr 10 10:20:40 theoden charon: 08[IKE] CHILD_SA mineduc{278} established with SPIs cd01f0d6_i dabf9437_o and TS 192.168.7.0/24 === 10.113.24.0/24
+Apr 10 10:21:25 theoden sshd[5704]: refused connect from 84.243.227.106 (84.243.227.106)
+Apr 10 10:22:02 theoden charon: 09[IKE] closing CHILD_SA mineduc{277} with SPIs c04aa1d6_i (10033 bytes) f7299ffb_o (187770 bytes) and TS 192.168.7.0/24 === 10.104.104.0/24
+Apr 10 10:34:01 theoden charon: 04[IKE] CHILD_SA mineduc{279} established with SPIs c182f624_i 05824eda_o and TS 192.168.7.0/24 === 10.104.104.0/24
+Apr 10 10:38:13 theoden sshd[12688]: refused connect from 218.156.85.17 (218.156.85.17)
+Apr 10 10:41:15 theoden sshd[13944]: refused connect from 79.3.109.1 (79.3.109.1)
+Apr 10 10:42:02 theoden charon: 08[IKE] closing CHILD_SA mineduc{279} with SPIs c182f624_i (17784 bytes) 05824eda_o (133440 bytes) and TS 192.168.7.0/24 === 10.104.104.0/24
+Apr 10 10:44:23 theoden charon: 12[IKE] CHILD_SA subdere{280} established with SPIs c535b366_i 3c5c719a_o and TS 192.168.7.0/24 === 10.111.72.0/27
+
+
+~# ip r s t 220
+10.111.72.0/27 via 190.153.214.145 dev vlan102 proto static src 192.168.7.172 
+10.113.24.0/24 via 190.153.214.145 dev vlan102 proto static src 192.168.7.172 
+root@theoden:~# 
+
+
+
+~# ip xfrm state
+src 190.153.214.146 dst 190.98.247.22
+	proto esp spi 0x3c5c719a reqid 5 mode tunnel
+	replay-window 0 flag af-unspec
+	auth-trunc hmac(sha1) 0xebb9197db7b9a711d06a6b6f42de991546703afb 96
+	enc cbc(des3_ede) 0x6d90a0084a972c602fbf88bd78c7effb33a9f5b8b4ca7851
+	anti-replay context: seq 0x0, oseq 0x304, bitmap 0x00000000
+src 190.98.247.22 dst 190.153.214.146
+	proto esp spi 0xc535b366 reqid 5 mode tunnel
+	replay-window 32 flag af-unspec
+	auth-trunc hmac(sha1) 0xe412b43bc66f4d72d9d8c9663780da1509451206 96
+	enc cbc(des3_ede) 0x52788f0f10a77a5495c24a15b254e82b44ac10406e3e6d5e
+	anti-replay context: seq 0x220, oseq 0x0, bitmap 0xffffffff
+src 190.153.214.146 dst 163.247.44.102
+	proto esp spi 0xdabf9437 reqid 73 mode tunnel
+	replay-window 0 flag af-unspec
+	auth-trunc hmac(sha1) 0xa1cb3e9c334c7af6d8cba221ac330b6cd71d97f5 96
+	enc cbc(des3_ede) 0x19452d5cde7322ffcd3eaeb5f2448c0cae2e37e4e5670e9f
+	anti-replay context: seq 0x0, oseq 0x2e55, bitmap 0x00000000
+src 163.247.44.102 dst 190.153.214.146
+	proto esp spi 0xcd01f0d6 reqid 73 mode tunnel
+	replay-window 32 flag af-unspec
+	auth-trunc hmac(sha1) 0xb4bcf1c07cca8c4afd92467febf1f2598b7cfd6b 96
+	enc cbc(des3_ede) 0xfea77182b68adf1924c88d4b7f2fb197a86fba04f2166dfb
+	anti-replay context: seq 0x129a, oseq 0x0, bitmap 0xffffffff
+src 190.153.214.146 dst 190.98.247.22
+	proto esp spi 0x3c5c716f reqid 5 mode tunnel
+	replay-window 0 flag af-unspec
+	auth-trunc hmac(sha1) 0x762c238dca60356a45f5ddad90774cd989edb86d 96
+	enc cbc(des3_ede) 0xede764bd0f3f2dfbc01136ae23ef1b1213ad6639273cd26b
+	anti-replay context: seq 0x0, oseq 0x14a4, bitmap 0x00000000
+src 190.98.247.22 dst 190.153.214.146
+	proto esp spi 0xc3004d89 reqid 5 mode tunnel
+	replay-window 32 flag af-unspec
+	auth-trunc hmac(sha1) 0x68d723f55aa65f5f6bebb3eea32cf13f7b1fa3af 96
+	enc cbc(des3_ede) 0xf433ab63f81cebf4d8e74f920f2dc6af0d26f69821b0d628
+	anti-replay context: seq 0x131e, oseq 0x0, bitmap 0xffffffff
+root@theoden:~# 
+
+
+
+
+~# ip xfrm policy
+src 10.111.72.0/27 dst 192.168.7.0/24 
+	dir fwd priority 186944 ptype main 
+	tmpl src 190.98.247.22 dst 190.153.214.146
+		proto esp reqid 5 mode tunnel
+src 10.111.72.0/27 dst 192.168.7.0/24 
+	dir in priority 186944 ptype main 
+	tmpl src 190.98.247.22 dst 190.153.214.146
+		proto esp reqid 5 mode tunnel
+src 192.168.7.0/24 dst 10.111.72.0/27 
+	dir out priority 186944 ptype main 
+	tmpl src 190.153.214.146 dst 190.98.247.22
+		proto esp reqid 5 mode tunnel
+src 10.113.24.0/24 dst 192.168.7.0/24 
+	dir fwd priority 187712 ptype main 
+	tmpl src 163.247.44.102 dst 190.153.214.146
+		proto esp reqid 73 mode tunnel
+src 10.113.24.0/24 dst 192.168.7.0/24 
+	dir in priority 187712 ptype main 
+	tmpl src 163.247.44.102 dst 190.153.214.146
+		proto esp reqid 73 mode tunnel
+src 192.168.7.0/24 dst 10.113.24.0/24 
+	dir out priority 187712 ptype main 
+	tmpl src 190.153.214.146 dst 163.247.44.102
+		proto esp reqid 73 mode tunnel
+src 0.0.0.0/0 dst 0.0.0.0/0 
+	socket in priority 0 ptype main 
+src 0.0.0.0/0 dst 0.0.0.0/0 
+	socket out priority 0 ptype main 
+src 0.0.0.0/0 dst 0.0.0.0/0 
+	socket in priority 0 ptype main 
+src 0.0.0.0/0 dst 0.0.0.0/0 
+	socket out priority 0 ptype main 
+src ::/0 dst ::/0 
+	socket in priority 0 ptype main 
+src ::/0 dst ::/0 
+	socket out priority 0 ptype main 
+src ::/0 dst ::/0 
+	socket in priority 0 ptype main 
+src ::/0 dst ::/0 
+	socket out priority 0 ptype main 
+root@theoden:~# 
+
+
+
+
+
+~# cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet static
+	address 192.168.7.172
+	netmask 255.255.255.0
+	###gateway 192.168.7.131
+	broadcast 192.168.7.255
+	# post-up  ethtool -K eth0 tx off
+
+auto vlan102
+iface vlan102 inet static
+	address 190.153.214.146/29
+	gateway 190.153.214.145
+	vlan-raw-device eth1
+root@theoden:~# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

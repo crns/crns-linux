@@ -1,0 +1,278 @@
+ref: https://opensource.com/article/18/3/manage-workstation-ansible
+
+Cómo administrar la configuración de su estación de trabajo con Ansible
+
+En el primer artículo de esta serie, aprende los conceptos básicos de la configuración de la administración de configuraciones para tus computadoras portátiles y de escritorio.
+
+La administración de la configuración es un aspecto muy importante tanto de la administración del servidor como de DevOps. La metodología de "infraestructura como código" facilita la implementación de servidores en diversas configuraciones y escala de forma dinámica los recursos de una organización para mantenerse al día con las demandas de los usuarios. Pero se presta menos atención a los administradores individuales que desean automatizar la configuración de sus propios equipos portátiles y de escritorio (estaciones de trabajo).
+
+En esta serie, le mostraré cómo automatizar la configuración de su estación de trabajo a través de Ansible, lo que le permitirá restaurar fácilmente toda su configuración si desea o necesita recargar su máquina. Además, si tiene varias estaciones de trabajo, puede usar este mismo enfoque para hacer que la configuración sea idéntica en cada una. En este primer artículo, configuraremos la administración de configuración básica para nuestras computadoras personales o de trabajo y estableceremos las bases para el resto de la serie. Al final de este artículo, tendrá una configuración de trabajo para beneficiarse de inmediato. Cada artículo automatizará más cosas y crecerá en complejidad.
+
+Por qué Ansible?
+
+Se encuentran disponibles muchas soluciones de administración de configuración, incluidas Salt Stack, Chef y Puppet. Prefiero Ansible porque es más ligero en términos de utilización de recursos, su sintaxis es más fácil de leer, y cuando se aprovecha adecuadamente puede revolucionar la administración de la configuración. La naturaleza liviana de Ansible es especialmente relevante para el tema en cuestión, ya que es posible que no deseemos ejecutar un servidor completo solo para automatizar la configuración de nuestras computadoras portátiles y de escritorio. Idealmente, queremos algo rápido; algo que podemos usar para ponernos en funcionamiento rápidamente deberíamos restaurar nuestras estaciones de trabajo o sincronizar nuestra configuración entre varias máquinas. Mi método específico para Ansible (que demostraré en este artículo) es perfecto para esto; no hay servidor que mantener. Usted acaba de descargar su configuración y ejecutarla.
+
+Mi acercamiento
+
+Por lo general, Ansible se ejecuta desde un servidor central. Utiliza un archivo de inventario, que es un archivo de texto que contiene una lista de todos los hosts y sus direcciones IP o nombres de dominio que queremos que administre Ansible. Esto es ideal para entornos estáticos, pero no es ideal para estaciones de trabajo. La razón es que realmente no sabemos cuál será el estado de nuestras estaciones de trabajo en un momento dado. Tal vez apagué mi computadora de escritorio o mi laptop puede ser suspendida y guardada en mi bolso. En cualquier caso, el servidor de Ansible se quejaría, ya que no puede acceder a mis máquinas si no están en línea. Necesitamos algo que sea más un enfoque bajo demanda, y la forma en que lograremos eso es mediante el uso de ansible-pull. El comando ansible-pull, que es parte de Ansible, le permite descargar su configuración de un repositorio de Git y aplicarla inmediatamente. No necesitará mantener un servidor o una lista de inventario; simplemente ejecuta el comando ansible-pull, le da un URL de repositorio de Git y hará el resto por usted.
+
+Empezando
+
+Primero, instale Ansible en la computadora que desea que administre. Un problema es que muchas distribuciones se envían con una versión anterior. Puedo decirte por experiencia que definitivamente querrás la última versión disponible. Las nuevas características se introducen en Ansible con bastante frecuencia, y si está ejecutando una versión anterior, es posible que la sintaxis de ejemplo que encuentre en línea no sea funcional porque está utilizando funciones que no están implementadas en la versión que ha instalado. Incluso los lanzamientos puntuales tienen bastantes nuevas características. Un ejemplo de esto es el módulo dconf, que es nuevo para Ansible a partir de 2.4. Si intenta utilizar la sintaxis que hace uso de este módulo, a menos que tenga 2.4 o más reciente, fallará. En Ubuntu y sus derivados, podemos instalar fácilmente la última versión de Ansible con el archivo oficial de paquetes personales (PPA). Los siguientes comandos harán el truco:
+
+sudo apt-get install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt-get update
+sudo apt-get install ansible
+
+Si no está utilizando Ubuntu, consulte la documentación de Ansible sobre cómo obtenerlo para su plataforma (http://docs.ansible.com/ansible/latest/intro_installation.html).
+
+A continuación, necesitaremos un repositorio de Git para mantener nuestra configuración. La manera más fácil de satisfacer este requisito es crear un repositorio vacío en GitHub, o puede utilizar su propio servidor Git si tiene uno. Para simplificar, supongo que estás usando GitHub, así que ajusta los comandos si estás usando algo más. Crea un repositorio en GitHub; terminarás con un URL de repositorio que será similar a esto:
+
+git@github.com:<your_user_name>/ansible.git
+
+Clona ese repositorio en tu directorio de trabajo local (ignora cualquier mensaje que se queje de que el repositorio está vacío):
+
+git clone git@github.com:<your_user_name>/ansible.git
+
+Ahora tenemos un repositorio vacío con el que podemos trabajar. Cambia tu directorio de trabajo para que esté dentro del repositorio (cd. / Visible por ejemplo) y crea un archivo llamado local.yml en tu editor de texto favorito. Coloque la siguiente configuración en ese archivo:
+
+- hosts: localhost
+  become: true
+  tasks:
+  - name: Install htop
+    apt: name=htop
+
+
+El archivo que acaba de crear se conoce como playbook, y las instrucciones para instalar htop (un paquete que escogí arbitrariamente para servir como ejemplo) se conocen como play. El libro de jugadas en sí es un archivo en formato YAML, que es un lenguaje de marcado fácil de leer. Un recorrido completo de YAML va más allá del alcance de este artículo, pero no es necesario que tenga un conocimiento experto de él para ser competente con Ansible. La configuración es fácil de leer; simplemente mirando este archivo, puede ver fácilmente que estamos instalando el paquete htop. Preste especial atención al módulo apt en la última línea, que solo funcionará en sistemas basados ​​en Debian. Puedes cambiar esto a yum en lugar de apt si estás usando una plataforma Red Hat o cambiarla a dnf si estás usando Fedora. La línea de nombre simplemente brinda información sobre nuestra tarea y se mostrará en el resultado. Por lo tanto, querrá asegurarse de que el nombre sea descriptivo, por lo que es fácil de encontrar si necesita solucionar problemas de varias reproducciones.
+
+A continuación, comprometamos nuestro nuevo archivo a nuestro repositorio:
+
+git add local.yml
+git commit -m "initial commit"
+git push origin master
+
+Ahora nuestro nuevo libro de jugadas debería estar presente en nuestro repositorio en GitHub. Podemos aplicar el libro de jugadas que creamos con el siguiente comando:
+
+sudo ansible-pull -U https://github.com/<your_user_name>/ansible.git
+
+Si se ejecuta correctamente, el paquete htop debe estar instalado en su sistema. Es posible que haya visto algunas advertencias al principio que se quejan de la falta de un archivo de inventario. Esto está bien, ya que no estamos usando un archivo de inventario (ni lo necesitamos para este uso). Al final de la salida, le dará una visión general de lo que hizo. Si htop se instaló correctamente, debería ver changed = 1 en la última línea de la salida.
+
+¿Cómo funcionó esto? El comando ansible-pull usa la opción -U, que espera una URL de repositorio. Le di la versión https de la URL del repositorio por motivos de seguridad porque no quiero que ningún servidor tenga acceso de escritura al repositorio (https es de solo lectura por defecto). Se asume el nombre del libro de jugadas local.yml, por lo que no necesitamos proporcionar un nombre de archivo para el libro de jugadas: ejecutará automáticamente un libro de jugadas denominado local.yml si lo encuentra en la raíz del repositorio. A continuación, usamos sudo en frente del comando ya que estamos modificando el sistema.
+
+Avancemos y agreguemos paquetes adicionales a nuestro libro de jugadas. Agregaré dos paquetes adicionales para que se vea así:
+
+- hosts: localhost
+  become: true
+  tasks:
+  - name: Install htop
+    apt: name=htop
+
+  - name: Install mc
+    apt: name=mc
+   
+  - name: Install tmux
+    apt: name=tmux
+
+
+Agregué juegos adicionales (tareas) para instalar otros dos paquetes, mc y tmux. No importa qué paquetes elijas para instalar este libro de jugadas; Acabo de elegir estos arbitrariamente. Debe instalar los paquetes que desee que tengan todos sus sistemas. La única advertencia es que debe saber que los paquetes existen en el repositorio para su distribución con anticipación.
+
+Antes de comprometer y aplicar este libro de jugadas actualizado, debemos limpiarlo. Funcionará bien tal como es, pero (para ser honesto) se ve un poco desordenado. Intentemos instalar los tres paquetes en una sola jugada. Reemplace el contenido de su local.yml con esto:
+
+- hosts: localhost
+  become: true
+  tasks:
+  - name: Install packages
+    apt: name={{item}}
+    with_items:
+      - htop
+      - mc
+      - tmux
+
+Ahora que se ve más limpio y más eficiente. Usamos with_items para consolidar nuestra lista de paquetes en una sola jugada. Si queremos agregar paquetes adicionales, simplemente agregamos otra línea con un guión y un nombre de paquete. Considera que with_items es similar a un bucle for. Todos los paquetes que enumeramos serán instalados.
+
+Confirmar nuestros nuevos cambios al repositorio:
+
+git add local.yml
+git commit -m "added additional packages, cleaned up formatting"
+git push origin master
+
+Ahora podemos ejecutar nuestro libro de jugadas para beneficiarnos de la nueva configuración:
+
+sudo ansible-pull -U https://github.com/<your_user_name>/ansible.git
+
+Es cierto que este ejemplo no hace mucho todavía; todo lo que hace es instalar algunos paquetes. Podrías haber instalado estos paquetes mucho más rápido simplemente usando tu administrador de paquetes. Sin embargo, a medida que esta serie continúe, estos ejemplos se volverán más complejos y automatizaremos más cosas. Al final, la configuración de Ansible que creará automatizará más y más tareas. Por ejemplo, el que yo uso automatiza la instalación de cientos de paquetes, configura trabajos cron, maneja la configuración del escritorio, y más.
+
+Por lo que hemos logrado hasta ahora, probablemente ya puedas ver el panorama general. Todo lo que teníamos que hacer era crear un repositorio, poner un libro de jugadas en ese repositorio, luego utilizar el comando ansible-pull para desplegar ese repositorio y aplicarlo a nuestra máquina. No necesitamos configurar un servidor. En el futuro, si queremos cambiar nuestra configuración, podemos desplegar el repositorio, actualizarlo, luego volver a enviarlo a nuestro repositorio y aplicarlo. Si estamos configurando una máquina nueva, solo necesitamos instalar Ansible y aplicar la configuración.
+
+En el próximo artículo, automatizaremos esto aún más a través de cron y algunos elementos adicionales. Mientras tanto, he copiado el código de este artículo en mi repositorio de GitHub para que pueda verificar su sintaxis contra la mía (https://github.com/jlacroix82/ansible_article). Actualizaré el código a medida que avanzamos.
+
+
+---------------
+
+ref: https://opensource.com/article/18/3/manage-your-workstation-configuration-ansible-part-2?utm_medium=Email&utm_campaign=weekly&sc_cid=701f2000000ZyfhAAC
+
+Administre su estación de trabajo con Ansible: configuración automática
+
+Aprenda cómo hacer que Ansible aplique automáticamente cambios de configuración a una flota de computadoras portátiles y de escritorio.
+
+Ansible es una sorprendente herramienta de automatización y gestión de la configuración. Se utiliza principalmente para servidores e implementaciones en la nube, y recibe mucha menos atención para su uso en estaciones de trabajo, tanto computadoras de escritorio como portátiles, que es el enfoque de esta serie.
+
+En la primera parte de esta serie, le mostré el uso básico del comando ansible-pull, y creamos un libro de jugadas que instala un puñado de paquetes. Eso no fue extremadamente útil en sí mismo, pero preparó el escenario para una mayor automatización.
+
+En este artículo, todo se cierra en un círculo completo, y para el final tendremos una solución completamente funcional para automatizar la configuración de la estación de trabajo. Esta vez, configuraremos nuestra configuración de Ansible para que los cambios futuros que hagamos se apliquen automáticamente a nuestras estaciones de trabajo. En este punto, supongo que ya trabajó en la primera parte. Si no lo has hecho, siéntete libre de hacer eso de vez en cuando y regresa a este artículo cuando hayas terminado. Ya debe tener un repositorio de GitHub con el código del primer artículo dentro de él. Vamos a construir directamente sobre lo que hicimos antes.
+
+Primero, debemos reorganizarnos porque haremos más que solo instalar paquetes. En este punto, actualmente tenemos un libro de jugadas llamado local.yml con el siguiente contenido:
+
+- hosts: localhost
+  become: true
+  tasks:
+  - name: Install packages
+    apt: name={{item}}
+    with_items:
+      - htop
+      - mc
+      - tmux
+
+Eso está muy bien si solo queremos realizar una tarea. A medida que agreguemos cosas nuevas a nuestra configuración, este archivo se volverá bastante grande y se llenará de cosas. Es mejor organizar nuestras jugadas en archivos individuales con cada responsable de un tipo diferente de configuración. Para lograr esto, crea lo que se llama un libro de tareas, que se parece mucho a un libro de jugadas, pero los contenidos son más optimizados. Vamos a crear un directorio para nuestros libros de tareas dentro de nuestro repositorio de Git:
+
+mkdir tasks
+
+El código dentro de nuestro actual libro de jugadas local.yml se presta bien para convertirse en un libro de tareas para instalar paquetes. Vamos a mover este archivo al directorio de tareas que acabamos de crear con un nuevo nombre:
+
+mv local.yml tasks/packages.yml
+
+Ahora, podemos editar nuestro taskbook packages.yml y desmantelarlo un poco. De hecho, podemos quitar todo excepto la tarea individual en sí misma. Hagamos que los paquetes.yml se vean así:
+
+- name: Install packages
+  apt: name={{item}}
+  with_items:
+    - htop
+    - mc
+    - tmux
+
+Como puede ver, usa la misma sintaxis, pero eliminamos todo lo que no es necesario para la tarea que está realizando. Ahora tenemos un libro de tareas dedicado para instalar paquetes. Sin embargo, todavía necesitamos un archivo llamado local.yml, ya que ansible-pull aún espera encontrar un archivo con ese nombre. Así que crearemos uno nuevo con este contenido en la raíz de nuestro repositorio (no en el directorio de tareas):
+
+- hosts: localhost
+  become: true
+  pre_tasks:
+    - name: update repositories
+      apt: update_cache=yes
+      changed_when: False
+
+  tasks:
+    - include: tasks/packages.yml
+
+Este nuevo local.yml actúa como un índice que importará todos nuestros libros de tareas. He agregado algunas cosas nuevas a este archivo que aún no has visto en esta serie. Primero, al comienzo del archivo, agregué pre_tasks, lo que nos permite hacer que Ansible realice una tarea antes de ejecutar todas las otras tareas. En este caso, le estamos diciendo a Ansible que actualice el índice de repositorio de nuestra distribución. Esta línea lo hace por nosotros:
+
+apt: update_cache=yes
+
+Normalmente, el módulo apt nos permite instalar paquetes, pero también podemos pedirle que actualice nuestro índice de repositorio. La idea es que queremos que todas nuestras obras individuales funcionen con un índice nuevo cada vez que se ejecuta Ansible. Esto ayudará a garantizar que no tengamos problemas con un índice obsoleto al intentar instalar un paquete. Tenga en cuenta que el módulo apt funciona solo con Debian, Ubuntu y sus derivados. Si está ejecutando una distribución diferente, querrá usar un módulo específico para su distribución en lugar de apt. Consulte la documentación de Ansible si necesita usar un módulo diferente.
+
+La siguiente línea también merece una explicación más detallada:
+
+changed_when: False
+
+Esta línea en una tarea individual evita que Ansible informe los resultados de la obra como cambiados incluso cuando da como resultado un cambio en el sistema. En este caso, no nos importa si el índice del repositorio contiene datos nuevos; casi siempre lo hará, ya que los repositorios siempre están cambiando. No nos importan los cambios en los repositorios de apt, ya que los cambios de índice son los mismos para el curso. Si omitimos esta línea, veremos el resumen al final del informe del proceso de que algo ha cambiado, incluso si se trata simplemente del repositorio que se está actualizando. Es mejor ignorar este tipo de cambios.
+
+A continuación está nuestra sección de tareas normales, e importamos el libro de tareas que creamos. Cada vez que agregamos otro libro de tareas, agregamos otra línea aquí:
+
+tasks:
+  - include: tasks/packages.yml
+
+
+Si tuviera que ejecutar el comando ansible-pull aquí, esencialmente debería hacer lo mismo que en el último artículo. La diferencia es que hemos mejorado nuestra organización y podemos expandirla más eficientemente. La sintaxis del comando ansible-pull, para evitar que encuentre el artículo anterior, es este:
+
+sudo ansible-pull -U https://github.com/<github_user>/ansible.git
+
+Si lo recuerda, el comando ansible-pull baja un repositorio de Git y aplica la configuración que contiene.
+
+Ahora que nuestra base está en su lugar, podemos ampliar nuestra configuración de Ansible y agregar funciones. Específicamente, agregaremos configuración para automatizar la implementación de cambios futuros en nuestras estaciones de trabajo. Para apoyar este objetivo, lo primero que debemos hacer es crear un usuario específicamente para aplicar nuestra configuración de Ansible. Esto no es obligatorio, podemos seguir ejecutando nuestra configuración de Ansible con nuestro propio usuario. Pero el uso de un usuario separado segrega esto a un proceso del sistema que se ejecutará en segundo plano, sin nuestra participación.
+
+Podríamos crear a este usuario con el método normal, pero como usamos Ansible, debemos evitar los cambios manuales. En su lugar, crearemos un libro de tareas para manejar la creación del usuario. Este libro de tareas creará solo un usuario por ahora, pero siempre puede agregar juegos adicionales a este libro de tareas para agregar usuarios adicionales. Llamaré a este usuario ansible, pero puedes nombrarlo de otra forma si lo deseas (si lo haces, asegúrate de actualizar todas las instancias). Vamos a crear un libro de tareas llamado users.yml y colocar este código dentro de él:
+
+- name: create ansible user
+  user: name=ansible uid=900
+
+A continuación, debemos editar nuestro archivo local.yml y anexar este nuevo libro de tareas al archivo, así se verá así:
+
+- hosts: localhost
+  become: true
+  pre_tasks:
+    - name: update repositories
+      apt: update_cache=yes
+      changed_when: False
+
+  tasks:
+    - include: tasks/users.yml
+    - include: tasks/packages.yml
+
+Ahora cuando ejecutamos nuestro comando ansible-pull, se creará un usuario llamado ansible en el sistema. Tenga en cuenta que específicamente he declarado el ID de usuario 900 para este usuario mediante la opción UID. Esto no es obligatorio, pero se recomienda. La razón es que los UID menores de 1,000 normalmente no se muestran en la pantalla de inicio de sesión, lo cual es excelente porque no hay razón por la que necesitemos iniciar sesión en una sesión de escritorio como nuestro usuario ansible. UID 900 es arbitrario; debe ser cualquier número por debajo de 1,000 que no esté en uso. Puede averiguar si UID 900 está en uso en su sistema con el siguiente comando:
+
+cat /etc/passwd |grep 900
+
+Sin embargo, no deberías tener un problema con este UID porque nunca lo he visto usar por defecto en ninguna distribución que haya utilizado hasta ahora.
+
+Ahora, tenemos un usuario ansible que luego será utilizado para aplicar nuestra configuración de Ansible automáticamente. A continuación, podemos crear el trabajo cron real que se utilizará para automatizar esto. En lugar de colocar esto en el libro de tareas users.yml que acabamos de crear, debemos separar esto en su propio archivo. Cree un libro de tareas llamado cron.yml en el directorio de tareas y coloque el siguiente código dentro:
+
+- name: install cron job (ansible-pull)
+  cron: user="ansible" name="ansible provision" minute="*/10" job="/usr/bin/ansible-pull -o -U https://github.com/<github_user>/ansible.git > /dev/null"
+
+La sintaxis del módulo cron debe ser bastante autoexplicativa. Con este juego, estamos creando un trabajo cron para que se ejecute como el usuario ansible. El trabajo se ejecutará cada 10 minutos y el comando que ejecutará es el siguiente:
+
+/usr/bin/ansible-pull -o -U https://github.com/<github_user>/ansible.git > /dev/null
+
+Además, podemos poner trabajos cron adicionales que queremos que tengan todas nuestras estaciones de trabajo en este único archivo. Solo necesitamos agregar juegos adicionales para agregar nuevos trabajos cron. Sin embargo, simplemente agregar un nuevo libro de tareas para cron no es suficiente; también tendremos que agregarlo a nuestro archivo local.yml para que se llame. Coloque la siguiente línea con la otra incluye:
+
+- include: tasks/cron.yml
+
+Ahora cuando se ejecuta ansible-pull, se configurará una nueva tarea cron que se ejecutará como usuario ansible cada 10 minutos. Pero tener un trabajo de Ansible ejecutándose cada 10 minutos no es ideal, ya que requerirá una considerable potencia de CPU. Realmente no tiene sentido que Ansible se ejecute cada 10 minutos a menos que hayamos cambiado algo en el repositorio de Git.
+
+Sin embargo, ya hemos resuelto este problema. Observe la opción -o que agregué al comando ansible-pull en el trabajo cron que nunca hemos usado antes. Esta opción le dice a Ansible que se ejecute solo si el repositorio ha cambiado desde la última vez que se llamó a ansible-pull. Si el repositorio no ha cambiado, no hará nada. De esta forma, no estás desperdiciando CPU valiosa sin ninguna razón. Seguro, se usará algo de CPU cuando retire el repositorio, pero no tanto como lo haría si aplicara toda su configuración de nuevo. Cuando se ejecuta ansible-pull, pasará por todas las tareas en el Playbook y los libros de tareas, pero al menos no se ejecutará sin ningún propósito.
+
+Aunque hemos agregado todos los componentes necesarios para automatizar el ansible-pull, en realidad todavía no funcionará correctamente. El comando ansible-pull se ejecutará con sudo, lo que le daría acceso para realizar comandos a nivel del sistema. Sin embargo, nuestro usuario ansible no está configurado para realizar tareas como sudo. Por lo tanto, cuando se desencadena el trabajo cron, fallará. Normalmente podríamos usar visudo y configurar manualmente el usuario ansible para tener este acceso. Sin embargo, debemos hacer las cosas de la manera Ansible a partir de ahora, y esta es una gran oportunidad para mostrarle cómo funciona el módulo de copia. El módulo de copia le permite copiar un archivo de su repositorio Ansible a otro lugar en el sistema de archivos. En nuestro caso, copiaremos un archivo de configuración para sudo a /etc/sudoers.d/ para que el usuario ansible pueda realizar tareas administrativas.
+
+Abra el libro de tareas users.yml y agregue el siguiente juego al final:
+
+- name: copy sudoers_ansible
+  copy: src=files/sudoers_ansible dest=/etc/sudoers.d/ansible owner=root group=root mode=0440
+
+El módulo copy, como podemos ver, copia un archivo de nuestro repositorio a otro lugar. En este caso, tomaremos un archivo llamado sudoers_ansible (que crearemos en breve) y lo copiaremos en /etc/sudoers.d/ansible con root como propietario.
+
+A continuación, debemos crear el archivo que copiaremos. En la raíz de su repositorio de Ansible, cree un directorio de archivos:
+
+mkdir files
+
+Luego, en el directorio de archivos que acabamos de crear, cree el archivo sudoers_ansible con el siguiente contenido:
+
+ansible ALL=(ALL) NOPASSWD: ALL
+
+Crear un archivo en /etc/sudoers.d, como lo estamos haciendo aquí, nos permite configurar sudo para un usuario específico. Aquí estamos permitiendo que el usuario ansible tenga acceso total al sistema a través de sudo sin una solicitud de contraseña. Esto permitirá que ansible-pull se ejecute como una tarea en segundo plano sin necesidad de ejecutarlo manualmente.
+
+Ahora puede ejecutar ansible-pull nuevamente para desplegar los últimos cambios:
+
+sudo ansible-pull -U https://github.com/<github_user>/ansible.git
+
+De aquí en adelante, el trabajo cron para ansible-pull se ejecutará cada 10 minutos en segundo plano y revisará los cambios en su depósito. Si encuentra cambios, ejecutará su libro de jugadas y aplicará sus libros de tareas.
+
+Entonces ahora tenemos una solución completamente funcional. Cuando configura por primera vez una computadora portátil o de escritorio nueva, ejecutará el comando ansible-pull manualmente, pero solo la primera vez. A partir de ese momento, el usuario ansible se encargará de las ejecuciones posteriores en segundo plano. Cuando desee realizar un cambio en las máquinas de su estación de trabajo, simplemente despliegue su repositorio de Git, realice los cambios y luego redireccione esos cambios al repositorio. Luego, la próxima vez que el trabajo cron se active en cada máquina, desplegará esos cambios y los aplicará. Ahora solo tiene que hacer cambios una vez, y todas sus estaciones de trabajo harán lo mismo. Sin embargo, este método puede ser un poco poco convencional. Normalmente, tendría un archivo de inventario con sus máquinas enumeradas y varios roles de los que podría ser miembro cada máquina. Sin embargo, el método ansible-pull, como se describe en este artículo, es una forma muy eficiente de administrar la configuración de la estación de trabajo.
+
+He actualizado el código en mi repositorio de GitHub para este artículo, así que siéntase libre de navegar el código allí y verificar su sintaxis contra la mía. Además, moví el código del artículo anterior a su propio directorio en ese repositorio.
+
+En la parte 3, cerraremos la serie usando Ansible para configurar las configuraciones de escritorio de GNOME. Le mostraré cómo configurar su fondo de pantalla y pantalla de bloqueo, aplicar un tema de escritorio y más.
+
+Mientras tanto, es hora de una pequeña tarea. La mayoría de nosotros tenemos archivos de configuración que nos gusta mantener para varias aplicaciones que usamos. Esto podría ser archivos de configuración para Bash, Vim o cualquier herramienta que use. Te desafío ahora a que automatices la copia de estos archivos de configuración en tus máquinas a través del repositorio de Ansible en el que hemos estado trabajando. En este artículo, le he mostrado cómo copiar un archivo, así que échele un vistazo y vea si puede aplicar ese conocimiento a sus archivos personales.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
