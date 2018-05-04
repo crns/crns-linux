@@ -1,0 +1,44 @@
+Kingston 2GB 1Rx8 PC3 - 10600S - 9 -10 -B10
+
+SNY1333D3S9ELC/2G
+
+https://www.oempcworld.com/OEMPCworld-com/033514.html
+SNY1333D3S9ELC/2G 
+CHT 
+2GB 
+204p 
+PC3-10600 
+CL9 
+8c 
+256x8 
+DDR3-1333 
+1Rx8 
+1.5V 
+SODIMM 
+RFB
+
+---
+https://www.impactcomputers.com/index.php?_route_=sny1333d3s9elc-2g.html&manufacturer_id=71
+
+Memory
+Comp. Config 	1Rx8
+Pins 	204 Pins
+Register 	DDR3
+Size 	2GB
+Speed 	1333MHZ
+Type 	PC3-10600
+Voltage 	1.5V
+
+-----------------------
+https://www.pcfactory.cl/producto/16264-memoria-notebook-4gb-sodimm-ddr3-1333mhz-value-ram#parentHorizontalTab1
+
+ID 	16264
+Marca 	Kingston
+Tipo 	DDR3 SODIMM
+Capacidad 	4GB
+Formato 	1 módulo
+Frecuencia 	1333 MHz (PC3-10666)
+Latencia 	CL9
+Configuración 	Single Channel
+Voltaje 	1.5V
+Soporte XMP 	No incluye

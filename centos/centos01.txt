@@ -1,0 +1,237 @@
+0? - Curso Instalación de Linux
+
+Para Netinstall ir a http://www.centos.com/download/mirrors/ y seleccionar un mirror local.
+
+http://mirror.gtdinternet.com/7/os/x86_64/
+
+
+enp0s8 esta deshabilitado en el boot.
+
+su -
+
+ifup enp0s8
+
+para habilitar en el arranque editar
+
+yum install -y nano
+
+nano /etc/sysconfig/network-scripts/ifcfg-enp0s8
+
+nano /etc/sysconfig/network-scripts/ifcfg-enp0s8
+
+ONBOOT=no
+
+Cambiar a 
+
+ONBOOT=yes
+
+Guardar con Ctrl + O y aceptar con ENTER, salir con Crtl + X
+
+################
+
+Instalando Pqtes y configurando el sistema:
+
+yum install -y sudo
+
+luego en /etc/sudores linea 93 agregar:
+
+mcampos    ALL=(ALL)       ALL
+
+login as: mcampos
+mcampos@192.168.56.101's password:
+Last login: Wed Apr 25 20:50:47 2018 from 192.168.56.1
+[mcampos@localhost ~]$ sudo yum update -y
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for mcampos:
+
+Más info de SUDO en:
+http://www.alcancelibre.org/staticpages/index.php/como-sudo-linux
+
+Truco:
+
+Use el comando usermod para agregar el usuario al grupo wheel.
+
+    usermod -aG wheel username
+
+Predeterminadamente, en CentOS, los miembros del grupo wheel tienen privilegios sudo.
+
+tip: https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-centos-quickstart
+
+Optimizar disco:
+
+sudo nano /etc/fstab
+
+noatime,nodiratime
+
+
+sudo mount -o remount,noatime,nodiratime,errors=remount-ro /
+
+con lvs
+
+sudo mount -o remount,noatime,nodiratime,defaults /
+
+sudo mount -o remount,noatime,nodiratime,defaults /home
+
+
+Trabajando con repositorios:
+
+https://wiki.centos.org/es/AdditionalResources/Repositories
+https://wiki.centos.org/es/PackageManagement/Yum/Priorities
+
+Habilitar CentOSPlus:
+
+nano /etc/yum.repos.d/CentOS-Base.repo
+
+[centosplus]
+name=CentOS-$releasever - Plus
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus&infra=$infra
+#baseurl=http://mirror.centos.org/centos/$releasever/centosplus/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+
+cambiar enabled=0 a enabled=1 guardar y salir de nano.
+
+
+yum repolist
+
+[mcampos@localhost yum.repos.d]$ yum repolist
+Complementos cargados:fastestmirror
+base                                                                                              | 3.6 kB  00:00:00
+centosplus                                                                                        | 3.4 kB  00:00:00
+extras                                                                                            | 3.4 kB  00:00:00
+updates                                                                                           | 3.4 kB  00:00:00
+centosplus/7/x86_64/primary_db                                                                    | 3.1 MB  00:00:06
+Loading mirror speeds from cached hostfile
+ * base: mirror.orbyta.com
+ * centosplus: mirror.orbyta.com
+ * extras: mirror.orbyta.com
+ * updates: mirror.orbyta.com
+id del repositorio                                        nombre del repositorio                                   estado
+base/7/x86_64                                             CentOS-7 - Base                                          9.591
+centosplus/7/x86_64                                       CentOS-7 - Plus                                             92
+extras/7/x86_64                                           CentOS-7 - Extras                                          448
+updates/7/x86_64                                          CentOS-7 - Updates                                       2.416
+repolist: 12.547
+
+
+
+
+Repositorio RPMFusion:
+https://rpmfusion.org/Configuration/
+
+yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+
+
+Verificar Repositorios activos:
+
+[mcampos@localhost ~]$ yum repolist
+Complementos cargados:fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.orbyta.com
+ * centosplus: mirror.orbyta.com
+ * epel: epel.gtdinternet.com
+ * extras: mirror.orbyta.com
+ * rpmfusion-free-updates: mirror.math.princeton.edu
+ * rpmfusion-nonfree-updates: mirror.math.princeton.edu
+ * updates: mirror.orbyta.com
+id del repositorio                                nombre del repositorio                                           estado
+base/7/x86_64                                     CentOS-7 - Base                                                   9.591
+centosplus/7/x86_64                               CentOS-7 - Plus                                                      92
+epel/x86_64                                       Extra Packages for Enterprise Linux 7 - x86_64                   12.512
+extras/7/x86_64                                   CentOS-7 - Extras                                                   448
+rpmfusion-free-updates/x86_64                     RPM Fusion for EL 7 - Free - Updates                                237
+rpmfusion-nonfree-updates/x86_64                  RPM Fusion for EL 7 - Nonfree - Updates                              47
+updates/7/x86_64                                  CentOS-7 - Updates                                                2.416
+repolist: 25.343
+[mcampos@localhost ~]$
+
+Actualización masiva:
+
+
+Repositorio ELRepo:
+http://elrepo.org/tiki/tiki-index.php
+
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+
+Canales de ELRepo
+
+Para organizar mejor el software que contiene el repositorio, el mismo se divide en 4 canales:
+
+elrepo: canal principal del repositorio y único habilitado por defecto, contiene paquetes que no se encuentran en la distribución.
+elrepo-extras: reemplazan otros presentes en la distribución.
+elrepo-testing: reemplazan otros presentes en la distribución y 
+elrepo-kernel: permiten actualizar el kernel actual a uno más reciente.
+
+Para ver la lista de paquetes disponibles en un canal específico:
+
+yum --disablerepo="*" --enablerepo="elrepo-testing" list available
+
+ yum --disablerepo="*" --enablerepo="remi" search ocs
+
+ yum --enablerepo="elrepo-extras" --enablerepo="rpmforge" info unarj
+
+
+
+Otros Repos:
+
+RepoForge:
+rpm -vi http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+
+nano /etc/yum.repos.d/rpmforge.repo
+
+Remi:
+rpm -vi  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+nano /etc/yum.repos.d/remi.repo
+
+
+
+
+Instalar utilidades:
+
+fail2ban
+fail2ban-systemd
+bridge-utils
+bind-utils
+git
+unrar
+pciutils
+
+pci-utils:
+http://www.alcancelibre.org/staticpages/index.php/uso-lscpu-lsmod-lspci-lsusb
+
+bridg-utils:
+https://www.itzgeek.com/how-tos/mini-howtos/create-a-network-bridge-on-centos-7-rhel-7.html
+
+Installing Fail2Ban
+https://www.howtoforge.com/tutorial/how-to-install-fail2ban-on-centos/
+
+To install Fail2Ban on CentOS 7, we will have to install EPEL (Extra Packages for Enterprise Linux) repository first. EPEL contains additional packages for all CentOS versions, one of these additional packages is Fail2Ban.
+
+The following commands must be executed after switching to the root user.
+
+yum install epel-release
+
+sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar pciutils
+
+sudo yum -y install kmod pciutils usbutils util-linux
+
+
+If you have SELinux installed, then update the SELinux policies:
+
+yum update -y selinux-policy*
+
+
+Instalar editores:
+
+nano gedit

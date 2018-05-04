@@ -1,0 +1,350 @@
+Instalar Apache Worker
+
+ref: https://www.linuxito.com/gnu-linux/nivel-basico/881-como-instalar-apache-en-debian-devuan
+
+~# apt-get install apache2
+
+
+Apache worker:
+
+~# a2dismod mpm_event
+Module mpm_event disabled.
+To activate the new configuration, you need to run:
+  systemctl restart apache2
+
+~# a2enmod mpm_worker
+Considering conflict mpm_event for mpm_worker:
+Considering conflict mpm_prefork for mpm_worker:
+Enabling module mpm_worker.
+To activate the new configuration, you need to run:
+  systemctl restart apache2
+
+
+~# systemctl status apache2
+● apache2.service - The Apache HTTP Server
+   Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-04-10 17:28:05 -03; 12min ago
+ Main PID: 29508 (apache2)
+   CGroup: /system.slice/apache2.service
+           ├─29508 /usr/sbin/apache2 -k start
+           ├─29509 /usr/sbin/apache2 -k start
+           └─29510 /usr/sbin/apache2 -k start
+
+abr 10 17:28:05 bifur systemd[1]: Starting The Apache HTTP Server...
+abr 10 17:28:05 bifur systemd[1]: Started The Apache HTTP Server.
+
+~# systemctl restart apache2
+
+~# systemctl status apache2
+● apache2.service - The Apache HTTP Server
+   Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-04-10 17:40:30 -03; 2s ago
+  Process: 29660 ExecStop=/usr/sbin/apachectl stop (code=exited, status=0/SUCCESS)
+  Process: 29667 ExecStart=/usr/sbin/apachectl start (code=exited, status=0/SUCCESS)
+ Main PID: 29672 (apache2)
+    Tasks: 55 (limit: 4915)
+   CGroup: /system.slice/apache2.service
+           ├─29672 /usr/sbin/apache2 -k start
+           ├─29673 /usr/sbin/apache2 -k start
+           └─29674 /usr/sbin/apache2 -k start
+
+abr 10 17:40:30 bifur systemd[1]: Starting The Apache HTTP Server...
+abr 10 17:40:30 bifur systemd[1]: Started The Apache HTTP Server.
+~#
+
+Instalar PHP
+
+~# apt-get -y install php php-cgi libapache2-mod-php php-common php-pear php-mbstring
+
+apt-get -y install php php-cgi libapache2-mod-php php-common php-pear php-mbstring php7.0-gd php7.0-json php7.0-mysql php7.0-curl php7.0-intl php7.0-mcrypt php-imagick php7.0-zip php7.0-xml
+
+
+~# a2enconf php7.0-cgi 
+Enabling conf php7.0-cgi.
+To activate the new configuration, you need to run:
+  systemctl reload apache2
+~# 
+
+Test:
+
+nano /var/www/html/index.php 
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align:center;">
+<?php
+      print Date("Y/m/d");
+?>
+</div>
+</body>
+</html>
+
+
+---------------
+Instalar php-fpm:
+
+ref: https://www.server-world.info/en/note?os=Debian_9&p=httpd&f=13
+
+~# apt-get -y install php-fpm
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  php7.0-fpm
+Se instalarán los siguientes paquetes NUEVOS:
+  php-fpm php7.0-fpm
+...
+
+
+
+nano /etc/php/7.0/fpm/pool.d/www.conf 
+
+cambiar linea 36 por:
+
+listen = /run/php/php7.0-fpm.sock
+
+a
+
+listen = 127.0.0.1:9000
+
+
+nano /etc/apache2/sites-enabled/000-default.conf
+
+# add into <VirtualHost> - </VirtualHost>
+
+        <FilesMatch "\.php$">
+            SetHandler "proxy:fcgi://127.0.0.1:9000/"
+        </FilesMatch>
+
+---
+----
+
+a2enmod proxy_fcgi
+
+
+~# a2enmod proxy_fcgi
+Considering dependency proxy for proxy_fcgi:
+Enabling module proxy.
+Enabling module proxy_fcgi.
+To activate the new configuration, you need to run:
+  systemctl restart apache2
+root@bifur:~# 
+
+systemctl restart apache2
+
+systemctl restart php7.0-fpm apache2 
+
+
+
+probar url: OK 
+Server API 	FPM/FastCGI 
+
+###
+
+apt-get install -y mariadb-server  php7.0-gd php7.0-json php7.0-mysql php7.0-curl php7.0-intl php7.0-mcrypt php-imagick php7.0-zip php7.0-xml php7.0-mbstring
+...
+NOTICE: Not enabling PHP 7.0 FPM by default.
+NOTICE: To enable PHP 7.0 FPM in Apache2 do:
+NOTICE: a2enmod proxy_fcgi setenvif
+NOTICE: a2enconf php7.0-fpm
+NOTICE: You are seeing this message because you have apache2 package installed.
+
+~# a2enmod proxy_fcgi setenvif
+Considering dependency proxy for proxy_fcgi:
+Module proxy already enabled
+Module proxy_fcgi already enabled
+Module setenvif already enabled
+
+~# a2enconf php7.0-fpm
+Enabling conf php7.0-fpm.
+To activate the new configuration, you need to run:
+  systemctl reload apache2
+
+############
+Crear Base de datos:
+
+~# mysql -u root -p
+Enter password: 
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 2
+Server version: 10.1.26-MariaDB-0+deb9u1 Debian 9.1
+
+Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+Once you're signed in, create a regular user for WordPress.
+
+MariaDB [(none)]> CREATE USER 'wptyduser'@'localhost' IDENTIFIED BY 'res1145dytpw';
+
+Now, create your WordPress database.
+
+MariaDB [(none)]> CREATE DATABASE wptyd_database;
+
+Finally, grand your user all permissions on the database.
+
+MariaDB [(none)]> GRANT ALL ON `wptyd_database`.* TO `wptyduser`@`localhost`;
+
+Flush your privileges and exit.
+
+MariaDB [(none)]> FLUSH PRIVILEGES;
+MariaDB [(none)]> exit;
+
+
+***********
+
+root@pippin:~# mysql -u root -p
+Enter password: 
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 2
+Server version: 10.1.26-MariaDB-0+deb9u1 Debian 9.1
+
+Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+MariaDB [(none)]> CREATE USER 'wptyduser'@'localhost' IDENTIFIED BY 'res1145dytpw';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> CREATE DATABASE wptyd_database;
+Query OK, 1 row affected (0.00 sec)
+
+MariaDB [(none)]> GRANT ALL ON `wptyd_database`.* TO `wptyduser`@`localhost`;
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> exit;
+Bye
+root@pippin:~#
+ 
+**************
+
+##############
+
+
+
+
+
+*Secure MariaDB installation
+
+~# mysql_secure_installation
+
+php --version
+~# php --version
+PHP 7.0.27-0+deb9u1 (cli) (built: Jan  5 2018 13:51:52) ( NTS )
+Copyright (c) 1997-2017 The PHP Group
+Zend Engine v3.0.0, Copyright (c) 1998-2017 Zend Technologies
+    with Zend OPcache v7.0.27-0+deb9u1, Copyright (c) 1999-2017, by Zend Technologies
+~# 
+
+
+Comprobar que es Apache-worker y no prefork:
+
+~# apachectl -V
+Server version: Apache/2.4.25 (Debian)
+Server built:   2018-03-31T08:47:16
+Server's Module Magic Number: 20120211:68
+Server loaded:  APR 1.5.2, APR-UTIL 1.5.4
+Compiled using: APR 1.5.2, APR-UTIL 1.5.4
+Architecture:   64-bit
+Server MPM:     worker
+  threaded:     yes (fixed thread count)
+    forked:     yes (variable process count)
+Server compiled with....
+ -D APR_HAS_SENDFILE
+ -D APR_HAS_MMAP
+ -D APR_HAVE_IPV6 (IPv4-mapped addresses enabled)
+ -D APR_USE_SYSVSEM_SERIALIZE
+ -D APR_USE_PTHREAD_SERIALIZE
+ -D SINGLE_LISTEN_UNSERIALIZED_ACCEPT
+ -D APR_HAS_OTHER_CHILD
+ -D AP_HAVE_RELIABLE_PIPED_LOGS
+ -D DYNAMIC_MODULE_LIMIT=256
+ -D HTTPD_ROOT="/etc/apache2"
+ -D SUEXEC_BIN="/usr/lib/apache2/suexec"
+ -D DEFAULT_PIDLOG="/var/run/apache2.pid"
+ -D DEFAULT_SCOREBOARD="logs/apache_runtime_status"
+ -D DEFAULT_ERRORLOG="logs/error_log"
+
+ -D AP_TYPES_CONFIG_FILE="mime.types"
+ -D SERVER_CONFIG_FILE="apache2.conf"
+root@bifur:~#
+
+#########
+https://linuxconfig.org/how-to-install-wordpress-on-debian-9-stretch-linux
+
+Instalar Wordpress:
+
+
+cd
+
+wget --no-check-certificate https://wordpress.org/latest.tar.gz
+
+tar xpf latest.tar.gz
+
+
+cp -r wordpress /var/www/
+
+cd /var/www/
+
+chown -R www-data:www-data /var/www/wordpress/
+
+# find /var/www/wordpress -type d -exec chmod 755 {} \;
+# find /var/www/wordpress -type f -exec chmod 644 {} \;
+
+
+
+nano /etc/apache2/sites-available/www.tecnologiaydesarrollo.cl.conf
+
+<VirtualHost *:80>
+
+        ServerName www.tecnologiaydesarrollo.cl
+        ServerAdmin webmaster@caschile.cl
+        DocumentRoot /var/www/wordpress/
+        DirectoryIndex index.php index.htm index.html
+
+        <Directory "/var/www/wordpress">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        <FilesMatch "\.php$">
+            SetHandler "proxy:fcgi://127.0.0.1:9000/"
+        </FilesMatch>
+
+#        <IfModule php5-fpm.c>
+#                #php_value suhosin.get.max_value_length 2048
+#               php_value post_max_size 12M
+#               php_value upload_max_filezise 10M
+#        </IfModule>
+
+        ErrorLog ${APACHE_LOG_DIR}/www.tecnologiaydesarrollo.cl-error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/www.tecnologiaydesarrollo.cl-access.log combined
+
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+
+
+
+a2ensite www.tecnologiaydesarrollo.cl
+
+systemctl restart php7.0-fpm apache2
+
+
+
+
+
+
+
+

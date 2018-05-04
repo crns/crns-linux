@@ -1,0 +1,88 @@
+yum update -y
+
+[mcampos@localhost ~]$ sudo yum group info 'Sistema X Window'
+[sudo] password for mcampos: 
+Complementos cargados:fastestmirror
+No existe un archivo de grupos instalados.
+Maybe run: yum groups mark convert (see man yum)
+Loading mirror speeds from cached hostfile
+ * base: mirror.globo.com
+ * centosplus: mirror.ci.ifes.edu.br
+ * epel: epel.gtdinternet.com
+ * extras: mirror.gtdinternet.com
+ * rpmfusion-free-updates: mirrors.lug.mtu.edu
+ * rpmfusion-nonfree-updates: mirrors.lug.mtu.edu
+ * updates: mirror.facom.ufms.br
+
+Grupo: Sistema X Window
+ Group-Id: x11
+ Descripción: Soporte para sistema X Window.
+ Paquetes obligatorios:
+   +glx-utils
+   +initial-setup-gui
+   +mesa-dri-drivers
+   +plymouth-system-theme
+   +spice-vdagent
+   +xorg-x11-drivers
+   +xorg-x11-server-Xorg
+   +xorg-x11-utils
+   +xorg-x11-xauth
+   +xorg-x11-xinit
+   +xvattr
+ Paquetes opcionales:
+   tigervnc-server
+   xorg-x11-drv-keyboard
+   xorg-x11-drv-libinput
+   xorg-x11-drv-mouse
+   xorg-x11-drv-openchrome
+[mcampos@localhost ~]$ 
+
+
+Ejecutar:
+
+yum install bzip2 kernel-headers kernel-devel gcc make perl
+
+
+
+yum groupinstall -y 'Sistema X Window'
+
+o
+
+sudo yum groupinstall -y 'Sistema X Window'
+
+sudo yum install -y xorg-x11-drv-keyboard xorg-x11-drv-libinput xorg-x11-drv-mouse
+
+xorg-x11-drv-openchrome
+
+sudo yum install -y openbox lightdm lightdm-gtk 
+
+sudo systemctl enable lightdm.service
+
+sudo yum install -y tint2 terminator firefox terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
+
+
+su -
+
+echo 'tint2 &' >> /etc/xdg/openbox/autostart
+
+echo 'nm-applet &' >> /etc/xdg/openbox/autostart
+
+unlink /etc/systemd/system/default.target
+
+ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+
+reboot
+
+o
+
+systemctl reboot
+
+
+Ref:
+https://arrfab.net/posts/2018/Jan/02/lightweigth-centos-7-i686-desktop-on-older-machine/
+https://www.centos.org/forums/viewtopic.php?f=47&t=47088&start=10
+-----
+https://www.comoinstalarlinux.com/como-instalar-openbox-en-arch-linux-y-personalizarlo/2/
+http://fraterneo.blogspot.cl/2013/08/como-instalar-openbox-en-fedora.html
+http://srobb.net/minimaldesktop.html
+

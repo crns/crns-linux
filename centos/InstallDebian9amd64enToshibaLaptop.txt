@@ -1,0 +1,1332 @@
+Instalación base de STRETCH net-install con opessh-client y openssh-server
+
+
+Configuracion de repositorios:
+
+
+/etc/apt/sources.list
+
+#
+deb http://security.debian.org/ stretch/updates main contrib non-free
+deb-src http://security.debian.org/ stretch/updates main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ stretch main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ stretch main contrib non-free
+
+deb http://ftp.cl.debian.org/debian/ stretch-updates main contrib non-free
+deb-src http://ftp.cl.debian.org/debian/ stretch-updates main contrib non-free
+
+# Debian Multimedia Repository
+deb http://www.deb-multimedia.org stretch main non-free
+deb ftp://ftp.deb-multimedia.org stretch main non-free
+
+# Stretch Backports
+deb http://ftp.cl.debian.org/debian stretch-backports main contrib non-free
+deb-src http://ftp.cl.debian.org/debian stretch-backports main contrib non-free
+
+###
+
+# Chrome
+deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+
+# Oracle-Java desde Ubuntu
+deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main
+deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main
+
+# Virtualbox
+deb http://download.virtualbox.org/virtualbox/debian stretch contrib
+
+
+
+
+apt-get install debian-keyring deb-multimedia-keyring debian-archive-keyring 
+
+
+root@yugo:~# apt-get install debian-keyring deb-multimedia-keyring debian-archive-keyring
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+debian-archive-keyring ya está en su versión más reciente (2017.5).
+Se instalarán los siguientes paquetes NUEVOS:
+  deb-multimedia-keyring debian-keyring
+0 actualizados, 2 nuevos se instalarán, 0 para eliminar y 28 no actualizados.
+Se necesita descargar 33,2 MB de archivos.
+Se utilizarán 35,0 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+root@yugo:~# apt-get install dirmngr
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libldap-2.4-2 libldap-common libsasl2-2 libsasl2-modules libsasl2-modules-db
+Paquetes sugeridos:
+  dbus-user-session pinentry-gnome3 tor libsasl2-modules-gssapi-mit | libsasl2-modules-gssapi-heimdal libsasl2-modules-ldap libsasl2-modules-otp
+  libsasl2-modules-sql
+Se instalarán los siguientes paquetes NUEVOS:
+  dirmngr libldap-2.4-2 libldap-common libsasl2-2 libsasl2-modules libsasl2-modules-db
+0 actualizados, 6 nuevos se instalarán, 0 para eliminar y 28 no actualizados.
+Se necesita descargar 1.174 kB de archivos.
+Se utilizarán 2.296 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n]
+
+
+Key de Ubuntu para instalar Java-Oracle
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+
+root@yugo:~# apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+Executing: /tmp/apt-key-gpghome.uZam2a9R05/gpg.1.sh --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+gpg: key C2518248EEA14886: public key "Launchpad VLC" imported
+gpg: Total number processed: 1
+gpg:               imported: 1
+root@yugo:~# 
+
+
+key para Google-Chrome
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys A040830F7FAC5991
+
+root@yugo:~# apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys A040830F7FAC5991
+Executing: /tmp/apt-key-gpghome.VS9tfEIpir/gpg.1.sh --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys A040830F7FAC5991
+gpg: key A040830F7FAC5991: public key "Google, Inc. Linux Package Signing Key <linux-packages-keymaster@google.com>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1
+root@yugo:~# 
+
+Key de Oracle VirtualBox:
+
+wget --no-check-certificate -q -O - https://www.virtualbox.org/download/oracle_vbox_2016.asc | apt-key add -
+wget --no-check-certificate -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
+
+root@yugo:~# wget --no-check-certificate -q -O - https://www.virtualbox.org/download/oracle_vbox_2016.asc | apt-key add -
+OK
+
+root@yugo:~# wget --no-check-certificate -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
+OK
+
+
+Actualizar sistema:
+
+apt-get update ; apt-get -y upgrade
+
+
+
+Firmware para controlador de wifi:
+
+W: Possible missing firmware /lib/firmware/rtl_nic/rtl8168d-1.fw for module r8169
+
+apt-get install firmware-realtek
+
+root@yugo:~# apt-get install firmware-realtek
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  firmware-realtek
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 342 kB de archivos.
+Se utilizarán 1.147 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian stretch/non-free amd64 firmware-realtek all 20161130-3 [342 kB]
+Descargados 342 kB en 0s (650 kB/s)      
+Seleccionando el paquete firmware-realtek previamente no seleccionado.
+(Leyendo la base de datos ... 19339 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../firmware-realtek_20161130-3_all.deb ...
+Desempaquetando firmware-realtek (20161130-3) ...
+Configurando firmware-realtek (20161130-3) ...
+update-initramfs: deferring update (trigger activated)
+Procesando disparadores para initramfs-tools (0.130) ...
+update-initramfs: Generating /boot/initrd.img-4.9.0-3-amd64
+root@yugo:~# 
+
+
+Instalar SUDO
+
+apt-get install sudo
+
+gpasswd -a mcampos sudo
+
+
+root@yugo:~# apt-get install sudo
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  sudo
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.055 kB de archivos.
+Se utilizarán 3.108 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian stretch/main amd64 sudo amd64 1.8.19p1-2.1 [1.055 kB]
+Descargados 1.055 kB en 0s (7.618 kB/s)
+Seleccionando el paquete sudo previamente no seleccionado.
+(Leyendo la base de datos ... 19406 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../sudo_1.8.19p1-2.1_amd64.deb ...
+Desempaquetando sudo (1.8.19p1-2.1) ...
+Configurando sudo (1.8.19p1-2.1) ...
+Procesando disparadores para systemd (232-25+deb9u1) ...
+root@yugo:~# gpasswd -a mcampos sudo
+Añadiendo al usuario mcampos al grupo sudo
+root@yugo:~# 
+
+
+OK primer reboot:
+
+-------------------------------
+
+
+Primer login y uso de sudo
+
+mcampos@yugo:~$ sudo dmesg
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for mcampos: 
+
+
+sudo apt-get install bash-completion man
+
+
+mcampos@yugo:~$ sudo apt-get install bash-completion man
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «man-db» en lugar de «man»
+Se instalarán los siguientes paquetes adicionales:
+  groff-base
+Paquetes sugeridos:
+  groff less www-browser
+Se instalarán los siguientes paquetes NUEVOS:
+  bash-completion groff-base man-db
+0 actualizados, 3 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 2.382 kB de archivos.
+Se utilizarán 6.873 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Instalar ALSA:
+
+
+Referencia http://blog.hbautista.com/linux/configurar-alsa-en-debian-y-reproduccion-de-musica-en-segundo-plano/
+
+
+mcampos@yugo:~$ cat /proc/asound/modules
+ 0 snd_hda_intel
+mcampos@yugo:~$ 
+
+sudo apt-get install alsa-utils alsa-oss alsa-tools
+
+mcampos@yugo:~$ sudo apt-get install alsa-utils alsa-oss alsa-tools
+[sudo] password for mcampos: 
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libasound2 libasound2-data libfftw3-single3 libglib2.0-0 libglib2.0-data libgomp1 libicu57 libsamplerate0 libxml2 sgml-base shared-mime-info
+  xdg-user-dirs xml-core
+Paquetes sugeridos:
+  libasound2-plugins libfftw3-bin libfftw3-dev sgml-base-doc debhelper
+Se instalarán los siguientes paquetes NUEVOS:
+  alsa-oss alsa-tools alsa-utils libasound2 libasound2-data libfftw3-single3 libglib2.0-0 libglib2.0-data libgomp1 libicu57 libsamplerate0 libxml2
+  sgml-base shared-mime-info xdg-user-dirs xml-core
+0 actualizados, 16 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 18,3 MB de archivos.
+Se utilizarán 61,6 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+
+sudo alsactl init
+
+mcampos@yugo:~$ sudo alsactl init
+Found hardware: "HDA-Intel" "Realtek ALC272" "HDA:10ec0272,1179ff10,00100001" "0x1179" "0xff1e"
+Hardware is initialized using a generic method
+mcampos@yugo:~$ 
+
+
+Optimizar Disco:
+
+mcampos@yugo:~$ cat /proc/mounts
+...
+/dev/sda1 / ext4 rw,relatime,errors=remount-ro,data=ordered 0 0
+...
+
+Editar fstab y agregar a / noatime,nodiratime:
+
+sudo nano /etc/fstab
+
+UUID=39622d96-ea91-4599-958e-03c553bfa7e7 /               ext4   noatime,nodiratime,errors=remount-ro 0       1
+
+Guardar y aplicar con:
+
+sudo mount -o remount,noatime,nodiratime,errors=remount-ro /
+
+Verificar:
+
+mcampos@yugo:~$ sudo cat /proc/mounts 
+...
+/dev/sda1 / ext4 rw,noatime,nodiratime,errors=remount-ro,data=ordered 0 0
+...
+
+Instalar utilidades del sistema:
+
+sudo apt-get install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils dnsutils git unrar
+
+mcampos@yugo:~$ sudo apt-get install ethtool iptables iproute vlan ifenslave bsdutils fail2ban firmware-linux-free firmware-linux-nonfree bridge-utils dnsutils git unrar
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+iptables ya está en su versión más reciente (1.6.0+snapshot20161117-6).
+bsdutils ya está en su versión más reciente (1:2.29.2-1).
+Se instalarán los siguientes paquetes adicionales:
+  amd64-microcode bind9-host bzip2 ca-certificates dh-python file firmware-amd-graphics firmware-misc-nonfree geoip-database git-man intel-microcode
+  iucode-tool less libbind9-140 libcurl3-gnutls libdns162 liberror-perl libgeoip1 libisc160 libisccc140 libisccfg140 liblwres141 libmagic-mgc
+  libmagic1 libmpdec2 libnghttp2-14 libperl5.24 libpython-stdlib libpython2.7-minimal libpython2.7-stdlib libpython3-stdlib libpython3.5-minimal
+  libpython3.5-stdlib librtmp1 libssh2-1 mime-support net-tools openssl patch perl perl-modules-5.24 python python-minimal python2.7
+  python2.7-minimal python3 python3-minimal python3-pyinotify python3-systemd python3.5 python3.5-minimal rename rsync whois xz-utils
+Paquetes sugeridos:
+  bzip2-doc libdpkg-perl rblcheck mailx monit git-daemon-run | git-daemon-sysvinit git-doc git-el git-email git-gui gitk gitweb git-arch git-cvs
+  git-mediawiki git-svn geoip-bin ed diffutils-doc perl-doc libterm-readline-gnu-perl | libterm-readline-perl-perl make python-doc python-tk
+  python2.7-doc binutils binfmt-support python3-doc python3-tk python3-venv python-pyinotify-doc python3.5-venv python3.5-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  amd64-microcode bind9-host bridge-utils bzip2 ca-certificates dh-python dnsutils ethtool fail2ban file firmware-amd-graphics firmware-linux-free
+  firmware-linux-nonfree firmware-misc-nonfree geoip-database git git-man ifenslave intel-microcode iproute iucode-tool less libbind9-140
+  libcurl3-gnutls libdns162 liberror-perl libgeoip1 libisc160 libisccc140 libisccfg140 liblwres141 libmagic-mgc libmagic1 libmpdec2 libnghttp2-14
+  libperl5.24 libpython-stdlib libpython2.7-minimal libpython2.7-stdlib libpython3-stdlib libpython3.5-minimal libpython3.5-stdlib librtmp1
+  libssh2-1 mime-support net-tools openssl patch perl perl-modules-5.24 python python-minimal python2.7 python2.7-minimal python3 python3-minimal
+  python3-pyinotify python3-systemd python3.5 python3.5-minimal rename rsync unrar vlan whois xz-utils
+0 actualizados, 66 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 35,1 MB de archivos.
+Se utilizarán 167 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+----------------
+Ahora instalar Xorg y Openbox
+
+Instalar editores:
+
+
+sudo apt-get install nano gedit
+
+campos@yugo:~$ sudo apt-get install nano gedit
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+nano ya está en su versión más reciente (2.7.4-1).
+Se instalarán los siguientes paquetes adicionales:
+  adwaita-icon-theme aspell aspell-en at-spi2-core dconf-gsettings-backend dconf-service dictionaries-common emacsen-common enchant fontconfig
+  fontconfig-config fonts-dejavu fonts-dejavu-core fonts-dejavu-extra gedit-common gir1.2-atk-1.0 gir1.2-freedesktop gir1.2-gdkpixbuf-2.0
+  gir1.2-glib-2.0 gir1.2-gtk-3.0 gir1.2-gtksource-3.0 gir1.2-pango-1.0 gir1.2-peas-1.0 glib-networking glib-networking-common
+  glib-networking-services gnome-user-guide gsettings-desktop-schemas gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-x
+  gtk-update-icon-cache hicolor-icon-theme hunspell-en-us iso-codes libaa1 libaspell15 libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0
+  libavahi-client3 libavahi-common-data libavahi-common3 libavc1394-0 libcaca0 libcairo-gobject2 libcairo2 libcap2-bin libcdparanoia0 libcolord2
+  libcroco3 libcups2 libdatrie1 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libdv4 libegl1-mesa libenchant1c2a
+  libepoxy0 libflac8 libfontconfig1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgirepository-1.0-1 libgl1-mesa-dri libgl1-mesa-glx
+  libglapi-mesa libgpm2 libgraphite2-3 libgspell-1-1 libgspell-1-common libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libgtk-3-0 libgtk-3-bin
+  libgtk-3-common libgtksourceview-3.0-1 libgtksourceview-3.0-common libgudev-1.0-0 libharfbuzz-icu0 libharfbuzz0b libhunspell-1.4-0 libhyphen0
+  libiec61883-0 libjack-jackd2-0 libjavascriptcoregtk-4.0-18 libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2
+  libllvm3.9 libnotify4 libogg0 libopus0 liborc-0.4-0 libpam-cap libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpangoxft-1.0-0
+  libpciaccess0 libpeas-1.0-0 libpeas-common libpixman-1-0 libproxy1v5 libpython3.5 libraw1394-11 librest-0.7-0 librsvg2-2 librsvg2-common
+  libsecret-1-0 libsecret-common libsensors4 libshout3 libsoup-gnome2.4-1 libsoup2.4-1 libspeex1 libtag1v5 libtag1v5-vanilla libthai-data libthai0
+  libtheora0 libtiff5 libtxc-dxtn-s2tc libv4l-0 libv4lconvert0 libvisual-0.4-0 libvorbis0a libvorbisenc2 libvpx4 libwavpack1 libwayland-client0
+  libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwebkit2gtk-4.0-37 libwebp6 libx11-xcb1 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0
+  libxcb-present0 libxcb-render0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxft2 libxi6
+  libxinerama1 libxkbcommon0 libxrandr2 libxrender1 libxshmfence1 libxslt1.1 libxtst6 libxv1 libxxf86vm1 libyelp0 notification-daemon python3-cairo
+  python3-gi python3-gi-cairo x11-common yelp yelp-xsl zenity zenity-common
+Paquetes sugeridos:
+  aspell-doc spellutils wordlist gedit-plugins gvfs hunspell openoffice.org-hunspell | openoffice.org-core isoquery colord cups-common libdv-bin
+  oss-compat libenchant-voikko gpm libvisual-0.4-plugins gstreamer1.0-tools jackd2 liblcms2-utils opus-tools libraw1394-doc librsvg2-bin lm-sensors
+  speex libwebkit2gtk-4.0-37-gtk2
+Se instalarán los siguientes paquetes NUEVOS:
+  adwaita-icon-theme aspell aspell-en at-spi2-core dconf-gsettings-backend dconf-service dictionaries-common emacsen-common enchant fontconfig
+  fontconfig-config fonts-dejavu fonts-dejavu-core fonts-dejavu-extra gedit gedit-common gir1.2-atk-1.0 gir1.2-freedesktop gir1.2-gdkpixbuf-2.0
+  gir1.2-glib-2.0 gir1.2-gtk-3.0 gir1.2-gtksource-3.0 gir1.2-pango-1.0 gir1.2-peas-1.0 glib-networking glib-networking-common
+  glib-networking-services gnome-user-guide gsettings-desktop-schemas gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-x
+  gtk-update-icon-cache hicolor-icon-theme hunspell-en-us iso-codes libaa1 libaspell15 libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0
+  libavahi-client3 libavahi-common-data libavahi-common3 libavc1394-0 libcaca0 libcairo-gobject2 libcairo2 libcap2-bin libcdparanoia0 libcolord2
+  libcroco3 libcups2 libdatrie1 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libdv4 libegl1-mesa libenchant1c2a
+  libepoxy0 libflac8 libfontconfig1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgirepository-1.0-1 libgl1-mesa-dri libgl1-mesa-glx
+  libglapi-mesa libgpm2 libgraphite2-3 libgspell-1-1 libgspell-1-common libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libgtk-3-0 libgtk-3-bin
+  libgtk-3-common libgtksourceview-3.0-1 libgtksourceview-3.0-common libgudev-1.0-0 libharfbuzz-icu0 libharfbuzz0b libhunspell-1.4-0 libhyphen0
+  libiec61883-0 libjack-jackd2-0 libjavascriptcoregtk-4.0-18 libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2
+  libllvm3.9 libnotify4 libogg0 libopus0 liborc-0.4-0 libpam-cap libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpangoxft-1.0-0
+  libpciaccess0 libpeas-1.0-0 libpeas-common libpixman-1-0 libproxy1v5 libpython3.5 libraw1394-11 librest-0.7-0 librsvg2-2 librsvg2-common
+  libsecret-1-0 libsecret-common libsensors4 libshout3 libsoup-gnome2.4-1 libsoup2.4-1 libspeex1 libtag1v5 libtag1v5-vanilla libthai-data libthai0
+  libtheora0 libtiff5 libtxc-dxtn-s2tc libv4l-0 libv4lconvert0 libvisual-0.4-0 libvorbis0a libvorbisenc2 libvpx4 libwavpack1 libwayland-client0
+  libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwebkit2gtk-4.0-37 libwebp6 libx11-xcb1 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0
+  libxcb-present0 libxcb-render0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxft2 libxi6
+  libxinerama1 libxkbcommon0 libxrandr2 libxrender1 libxshmfence1 libxslt1.1 libxtst6 libxv1 libxxf86vm1 libyelp0 notification-daemon python3-cairo
+  python3-gi python3-gi-cairo x11-common yelp yelp-xsl zenity zenity-common
+0 actualizados, 179 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 101 MB de archivos.
+Se utilizarán 474 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+----
+Video
+
+mcampos@yugo:~$ sudo apt-cache search intel | grep xorg
+xserver-xorg-video-intel - X.Org X server -- Intel i8xx, i9xx display driver
+xserver-xorg-video-intel-dbg - X.Org X server -- Intel i8xx, i9xx display driver (debug symbols)
+mcampos@yugo:~$
+
+
+mcampos@yugo:~$ sudo apt-get install xserver-xorg-video-intel
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libfontenc1 libice6 libsm6 libxaw7 libxcb-util0 libxfont1 libxfont2 libxkbfile1 libxmu6 libxpm4 libxss1 libxt6 libxvmc1 x11-xkb-utils xfonts-base
+  xfonts-encodings xfonts-utils xserver-common xserver-xorg-core
+Paquetes sugeridos:
+  xfs | xserver xfonts-100dpi | xfonts-75dpi xfonts-scalable
+Se instalarán los siguientes paquetes NUEVOS:
+  libfontenc1 libice6 libsm6 libxaw7 libxcb-util0 libxfont1 libxfont2 libxkbfile1 libxmu6 libxpm4 libxss1 libxt6 libxvmc1 x11-xkb-utils xfonts-base
+  xfonts-encodings xfonts-utils xserver-common xserver-xorg-core xserver-xorg-video-intel
+0 actualizados, 20 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 14,8 MB de archivos.
+Se utilizarán 22,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+--------------------------------------------
+
+
+Instalar Xorg 
+
+sudo apt-get install xorg
+
+mcampos@yugo:~$ sudo apt-get install xorg
+[sudo] password for mcampos: 
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  cpp cpp-6 libevdev2 libglu1-mesa libinput-bin libinput10 libisl15 libmpc3 libmpfr4 libmtdev1 libutempter0 libwacom-bin libwacom-common libwacom2
+  libxcb-shape0 libxxf86dga1 x11-apps x11-session-utils x11-utils x11-xserver-utils xbitmaps xfonts-100dpi xfonts-75dpi xfonts-scalable xinit
+  xorg-docs-core xserver-xorg xserver-xorg-input-all xserver-xorg-input-libinput xserver-xorg-input-wacom xserver-xorg-legacy xterm
+Paquetes sugeridos:
+  cpp-doc gcc-6-locales mesa-utils nickle cairo-5c xorg-docs x11-xfs-utils xinput xfonts-cyrillic
+Se instalarán los siguientes paquetes NUEVOS:
+  cpp cpp-6 libevdev2 libglu1-mesa libinput-bin libinput10 libisl15 libmpc3 libmpfr4 libmtdev1 libutempter0 libwacom-bin libwacom-common libwacom2
+  libxcb-shape0 libxxf86dga1 x11-apps x11-session-utils x11-utils x11-xserver-utils xbitmaps xfonts-100dpi xfonts-75dpi xfonts-scalable xinit xorg
+  xorg-docs-core xserver-xorg xserver-xorg-input-all xserver-xorg-input-libinput xserver-xorg-input-wacom xserver-xorg-legacy xterm
+0 actualizados, 33 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 20,1 MB de archivos.
+Se utilizarán 45,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Openbox:
+
+sudo apt-get install openbox obconf obmenu
+
+mcampos@yugo:~$ sudo apt-get install openbox obconf obmenu
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  giblib1 libblas-common libblas3 libgail-common libgail18 libgfortran3 libgif7 libglade2-0 libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libid3tag0
+  libimlib2 liblapack3 libobrender32v5 libobt2v5 libquadmath0 libstartup-notification0 python-cairo python-glade2 python-gobject-2 python-gtk2
+  python-numpy python-xdg scrot
+Paquetes sugeridos:
+  gvfs menu libxml2-dev tint2 openbox-menu openbox-gnome-session openbox-kde-session python-gtk2-doc python-gobject-2-dbg gcc gfortran python-dev
+  python-nose python-numpy-dbg python-numpy-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  giblib1 libblas-common libblas3 libgail-common libgail18 libgfortran3 libgif7 libglade2-0 libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libid3tag0
+  libimlib2 liblapack3 libobrender32v5 libobt2v5 libquadmath0 libstartup-notification0 obconf obmenu openbox python-cairo python-glade2
+  python-gobject-2 python-gtk2 python-numpy python-xdg scrot
+0 actualizados, 28 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 11,5 MB de archivos.
+Se utilizarán 55,4 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+sudo apt-get install lxappearance gtk.-engines-* gnome-themes-standard .+-icon-theme
+
+mcampos@yugo:~$ sudo apt-get install lxappearance gtk.-engines-* gnome-themes-standard .+-icon-theme
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Nota, seleccionando «gtk2-engines» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk3-engines-breeze» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-xfce» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-qtcurve» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-moblin» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk3-engines-oxygen» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-murrine» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-cleanice» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-pixbuf» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk3-engines-xfce» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-nodoka» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-aurora» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-oxygen» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-gartoon» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-magicchicken» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-sugar» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gtk2-engines-wonderland» para la expresión regular «gtk.-engines-*»
+Nota, seleccionando «gnome-icon-theme-gartoon» en lugar de «gtk2-engines-gartoon»
+Nota, seleccionando «gnome-icon-theme-nuovo» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-human-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «tango-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «faba-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «human-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-dust-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «nuvola-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «oxygen-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «tango-icon-theme-common» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-wise-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «numix-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-brave-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-wine-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme-yasis» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme-suede» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-noble-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «lxde-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «moblin-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «mate-icon-theme-faenza» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme-full» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme-symbolic» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme-gartoon» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «mate-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «adwaita-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «moka-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-icon-theme-extras» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «hicolor-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «faba-icon-theme-symbolic» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «breeze-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «sugar-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «tangerine-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «industrial-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «gnome-illustrious-icon-theme» para la expresión regular «.+-icon-theme»
+Nota, seleccionando «faenza-icon-theme» para la expresión regular «.+-icon-theme»
+adwaita-icon-theme ya está en su versión más reciente (3.22.0-1+deb9u1).
+fijado adwaita-icon-theme como instalado manualmente.
+hicolor-icon-theme ya está en su versión más reciente (0.15-1).
+fijado hicolor-icon-theme como instalado manualmente.
+Se instalarán los siguientes paquetes adicionales:
+  albatross-gtk-theme blackbird-gtk-theme bluebird-gtk-theme gnome-accessibility-themes gnome-colors-common gnome-themes-standard-data
+  greybird-gtk-theme i965-va-driver kde-style-qtcurve-qt4 kde-style-qtcurve-qt5 kio liba52-0.7.4 libaacs0 libass9 libasyncns0 libaudio2
+  libauthen-sasl-perl libavcodec57 libavformat57 libavutil55 libbasicusageenvironment1 libbluray2 libcddb2 libcdio13 libchromaprint1 libcrystalhd3
+  libdbus-glib-1-2 libdbusmenu-qt5-2 libdc1394-22 libdca0 libdirectfb-1.2-9 libdouble-conversion1 libdvbpsi10 libdvdnav4 libdvdread4 libebml4v5
+  libencode-locale-perl libfaad2 libfam0 libfdk-aac1 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl
+  libfont-afm-perl libfribidi0 libgles2-mesa libglew2.0 libgme0 libgpgme11 libgpgmepp6 libgroupsock8 libgsm1 libhtml-form-perl libhtml-format-perl
+  libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl
+  libhttp-negotiate-perl libilbc2 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libiso9660-8 libkate1 libkf5archive5 libkf5attica5
+  libkf5auth-data libkf5auth5 libkf5bookmarks-data libkf5bookmarks5 libkf5codecs-data libkf5codecs5 libkf5completion-data libkf5completion5
+  libkf5config-bin libkf5config-data libkf5configcore5 libkf5configgui5 libkf5configwidgets-data libkf5configwidgets5 libkf5coreaddons-data
+  libkf5coreaddons5 libkf5crash5 libkf5dbusaddons-bin libkf5dbusaddons-data libkf5dbusaddons5 libkf5globalaccel-bin libkf5globalaccel-data
+  libkf5globalaccel5 libkf5globalaccelprivate5 libkf5guiaddons5 libkf5i18n-data libkf5i18n5 libkf5iconthemes-bin libkf5iconthemes-data
+  libkf5iconthemes5 libkf5itemviews-data libkf5itemviews5 libkf5jobwidgets-data libkf5jobwidgets5 libkf5kdelibs4support-data libkf5kdelibs4support5
+  libkf5kdelibs4support5-bin libkf5kiocore5 libkf5kiofilewidgets5 libkf5kiontlm5 libkf5kiowidgets5 libkf5notifications-data libkf5notifications5
+  libkf5parts-data libkf5parts-plugins libkf5parts5 libkf5service-bin libkf5service-data libkf5service5 libkf5solid5 libkf5solid5-data
+  libkf5sonnet5-data libkf5sonnetcore5 libkf5sonnetui5 libkf5textwidgets-data libkf5textwidgets5 libkf5wallet-bin libkf5wallet-data libkf5wallet5
+  libkf5widgetsaddons-data libkf5widgetsaddons5 libkf5windowsystem-data libkf5windowsystem5 libkf5xmlgui-bin libkf5xmlgui-data libkf5xmlgui5
+  libkvazaar3 libkwalletbackend5-5 liblirc-client0 liblivemedia58 liblua5.2-0 liblwp-mediatypes-perl liblwp-protocol-https-perl libmad0
+  libmailtools-perl libmatroska6v5 libmfx0 libmng1 libmodplug1 libmp3lame0 libmpcdec6 libmpeg2-4 libmpg123-0 libmtp-common libmtp-runtime libmtp9
+  libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnuma1 libopencore-amrnb0 libopencore-amrwb0 libopenh264-2
+  libopenjp2-7 libopenmpt0 libpango1.0-0 libpangox-1.0-0 libpcre16-3 libphonon4qt5-4 libpolkit-agent-1-0 libpolkit-gobject-1-0 libpolkit-qt5-1-1
+  libpostproc54 libproxy-tools libpulse-mainloop-glib0 libpulse0 libqt4-dbus libqt4-svg libqt4-xml libqt5core5a libqt5dbus5 libqt5gui5
+  libqt5network5 libqt5printsupport5 libqt5script5 libqt5svg5 libqt5test5 libqt5widgets5 libqt5x11extras5 libqt5xml5 libqtcore4 libqtcurve-utils2
+  libqtdbus4 libqtgui4 libresid-builder0c2a libsdl-image1.2 libsdl1.2debian libshine3 libsidplay2 libsnappy1v5 libsndfile1 libsoxr0 libspeexdsp1
+  libswresample2 libswscale4 libtie-ixhash-perl libtimedate-perl libtwolame0 libupnp6 liburi-perl libusageenvironment3 libva-drm1 libva-x11-1 libva1
+  libvcdinfo0 libvdpau-va-gl1 libvdpau1 libvlc-bin libvlc5 libvlccore8 libvo-amrwbenc0 libvorbisfile3 libwww-perl libwww-robotrules-perl
+  libx11-protocol-perl libx264-150 libx265-116 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0
+  libxcb-xkb1 libxcb-xv0 libxkbcommon-x11-0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxvidcore4 libzvbi-common libzvbi0
+  lxde-settings-daemon mesa-utils mesa-va-drivers mesa-vdpau-drivers murrine-themes perl-openssl-defaults phonon4qt5 phonon4qt5-backend-vlc qdbus
+  qt-at-spi qt5-gtk-platformtheme qtchooser qtcore4-l10n qttranslations5-l10n sonnet-plugins va-driver-all vdpau-driver-all vlc-data vlc-plugin-base
+  vlc-plugin-video-output xdg-utils
+Paquetes sugeridos:
+  arc-brave shiki-brave-theme arc-dust shiki-dust-theme arc-human shiki-human-theme arc-illustrious shiki-illustrious-theme arc-noble
+  shiki-noble-theme arc-wine shiki-wine-theme arc-wise shiki-wise-theme kde-config-gtk-style xfce4-panel nas libdigest-hmac-perl libgssapi-perl
+  libbluray-bdj libchromaprint-tools python-acoustid firmware-crystalhd libdvdcss2 fam glew-utils gpgsm libdata-dump-perl media-player-info lirc
+  libcrypt-ssleay-perl pulseaudio qt5-image-formats-plugins qtwayland5 qt4-qtconfig libauthen-ntlm-perl libunicode-map8-perl libunicode-string-perl
+  xml-twig-tools phonon4qt5-backend-gstreamer hspell kdelibs-data libfglrx-amdxvba1 nvidia-vdpau-driver nvidia-legacy-340xx-vdpau-driver
+  nvidia-legacy-304xx-vdpau-driver gvfs-bin
+Se instalarán los siguientes paquetes NUEVOS:
+  albatross-gtk-theme blackbird-gtk-theme bluebird-gtk-theme breeze-icon-theme faba-icon-theme faenza-icon-theme gnome-accessibility-themes
+  gnome-brave-icon-theme gnome-colors-common gnome-dust-icon-theme gnome-human-icon-theme gnome-icon-theme gnome-icon-theme-extras
+  gnome-icon-theme-gartoon gnome-icon-theme-nuovo gnome-icon-theme-suede gnome-icon-theme-symbolic gnome-icon-theme-yasis
+  gnome-illustrious-icon-theme gnome-noble-icon-theme gnome-themes-standard gnome-themes-standard-data gnome-wine-icon-theme gnome-wise-icon-theme
+  greybird-gtk-theme gtk2-engines gtk2-engines-aurora gtk2-engines-cleanice gtk2-engines-magicchicken gtk2-engines-moblin gtk2-engines-murrine
+  gtk2-engines-nodoka gtk2-engines-oxygen gtk2-engines-pixbuf gtk2-engines-qtcurve gtk2-engines-sugar gtk2-engines-wonderland gtk2-engines-xfce
+  gtk3-engines-breeze gtk3-engines-xfce human-icon-theme i965-va-driver kde-style-qtcurve-qt4 kde-style-qtcurve-qt5 kio liba52-0.7.4 libaacs0
+  libass9 libasyncns0 libaudio2 libauthen-sasl-perl libavcodec57 libavformat57 libavutil55 libbasicusageenvironment1 libbluray2 libcddb2 libcdio13
+  libchromaprint1 libcrystalhd3 libdbus-glib-1-2 libdbusmenu-qt5-2 libdc1394-22 libdca0 libdirectfb-1.2-9 libdouble-conversion1 libdvbpsi10
+  libdvdnav4 libdvdread4 libebml4v5 libencode-locale-perl libfaad2 libfam0 libfdk-aac1 libfile-basedir-perl libfile-desktopentry-perl
+  libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfribidi0 libgles2-mesa libglew2.0 libgme0 libgpgme11 libgpgmepp6 libgroupsock8
+  libgsm1 libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl
+  libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libilbc2 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl
+  libiso9660-8 libkate1 libkf5archive5 libkf5attica5 libkf5auth-data libkf5auth5 libkf5bookmarks-data libkf5bookmarks5 libkf5codecs-data
+  libkf5codecs5 libkf5completion-data libkf5completion5 libkf5config-bin libkf5config-data libkf5configcore5 libkf5configgui5
+  libkf5configwidgets-data libkf5configwidgets5 libkf5coreaddons-data libkf5coreaddons5 libkf5crash5 libkf5dbusaddons-bin libkf5dbusaddons-data
+  libkf5dbusaddons5 libkf5globalaccel-bin libkf5globalaccel-data libkf5globalaccel5 libkf5globalaccelprivate5 libkf5guiaddons5 libkf5i18n-data
+  libkf5i18n5 libkf5iconthemes-bin libkf5iconthemes-data libkf5iconthemes5 libkf5itemviews-data libkf5itemviews5 libkf5jobwidgets-data
+  libkf5jobwidgets5 libkf5kdelibs4support-data libkf5kdelibs4support5 libkf5kdelibs4support5-bin libkf5kiocore5 libkf5kiofilewidgets5 libkf5kiontlm5
+  libkf5kiowidgets5 libkf5notifications-data libkf5notifications5 libkf5parts-data libkf5parts-plugins libkf5parts5 libkf5service-bin
+  libkf5service-data libkf5service5 libkf5solid5 libkf5solid5-data libkf5sonnet5-data libkf5sonnetcore5 libkf5sonnetui5 libkf5textwidgets-data
+  libkf5textwidgets5 libkf5wallet-bin libkf5wallet-data libkf5wallet5 libkf5widgetsaddons-data libkf5widgetsaddons5 libkf5windowsystem-data
+  libkf5windowsystem5 libkf5xmlgui-bin libkf5xmlgui-data libkf5xmlgui5 libkvazaar3 libkwalletbackend5-5 liblirc-client0 liblivemedia58 liblua5.2-0
+  liblwp-mediatypes-perl liblwp-protocol-https-perl libmad0 libmailtools-perl libmatroska6v5 libmfx0 libmng1 libmodplug1 libmp3lame0 libmpcdec6
+  libmpeg2-4 libmpg123-0 libmtp-common libmtp-runtime libmtp9 libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnuma1
+  libopencore-amrnb0 libopencore-amrwb0 libopenh264-2 libopenjp2-7 libopenmpt0 libpango1.0-0 libpangox-1.0-0 libpcre16-3 libphonon4qt5-4
+  libpolkit-agent-1-0 libpolkit-gobject-1-0 libpolkit-qt5-1-1 libpostproc54 libproxy-tools libpulse-mainloop-glib0 libpulse0 libqt4-dbus libqt4-svg
+  libqt4-xml libqt5core5a libqt5dbus5 libqt5gui5 libqt5network5 libqt5printsupport5 libqt5script5 libqt5svg5 libqt5test5 libqt5widgets5
+  libqt5x11extras5 libqt5xml5 libqtcore4 libqtcurve-utils2 libqtdbus4 libqtgui4 libresid-builder0c2a libsdl-image1.2 libsdl1.2debian libshine3
+  libsidplay2 libsnappy1v5 libsndfile1 libsoxr0 libspeexdsp1 libswresample2 libswscale4 libtie-ixhash-perl libtimedate-perl libtwolame0 libupnp6
+  liburi-perl libusageenvironment3 libva-drm1 libva-x11-1 libva1 libvcdinfo0 libvdpau-va-gl1 libvdpau1 libvlc-bin libvlc5 libvlccore8
+  libvo-amrwbenc0 libvorbisfile3 libwww-perl libwww-robotrules-perl libx11-protocol-perl libx264-150 libx265-116 libxcb-icccm4 libxcb-image0
+  libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xkb1 libxcb-xv0 libxkbcommon-x11-0 libxml-parser-perl libxml-twig-perl
+  libxml-xpathengine-perl libxvidcore4 libzvbi-common libzvbi0 lxappearance lxde-icon-theme lxde-settings-daemon mate-icon-theme
+  mate-icon-theme-faenza mesa-utils mesa-va-drivers mesa-vdpau-drivers moblin-icon-theme moka-icon-theme murrine-themes numix-icon-theme
+  nuvola-icon-theme oxygen-icon-theme perl-openssl-defaults phonon4qt5 phonon4qt5-backend-vlc qdbus qt-at-spi qt5-gtk-platformtheme qtchooser
+  qtcore4-l10n qttranslations5-l10n sonnet-plugins sugar-icon-theme tangerine-icon-theme tango-icon-theme va-driver-all vdpau-driver-all vlc-data
+  vlc-plugin-base vlc-plugin-video-output xdg-utils
+0 actualizados, 311 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 244 MB de archivos.
+Se utilizarán 899 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+---
+
+Configura OpenBox desde LXAppearance:
+
+sudo apt-get install lxappearance-obconf
+
+mcampos@yugo:~$ sudo apt-get install lxappearance-obconf
+[sudo] password for mcampos: 
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  lxappearance-obconf
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 51,5 kB de archivos.
+Se utilizarán 401 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian stretch/main amd64 lxappearance-obconf amd64 0.2.3-1 [51,5 kB]
+Descargados 51,5 kB en 0s (73,9 kB/s)          
+Seleccionando el paquete lxappearance-obconf previamente no seleccionado.
+(Leyendo la base de datos ... 304181 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../lxappearance-obconf_0.2.3-1_amd64.deb ...
+Desempaquetando lxappearance-obconf (0.2.3-1) ...
+Configurando lxappearance-obconf (0.2.3-1) ...
+mcampos@yugo:~$ 
+
+mcampos@yugo:~$ sudo apt-get install gksu
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  dbus-user-session gconf-service gconf2 gconf2-common gcr gnome-keyring libgck-1-0 libgconf-2-4 libgcr-3-common libgcr-base-3-1 libgcr-ui-3-1
+  libgksu2-0 libgnome-keyring-common libgnome-keyring0 libgtop-2.0-10 libgtop2-common libpam-gnome-keyring p11-kit p11-kit-modules pinentry-gnome3
+  psmisc
+Paquetes sugeridos:
+  gconf-defaults-service pinentry-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  dbus-user-session gconf-service gconf2 gconf2-common gcr gksu gnome-keyring libgck-1-0 libgconf-2-4 libgcr-3-common libgcr-base-3-1 libgcr-ui-3-1
+  libgksu2-0 libgnome-keyring-common libgnome-keyring0 libgtop-2.0-10 libgtop2-common libpam-gnome-keyring p11-kit p11-kit-modules pinentry-gnome3
+  psmisc
+0 actualizados, 22 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 5.156 kB de archivos.
+Se utilizarán 19,8 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+
+Nota se utiliza en los menus donde se requiera privilegios de root eje. gksu lxappearance
+
+-----------------------
+
+sudo apt-get install nitrogen
+
+mcampos@yugo:~$ sudo apt-get install nitrogen
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libatkmm-1.6-1v5 libcairomm-1.0-1v5 libglibmm-2.4-1v5 libgtkmm-2.4-1v5 libpangomm-1.4-1v5 libsigc++-2.0-0v5
+Se instalarán los siguientes paquetes NUEVOS:
+  libatkmm-1.6-1v5 libcairomm-1.0-1v5 libglibmm-2.4-1v5 libgtkmm-2.4-1v5 libpangomm-1.4-1v5 libsigc++-2.0-0v5 nitrogen
+0 actualizados, 7 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.865 kB de archivos.
+Se utilizarán 8.849 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+------
+Paneles
+
+LXPanel
+
+sudo apt-get install lxpanel
+
+mcampos@yugo:~$ sudo apt-get install lxpanel
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libasound2-plugins libcanberra-gtk3-0 libcanberra-gtk3-module libcanberra0 libexif12 libfm-data libfm-extra4 libfm-gtk-data libfm-gtk4
+  libfm-modules libfm4 libgtkmm-3.0-1v5 libkeybinder0 libltdl7 libmenu-cache-bin libmenu-cache3 libpolkit-backend-1-0 libpulsedsp libtdb1
+  libwebrtc-audio-processing1 libwnck-common libwnck22 libxres1 lxmenu-data lxpanel-data pavucontrol policykit-1 pulseaudio pulseaudio-utils rtkit
+Paquetes sugeridos:
+  libcanberra-gtk0 libcanberra-pulse libfm-tools nautilus-actions menu firefox-esr | firefox | www-browser pavumeter paman paprefs avahi-daemon
+Se instalarán los siguientes paquetes NUEVOS:
+  libasound2-plugins libcanberra-gtk3-0 libcanberra-gtk3-module libcanberra0 libexif12 libfm-data libfm-extra4 libfm-gtk-data libfm-gtk4
+  libfm-modules libfm4 libgtkmm-3.0-1v5 libkeybinder0 libltdl7 libmenu-cache-bin libmenu-cache3 libpolkit-backend-1-0 libpulsedsp libtdb1
+  libwebrtc-audio-processing1 libwnck-common libwnck22 libxres1 lxmenu-data lxpanel lxpanel-data pavucontrol policykit-1 pulseaudio pulseaudio-utils
+  rtkit
+0 actualizados, 31 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 6.080 kB de archivos.
+Se utilizarán 26,9 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Herramienta de gestion de redes:
+
+sudo apt-get install network-manager-gnome
+
+mcampos@yugo:~$ sudo apt-get install network-manager-gnome
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  crda dns-root-data dnsmasq-base iputils-arping libbluetooth3 libjansson4 libjim0.76 libmbim-glib4 libmbim-proxy libmm-glib0 libndp0 libnm0 libnma0
+  libpcap0.8 libqmi-glib5 libqmi-proxy libteamdctl0 mobile-broadband-provider-info modemmanager network-manager policykit-1-gnome ppp usb-modeswitch
+  usb-modeswitch-data wireless-regdb
+Paquetes sugeridos:
+  libteam-utils network-manager-openconnect-gnome network-manager-openvpn-gnome network-manager-vpnc-gnome network-manager-pptp-gnome comgt wvdial
+Se instalarán los siguientes paquetes NUEVOS:
+  crda dns-root-data dnsmasq-base iputils-arping libbluetooth3 libjansson4 libjim0.76 libmbim-glib4 libmbim-proxy libmm-glib0 libndp0 libnm0 libnma0
+  libpcap0.8 libqmi-glib5 libqmi-proxy libteamdctl0 mobile-broadband-provider-info modemmanager network-manager network-manager-gnome
+  policykit-1-gnome ppp usb-modeswitch usb-modeswitch-data wireless-regdb
+0 actualizados, 26 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 6.625 kB de archivos.
+Se utilizarán 28,8 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+mcampos@yugo:~$ sudo apt-get install network-manager-pptp-gnome
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libnm-glib-vpn1 libnm-glib4 libnm-gtk0 libnm-util2 network-manager-pptp pptp-linux
+Se instalarán los siguientes paquetes NUEVOS:
+  libnm-glib-vpn1 libnm-glib4 libnm-gtk0 libnm-util2 network-manager-pptp network-manager-pptp-gnome pptp-linux
+0 actualizados, 7 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.248 kB de archivos.
+Se utilizarán 2.836 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+-----------------------
+
+Composición para el escritorio:
+
+mcampos@yugo:~$ sudo apt-get install compton
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libconfig9
+Se instalarán los siguientes paquetes NUEVOS:
+  compton libconfig9
+0 actualizados, 2 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 129 kB de archivos.
+Se utilizarán 345 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+---------------
+OK Ahora configurar Openbox:
+
+--------------
+Instalar Google Chrome
+
+mcampos@yugo:~$ sudo apt-get install google-chrome-stable
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  distro-info-data fonts-liberation libappindicator1 libdbusmenu-glib4 libdbusmenu-gtk4 libindicator7 libnspr4 libnss3 lsb-release
+Paquetes sugeridos:
+  lsb
+Se instalarán los siguientes paquetes NUEVOS:
+  distro-info-data fonts-liberation google-chrome-stable libappindicator1 libdbusmenu-glib4 libdbusmenu-gtk4 libindicator7 libnspr4 libnss3
+  lsb-release
+0 actualizados, 10 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 64,2 MB de archivos.
+Se utilizarán 250 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+Instalar Oracle Java
+
+sudo apt-get install oracle-java8-installer
+
+mcampos@yugo:~$ sudo apt-get install oracle-java8-installer
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  binutils gsfonts gsfonts-x11 java-common oracle-java8-set-default
+Paquetes sugeridos:
+  binutils-doc binfmt-support visualvm ttf-baekmuk | ttf-unfonts | ttf-unfonts-core ttf-kochi-gothic | ttf-sazanami-gothic ttf-kochi-mincho
+  | ttf-sazanami-mincho ttf-arphic-uming firefox | firefox-2 | iceweasel | mozilla-firefox | iceape-browser | mozilla-browser | epiphany-gecko
+  | epiphany-webkit | epiphany-browser | galeon | midbrowser | moblin-web-browser | xulrunner | xulrunner-1.9 | konqueror | chromium-browser
+  | midori | google-chrome
+Se instalarán los siguientes paquetes NUEVOS:
+  binutils gsfonts gsfonts-x11 java-common oracle-java8-installer oracle-java8-set-default
+0 actualizados, 6 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 6.958 kB de archivos.
+Se utilizarán 28,7 MB de espacio de disco adicional después de esta operación.
+W: El objetivo Packages (main/binary-amd64/Packages) está configurado varias veces en /etc/apt/sources.list:21 y /etc/apt/sources.list.d/google-chrome.list:3
+W: El objetivo Packages (main/binary-all/Packages) está configurado varias veces en /etc/apt/sources.list:21 y /etc/apt/sources.list.d/google-chrome.list:3
+W: El objetivo Translations (main/i18n/Translation-es_CL) está configurado varias veces en /etc/apt/sources.list:21 y /etc/apt/sources.list.d/google-chrome.list:3
+W: El objetivo Translations (main/i18n/Translation-es) está configurado varias veces en /etc/apt/sources.list:21 y /etc/apt/sources.list.d/google-chrome.list:3
+W: El objetivo Translations (main/i18n/Translation-en) está configurado varias veces en /etc/apt/sources.list:21 y /etc/apt/sources.list.d/google-chrome.list:3
+¿Desea continuar? [S/n] 
+
+
+Instalat Firefox en Stretch:
+
+
+sudo apt-get install firefox-esr firefox-esr-l10n-es-cl
+
+mcampos@yugo:~$ sudo apt-get install firefox-esr firefox-esr-l10n-es-cl
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libevent-2.0-5 libjsoncpp1
+Paquetes sugeridos:
+  fonts-stix | otf-stix fonts-lmodern mozplugger
+Se instalarán los siguientes paquetes NUEVOS:
+  firefox-esr firefox-esr-l10n-es-cl libevent-2.0-5 libjsoncpp1
+0 actualizados, 4 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 47,1 MB de archivos.
+Se utilizarán 115 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+----------------------------
+
+Instalar Arduino IDE
+
+
+Dependencias:
+
+sudo apt-get install librxtx-java gcc-avr avr-libc binutils-avr avrdude
+
+mcampos@yugo:~$ sudo apt-get install librxtx-java gcc-avr avr-libc binutils-avr avrdude
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libftdi1
+Paquetes sugeridos:
+  avrdude-doc task-c-devel gcc-doc gcc
+Se instalarán los siguientes paquetes NUEVOS:
+  avr-libc avrdude binutils-avr gcc-avr libftdi1 librxtx-java
+0 actualizados, 6 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 18,6 MB de archivos.
+Se utilizarán 114 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+sudo gpasswd -a mcampos dialout
+
+mcampos@yugo:~$ sudo gpasswd -a mcampos dialout
+Añadiendo al usuario mcampos al grupo dialout
+mcampos@yugo:~$
+
+Finalmente el IDE
+
+sudo apt-get install arduino
+
+mcampos@yugo:~$ sudo apt-get install arduino
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  arduino-core extra-xdg-menus gcc gcc-6 libasan3 libatomic1 libc-dev-bin libc6-dev libcc1-0 libcilkrts5 libgcc-6-dev libitm1 libjna-java libjna-jni
+  liblsan0 libmpx2 libtsan0 libubsan0 linux-libc-dev manpages manpages-dev
+Paquetes sugeridos:
+  arduino-mk gcc-multilib make autoconf automake libtool flex bison gdb gcc-doc gcc-6-multilib gcc-6-doc gcc-6-locales libgcc1-dbg libgomp1-dbg
+  libitm1-dbg libatomic1-dbg libasan3-dbg liblsan0-dbg libtsan0-dbg libubsan0-dbg libcilkrts5-dbg libmpx2-dbg libquadmath0-dbg glibc-doc
+  libjna-java-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  arduino arduino-core extra-xdg-menus gcc gcc-6 libasan3 libatomic1 libc-dev-bin libc6-dev libcc1-0 libcilkrts5 libgcc-6-dev libitm1 libjna-java
+  libjna-jni liblsan0 libmpx2 libtsan0 libubsan0 linux-libc-dev manpages manpages-dev
+0 actualizados, 22 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 19,4 MB de archivos.
+Se utilizarán 77,1 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+sudo apt-get install gksu
+
+-----------------------
+
+Eclipse JEE IDE
+
+
+cd /opt
+
+
+Referencia https://levlaz.org/installing-the-latest-version-of-eclipse-ide-mars-in-debian/
+
+
+64bits:
+sudo wget http://eclipse.c3sl.ufpr.br/technology/epp/downloads/release/neon/3/eclipse-jee-neon-3-linux-gtk-x86_64.tar.gz
+
+
+
+sudo tar fvx eclipse-jee-neon-3-linux-gtk-x86_64.tar.gz
+
+
+sudo ln -s /opt/eclipse/eclipse /usr/local/bin/eclipse
+
+ok lanzar con eclipse
+
+
+Crear icono:
+
+sudo nano /usr/share/applications/eclipse.desktop
+
+[Desktop Entry]
+Name=Eclipse IDE
+Comment=Java Integrated Development Environment
+Exec=/usr/local/bin/eclipse
+Terminal=false
+Icon=/opt/eclipse/icon.xpm
+Type=Application
+Categories=Development;IDE
+
+
+-------------------------
+Escritorio:
+
+apt-get install nautilus
+
+mcampos@yugo:~$ sudo apt-get install nautilus
+[sudo] password for mcampos: 
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  desktop-file-utils dosfstools exfat-fuse exfat-utils fonts-droid-fallback fonts-noto-mono fuse gdisk gir1.2-clutter-1.0 gir1.2-clutter-gst-3.0
+  gir1.2-cogl-1.0 gir1.2-coglpango-1.0 gir1.2-evince-3.0 gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 gir1.2-gtkclutter-1.0
+  gir1.2-javascriptcoregtk-4.0 gir1.2-json-1.0 gir1.2-soup-2.4 gir1.2-webkit2-4.0 gnome-desktop3-data gnome-sushi gvfs gvfs-backends gvfs-common
+  gvfs-daemons gvfs-libs libarchive13 libatasmart4 libavahi-glib1 libbluray1 libcdio-cdda1 libcdio-paranoia1 libclutter-1.0-0 libclutter-1.0-common
+  libclutter-gst-3.0-0 libclutter-gtk-1.0-0 libcogl-common libcogl-pango20 libcogl-path20 libcogl20 libcupsfilters1 libcupsimage2 libdjvulibre-text
+  libdjvulibre21 libenca0 libevdocument3-4 libevview3-3 libexempi3 libgail-3-0 libgd3 libgdata-common libgdata22 libgjs0e libgnome-autoar-0-0
+  libgnome-autoar-common libgnome-desktop-3-12 libgoa-1.0-0b libgoa-1.0-common libgphoto2-6 libgphoto2-l10n libgphoto2-port12 libgs9 libgs9-common
+  libgxps2 libijs-0.35 libimobiledevice6 libiptcdata0 libjbig2dec0 libkpathsea6 libldb1 liblzo2-2 libmozjs-24-0 libmusicbrainz5-2
+  libmusicbrainz5cc2v5 libnautilus-extension1a libneon27-gnutls libnfs8 libntfs-3g871 liboauth0 libpaper-utils libpaper1 libparted2 libplist3
+  libpoppler-glib8 libpoppler64 libpython2.7 libsmbclient libspectre1 libstemmer0d libtalloc2 libtevent0 libtracker-sparql-1.0-0 libudisks2-0
+  libusbmuxd4 libwbclient0 nautilus-data ntfs-3g parted poppler-data python-talloc samba-libs udisks2 usbmuxd
+Paquetes sugeridos:
+  fonts-noto gstreamer1.0-libav bluez-obexd samba-common lrzip libbluray-bdj libgd-tools gphoto2 libusbmuxd-tools libparted-dev libparted-i18n
+  brasero eog evince | pdf-viewer totem | mp3-decoder nautilus-sendto tracker parted-doc poppler-utils ghostscript fonts-japanese-mincho
+  | fonts-ipafont-mincho fonts-japanese-gothic | fonts-ipafont-gothic fonts-arphic-ukai fonts-arphic-uming fonts-nanum btrfs-progs | btrfs-tools
+  cryptsetup-bin mdadm reiserfsprogs xfsprogs
+Se instalarán los siguientes paquetes NUEVOS:
+  desktop-file-utils dosfstools exfat-fuse exfat-utils fonts-droid-fallback fonts-noto-mono fuse gdisk gir1.2-clutter-1.0 gir1.2-clutter-gst-3.0
+  gir1.2-cogl-1.0 gir1.2-coglpango-1.0 gir1.2-evince-3.0 gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 gir1.2-gtkclutter-1.0
+  gir1.2-javascriptcoregtk-4.0 gir1.2-json-1.0 gir1.2-soup-2.4 gir1.2-webkit2-4.0 gnome-desktop3-data gnome-sushi gvfs gvfs-backends gvfs-common
+  gvfs-daemons gvfs-libs libarchive13 libatasmart4 libavahi-glib1 libbluray1 libcdio-cdda1 libcdio-paranoia1 libclutter-1.0-0 libclutter-1.0-common
+  libclutter-gst-3.0-0 libclutter-gtk-1.0-0 libcogl-common libcogl-pango20 libcogl-path20 libcogl20 libcupsfilters1 libcupsimage2 libdjvulibre-text
+  libdjvulibre21 libenca0 libevdocument3-4 libevview3-3 libexempi3 libgail-3-0 libgd3 libgdata-common libgdata22 libgjs0e libgnome-autoar-0-0
+  libgnome-autoar-common libgnome-desktop-3-12 libgoa-1.0-0b libgoa-1.0-common libgphoto2-6 libgphoto2-l10n libgphoto2-port12 libgs9 libgs9-common
+  libgxps2 libijs-0.35 libimobiledevice6 libiptcdata0 libjbig2dec0 libkpathsea6 libldb1 liblzo2-2 libmozjs-24-0 libmusicbrainz5-2
+  libmusicbrainz5cc2v5 libnautilus-extension1a libneon27-gnutls libnfs8 libntfs-3g871 liboauth0 libpaper-utils libpaper1 libparted2 libplist3
+  libpoppler-glib8 libpoppler64 libpython2.7 libsmbclient libspectre1 libstemmer0d libtalloc2 libtevent0 libtracker-sparql-1.0-0 libudisks2-0
+  libusbmuxd4 libwbclient0 nautilus nautilus-data ntfs-3g parted poppler-data python-talloc samba-libs udisks2 usbmuxd
+0 actualizados, 105 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 40,3 MB de archivos.
+Se utilizarán 152 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+-------------
+Visor PDF
+
+sudo apt-get install evince-gtk
+
+mcampos@yugo:~$ sudo apt-get install evince-gtk
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  evince evince-common
+Paquetes sugeridos:
+  nautilus-sendto
+Se instalarán los siguientes paquetes NUEVOS:
+  evince evince-common evince-gtk
+0 actualizados, 3 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 3.786 kB de archivos.
+Se utilizarán 14,2 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+-------------------------
+Instalar FreeCad y Kicad
+
+sudo apt-get install freecad kicad kicad-doc-es
+
+mcampos@yugo:~$ sudo apt-get install freecad kicad kicad-doc-es
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  blt fonts-lyx gstreamer1.0-pulseaudio javascript-common kicad-common libboost-atomic1.62.0 libboost-chrono1.62.0 libboost-context1.62.0
+  libboost-date-time1.62.0 libboost-filesystem1.62.0 libboost-iostreams1.62.0 libboost-locale1.62.0 libboost-program-options1.62.0
+  libboost-python1.62.0 libboost-regex1.62.0 libboost-signals1.62.0 libboost-system1.62.0 libboost-thread1.62.0 libcoin80v5 libfreeimage3 libgl2ps1
+  libilmbase12 libjs-jquery libjs-jquery-ui libjs-sphinxdoc libjs-underscore libjxr0 libmariadbclient18 liboce-foundation10 liboce-modeling10
+  liboce-ocaf-lite10 liboce-ocaf10 liboce-visualization10 libopenexr22 libphonon4 libpyside1.2 libqt4-declarative libqt4-designer libqt4-help
+  libqt4-network libqt4-opengl libqt4-script libqt4-scripttools libqt4-sql libqt4-sql-mysql libqt4-test libqt4-xmlpatterns libqtassistantclient4
+  libqtwebkit4 libraw15 libshiboken1.2v5 libsoqt4-20 libspnav0 libtcl8.6 libtk8.6 libwebpdemux2 libwebpmux2 libwxbase3.0-0v5 libwxgtk3.0-0v5
+  libxerces-c3.1 libzipios++0v5 mysql-common phonon phonon-backend-gstreamer phonon-backend-gstreamer-common pyside-tools python-bs4 python-chardet
+  python-collada python-cycler python-dateutil python-functools32 python-html5lib python-imaging python-lxml python-matplotlib
+  python-matplotlib-data python-pil python-pivy python-pkg-resources python-ply python-pyparsing python-pyside python-pyside.phonon
+  python-pyside.qtcore python-pyside.qtdeclarative python-pyside.qtgui python-pyside.qthelp python-pyside.qtnetwork python-pyside.qtopengl
+  python-pyside.qtscript python-pyside.qtsql python-pyside.qtsvg python-pyside.qttest python-pyside.qtuitools python-pyside.qtwebkit
+  python-pyside.qtxml python-qt4 python-qt4-gl python-sip python-six python-subprocess32 python-tk python-tz python-webencodings python-wxgtk3.0
+  python-wxversion tk8.6-blt2.5 ttf-bitstream-vera xsltproc
+Paquetes sugeridos:
+  blt-demo graphviz povray apache2 | lighttpd | httpd libopenal0a libsimage-dev libjs-jquery-ui-docs libqt4-declarative-folderlistmodel
+  libqt4-declarative-gestures libqt4-declarative-particles libqt4-declarative-shaders qt4-qmlviewer libqt4-dev spacenavd tcl8.6 tk8.6
+  phonon-backend-vlc gstreamer1.0-plugins-ugly phonon4qt5-backend-gstreamer python-cycler-doc python-genshi python-lxml-dbg python-lxml-doc dvipng
+  ffmpeg ghostscript inkscape ipython python-cairocffi python-configobj python-excelerator python-gobject python-matplotlib-doc python-nose
+  python-scipy python-tornado python-traits texlive-extra-utils texlive-latex-extra ttf-staypuft python-pil-doc python-pil-dbg python-setuptools
+  python-ply-doc python-pyparsing-doc python-qt4-dbg tix python-tk-dbg wx3.0-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  blt fonts-lyx freecad gstreamer1.0-pulseaudio javascript-common kicad kicad-common kicad-doc-es libboost-atomic1.62.0 libboost-chrono1.62.0
+  libboost-context1.62.0 libboost-date-time1.62.0 libboost-filesystem1.62.0 libboost-iostreams1.62.0 libboost-locale1.62.0
+  libboost-program-options1.62.0 libboost-python1.62.0 libboost-regex1.62.0 libboost-signals1.62.0 libboost-system1.62.0 libboost-thread1.62.0
+  libcoin80v5 libfreeimage3 libgl2ps1 libilmbase12 libjs-jquery libjs-jquery-ui libjs-sphinxdoc libjs-underscore libjxr0 libmariadbclient18
+  liboce-foundation10 liboce-modeling10 liboce-ocaf-lite10 liboce-ocaf10 liboce-visualization10 libopenexr22 libphonon4 libpyside1.2
+  libqt4-declarative libqt4-designer libqt4-help libqt4-network libqt4-opengl libqt4-script libqt4-scripttools libqt4-sql libqt4-sql-mysql
+  libqt4-test libqt4-xmlpatterns libqtassistantclient4 libqtwebkit4 libraw15 libshiboken1.2v5 libsoqt4-20 libspnav0 libtcl8.6 libtk8.6 libwebpdemux2
+  libwebpmux2 libwxbase3.0-0v5 libwxgtk3.0-0v5 libxerces-c3.1 libzipios++0v5 mysql-common phonon phonon-backend-gstreamer
+  phonon-backend-gstreamer-common pyside-tools python-bs4 python-chardet python-collada python-cycler python-dateutil python-functools32
+  python-html5lib python-imaging python-lxml python-matplotlib python-matplotlib-data python-pil python-pivy python-pkg-resources python-ply
+  python-pyparsing python-pyside python-pyside.phonon python-pyside.qtcore python-pyside.qtdeclarative python-pyside.qtgui python-pyside.qthelp
+  python-pyside.qtnetwork python-pyside.qtopengl python-pyside.qtscript python-pyside.qtsql python-pyside.qtsvg python-pyside.qttest
+  python-pyside.qtuitools python-pyside.qtwebkit python-pyside.qtxml python-qt4 python-qt4-gl python-sip python-six python-subprocess32 python-tk
+  python-tz python-webencodings python-wxgtk3.0 python-wxversion tk8.6-blt2.5 ttf-bitstream-vera xsltproc
+0 actualizados, 113 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 177 MB de archivos.
+Se utilizarán 1.069 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n]
+
+------------------------------
+Instalar VirtualBox
+
+Verificar repositorios
+
+mcampos@yugo:~$ sudo apt-cache search virtualbox-
+virtualbox-5.0 - Oracle VM VirtualBox
+virtualbox-5.1 - Oracle VM VirtualBox
+
+
+mcampos@yugo:~$ sudo apt-get install virtualbox-5.1
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libqt5opengl5 libsdl-ttf2.0-0 linux-compiler-gcc-6-x86 linux-headers-4.9.0-3-amd64 linux-headers-4.9.0-3-common linux-headers-amd64
+  linux-kbuild-4.9 make
+Paquetes sugeridos:
+  make-doc
+Paquetes recomendados:
+  linux-image
+Se instalarán los siguientes paquetes NUEVOS:
+  libqt5opengl5 libsdl-ttf2.0-0 linux-compiler-gcc-6-x86 linux-headers-4.9.0-3-amd64 linux-headers-4.9.0-3-common linux-headers-amd64
+  linux-kbuild-4.9 make virtualbox-5.1
+0 actualizados, 9 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 75,9 MB de archivos.
+Se utilizarán 217 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+
+Instalar VirtualBox Extension Pack
+
+https://www.virtualbox.org/ticket/8473
+
+wget -c http://download.virtualbox.org/virtualbox/5.1.6/Oracle_VM_VirtualBox_Extension_Pack-5.1.6-110634.vbox-extpack
+
+
+--------------------------------
+
+LibreOffice
+
+Ref: https://linuxgnublog.org/instalar-la-ultima-version-de-libre-office-en-debian-jessie/
+
+apt-get install libreoffice
+
+Y ahora el paquete de idioma español:
+
+apt-get install libreoffice-{l10n,help}-es
+
+Todo junto:
+
+sudo apt-get install libreoffice libreoffice-{l10n,help}-es
+
+mcampos@yugo:~$ sudo apt-get install libreoffice libreoffice-{l10n,help}-es
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  ant ant-optional coinor-libcbc3 coinor-libcgl1 coinor-libclp1 coinor-libcoinmp1v5 coinor-libcoinutils3v5 coinor-libosi1v5 fonts-crosextra-caladea
+  fonts-crosextra-carlito fonts-linuxlibertine fonts-opensymbol fonts-sil-gentium fonts-sil-gentium-basic gcj-6-jre-lib libabw-0.1-1
+  libapache-poi-java libapache-pom-java libbase-java libbcmail-java libbcpkix-java libbcprov-java libbsh-java libcdr-0.1-1 libclucene-contribs1v5
+  libclucene-core1v5 libcmis-0.5-5v5 libcolamd2 libcommons-codec-java libcommons-collections3-java libcommons-logging-java libcommons-parent-java
+  libdom4j-java libe-book-0.1-1 libehcache-java libeot0 libetonyek-0.1-1 libexttextcat-2.0-0 libexttextcat-data libflute-java libfonts-java
+  libformula-java libfreehand-0.1-1 libgcj-bc libgcj-common libgcj17 libgltf-0.0-0v5 libhsqldb1.8.0-java libisorelax-java libitext-java
+  libjaxen-java libjcommon-java libjdom1-java liblangtag-common liblangtag1 liblayout-java libloader-java liblog4j1.2-java libmail-java libmhash2
+  libmspub-0.1-1 libmsv-java libmwaw-0.3-3 libmythes-1.2-0 libodfgen-0.1-1 liborcus-0.11-0 libpagemaker-0.0-0 libpentaho-reporting-flow-engine-java
+  libpixie-java libpq5 libraptor2-0 librasqal3 librdf0 librelaxng-datatype-java libreoffice-avmedia-backend-gstreamer libreoffice-base
+  libreoffice-base-core libreoffice-base-drivers libreoffice-calc libreoffice-common libreoffice-core libreoffice-draw libreoffice-impress
+  libreoffice-java-common libreoffice-librelogo libreoffice-math libreoffice-nlpsolver libreoffice-ogltrans libreoffice-pdfimport
+  libreoffice-report-builder libreoffice-report-builder-bin libreoffice-script-provider-bsh libreoffice-script-provider-js
+  libreoffice-script-provider-python libreoffice-sdbc-hsqldb libreoffice-sdbc-postgresql libreoffice-style-galaxy libreoffice-wiki-publisher
+  libreoffice-writer librepository-java librevenge-0.0-0 libsac-java libsac-java-gcj libsaxonhe-java libserializer-java libservlet3.1-java
+  libsuitesparseconfig4 libvisio-0.1-1 libwpd-0.10-10 libwpg-0.3-3 libwps-0.4-4 libxerces2-java libxml-commons-external-java
+  libxml-commons-resolver1.1-java libxml-java libxmlbeans-java libxom-java libxpp2-java libxpp3-java libyajl2 lp-solve python3-uno uno-libs3 ure
+Paquetes sugeridos:
+  ant-doc ant-gcj ant-optional-gcj antlr javacc junit junit4 jython libbcel-java libbsf-java libcommons-net-java libjaxp1.3-java libjdepend-java
+  libjsch-java liboro-java libregexp-java libxalan2-java libapache-poi-java-doc libbcmail-java-doc libbcpkix-java-doc libbcprov-java-doc
+  libcommons-collections3-java-doc libavalon-framework-java libcommons-logging-java-doc libexcalibur-logkit-java libdom4j-java-doc libflute-java-doc
+  libfonts-java-doc libformula-java-doc libgcj17-dbg libgcj17-awt libhsqldb1.8.0-java-gcj libjcommon-java-doc libjdom1-java-doc liblayout-java-doc
+  liblog4j1.2-java-doc libmail-java-doc libjfreereport-java-doc raptor2-utils rasqal-utils librdf-storage-postgresql librdf-storage-mysql
+  librdf-storage-sqlite librdf-storage-virtuoso redland-utils cups-bsd hyphen-hyphenation-patterns iceweasel | firefox | icedove | thunderbird
+  | iceape-browser | mozilla-browser imagemagick | graphicsmagick-imagemagick-compat libreoffice-gnome | libreoffice-kde libreoffice-grammarcheck
+  libsane myspell-dictionary mythes-thesaurus openclipart2-libreoffice | openclipart-libreoffice pstoedit unixodbc gstreamer1.0-plugins-ugly
+  gstreamer1.0-plugins-bad gstreamer1.0-libav libreoffice-officebean libreoffice-gcj libjtds-java libreoffice-mysql-connector | libmyodbc
+  | libmysql-java libsqliteodbc | tdsodbc | mdbtools ocl-icd-libopencl1 libreoffice-style-breeze libreoffice-style-hicontrast
+  libreoffice-style-oxygen libreoffice-style-sifr libreoffice-style-tango bluez hunspell-dictionary-es | myspell-dictionary-es hyphen-es
+  libreoffice-grammarcheck-es mythes-es postgresql mediawiki librepository-java-doc libsac-java-doc libxerces2-java-doc libxerces2-java-gcj
+  libxml-commons-resolver1.1-java-doc libxom-java-doc
+Se instalarán los siguientes paquetes NUEVOS:
+  ant ant-optional coinor-libcbc3 coinor-libcgl1 coinor-libclp1 coinor-libcoinmp1v5 coinor-libcoinutils3v5 coinor-libosi1v5 fonts-crosextra-caladea
+  fonts-crosextra-carlito fonts-linuxlibertine fonts-opensymbol fonts-sil-gentium fonts-sil-gentium-basic gcj-6-jre-lib libabw-0.1-1
+  libapache-poi-java libapache-pom-java libbase-java libbcmail-java libbcpkix-java libbcprov-java libbsh-java libcdr-0.1-1 libclucene-contribs1v5
+  libclucene-core1v5 libcmis-0.5-5v5 libcolamd2 libcommons-codec-java libcommons-collections3-java libcommons-logging-java libcommons-parent-java
+  libdom4j-java libe-book-0.1-1 libehcache-java libeot0 libetonyek-0.1-1 libexttextcat-2.0-0 libexttextcat-data libflute-java libfonts-java
+  libformula-java libfreehand-0.1-1 libgcj-bc libgcj-common libgcj17 libgltf-0.0-0v5 libhsqldb1.8.0-java libisorelax-java libitext-java
+  libjaxen-java libjcommon-java libjdom1-java liblangtag-common liblangtag1 liblayout-java libloader-java liblog4j1.2-java libmail-java libmhash2
+  libmspub-0.1-1 libmsv-java libmwaw-0.3-3 libmythes-1.2-0 libodfgen-0.1-1 liborcus-0.11-0 libpagemaker-0.0-0 libpentaho-reporting-flow-engine-java
+  libpixie-java libpq5 libraptor2-0 librasqal3 librdf0 librelaxng-datatype-java libreoffice libreoffice-avmedia-backend-gstreamer libreoffice-base
+  libreoffice-base-core libreoffice-base-drivers libreoffice-calc libreoffice-common libreoffice-core libreoffice-draw libreoffice-help-es
+  libreoffice-impress libreoffice-java-common libreoffice-l10n-es libreoffice-librelogo libreoffice-math libreoffice-nlpsolver libreoffice-ogltrans
+  libreoffice-pdfimport libreoffice-report-builder libreoffice-report-builder-bin libreoffice-script-provider-bsh libreoffice-script-provider-js
+  libreoffice-script-provider-python libreoffice-sdbc-hsqldb libreoffice-sdbc-postgresql libreoffice-style-galaxy libreoffice-wiki-publisher
+  libreoffice-writer librepository-java librevenge-0.0-0 libsac-java libsac-java-gcj libsaxonhe-java libserializer-java libservlet3.1-java
+  libsuitesparseconfig4 libvisio-0.1-1 libwpd-0.10-10 libwpg-0.3-3 libwps-0.4-4 libxerces2-java libxml-commons-external-java
+  libxml-commons-resolver1.1-java libxml-java libxmlbeans-java libxom-java libxpp2-java libxpp3-java libyajl2 lp-solve python3-uno uno-libs3 ure
+0 actualizados, 127 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 154 MB de archivos.
+Se utilizarán 507 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+
+------------------------
+Reproductor multimedia:
+
+mcampos@yugo:~$ sudo apt-get install vlc
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  fonts-freefont-ttf vlc-bin vlc-l10n vlc-plugin-notify vlc-plugin-qt vlc-plugin-samba vlc-plugin-skins2 vlc-plugin-video-splitter
+  vlc-plugin-visualization
+Se instalarán los siguientes paquetes NUEVOS:
+  fonts-freefont-ttf vlc vlc-bin vlc-l10n vlc-plugin-notify vlc-plugin-qt vlc-plugin-samba vlc-plugin-skins2 vlc-plugin-video-splitter
+  vlc-plugin-visualization
+0 actualizados, 10 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 11,7 MB de archivos.
+Se utilizarán 54,7 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+----
+Geany IDE para C/C++
+
+sudo apt-get install geany geany-common
+
+mcampos@yugo:~$ sudo apt-get install geany geany-common
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Paquetes sugeridos:
+  libvte9 doc-base
+Se instalarán los siguientes paquetes NUEVOS:
+  geany geany-common
+0 actualizados, 2 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 3.848 kB de archivos.
+Se utilizarán 11,7 MB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian stretch/main amd64 geany-common all 1.29-1 [2.460 kB]
+Des:2 http://ftp.cl.debian.org/debian stretch/main amd64 geany amd64 1.29-1 [1.387 kB]
+Descargados 3.848 kB en 0s (5.532 kB/s)
+Seleccionando el paquete geany-common previamente no seleccionado.
+(Leyendo la base de datos ... 363221 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../geany-common_1.29-1_all.deb ...
+Desempaquetando geany-common (1.29-1) ...
+Seleccionando el paquete geany previamente no seleccionado.
+Preparando para desempaquetar .../geany_1.29-1_amd64.deb ...
+Desempaquetando geany (1.29-1) ...
+Procesando disparadores para mime-support (3.60) ...
+Procesando disparadores para desktop-file-utils (0.23-1) ...
+Configurando geany-common (1.29-1) ...
+Procesando disparadores para libc-bin (2.24-11+deb9u1) ...
+Procesando disparadores para man-db (2.7.6.1-2) ...
+Procesando disparadores para hicolor-icon-theme (0.15-1) ...
+Configurando geany (1.29-1) ...
+Procesando disparadores para libc-bin (2.24-11+deb9u1) ...
+mcampos@yugo:~$ 
+
+
+--------------
+Diversion y miscelanea:
+
+mcampos@yugo:~$ sudo apt-get install tuxguitar
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libswt-cairo-gtk-3-jni libswt-gtk-3-java libswt-gtk-3-jni libswt-webkit-gtk-3-jni oss-compat tuxguitar-alsa tuxguitar-oss
+Paquetes sugeridos:
+  libswt-gtk-3-java-gcj libswt-gnome-gtk-3-jni osspd lilypond tuxguitar-jsa timidity
+Se instalarán los siguientes paquetes NUEVOS:
+  libswt-cairo-gtk-3-jni libswt-gtk-3-java libswt-gtk-3-jni libswt-webkit-gtk-3-jni oss-compat tuxguitar tuxguitar-alsa tuxguitar-oss
+0 actualizados, 8 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 4.998 kB de archivos.
+Se utilizarán 8.345 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+-----------------------------------------------------------
+
+Trabajo con GIT
+
+Generar llave RSA para Github:
+
+ssh-keygen -p
+
+sudo apt-get install xclip
+
+xclip -sel clip < ~/.ssh/id_rsa.pub
+
+Pegar llave en Github
+
+---
+
+git remote add origin git@github.com:crns/crns-linux.git
+
+
+
+-----------------------------------------------------------
+Configuracion de sistema:
+
+lxrandr - LXDE monitor configuration tool
+
+mcampos@yugo:~/Documentos/Toshiba_Laptop_CRN$ sudo apt-get install lxrandr
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  lxrandr
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 50,2 kB de archivos.
+Se utilizarán 392 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian stretch/main amd64 lxrandr amd64 0.3.1-1 [50,2 kB]
+Descargados 50,2 kB en 2s (17,2 kB/s)
+Seleccionando el paquete lxrandr previamente no seleccionado.
+(Leyendo la base de datos ... 364081 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../lxrandr_0.3.1-1_amd64.deb ...
+Desempaquetando lxrandr (0.3.1-1) ...
+Procesando disparadores para mime-support (3.60) ...
+Procesando disparadores para desktop-file-utils (0.23-1) ...
+Procesando disparadores para man-db (2.7.6.1-2) ...
+Configurando lxrandr (0.3.1-1) ...
+mcampos@yugo:~/Documentos/Toshiba_Laptop_CRN$ 
+
+
+
+-----------------------
+Especifico Hardware TOSHIBA
+
+
+OK - revisar no funciona
+
+Hardware: Controlar brillo de pantalla
+fuente: http://ubunlog.com/ajustando-el-brillo-de-la-pantalla-con-xbacklight/
+
+sudo apt-get install xbacklight
+
+mcampos@yugo:/opt$ sudo apt-get install xbacklight
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes NUEVOS:
+  xbacklight
+0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 12,2 kB de archivos.
+Se utilizarán 34,8 kB de espacio de disco adicional después de esta operación.
+Des:1 http://ftp.cl.debian.org/debian stretch/main amd64 xbacklight amd64 1.2.1-1+b2 [12,2 kB]
+Descargados 12,2 kB en 0s (33,4 kB/s) 
+Seleccionando el paquete xbacklight previamente no seleccionado.
+(Leyendo la base de datos ... 362375 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../xbacklight_1.2.1-1+b2_amd64.deb ...
+Desempaquetando xbacklight (1.2.1-1+b2) ...
+Procesando disparadores para man-db (2.7.6.1-2) ...
+Configurando xbacklight (1.2.1-1+b2) ...
+mcampos@yugo:/opt$ 
+
+
+Set brillo al 80%:
+xbacklight -set 100
+
+Disminuir:
+xbacklight -dec 10
+
+Incrementar:
+xbacklight -inc 10
+
+--------------------
+Atajos de teclado:
+
+root@yugo:~# apt-get install xbindkeys-config
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  guile-2.0-libs xbindkeys
+Paquetes sugeridos:
+  wish
+Se instalarán los siguientes paquetes NUEVOS:
+  guile-2.0-libs xbindkeys xbindkeys-config
+0 actualizados, 3 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 2.277 kB de archivos.
+Se utilizarán 11,9 MB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+------------------------------------
+
+apt-get install fnfx-client
+
+root@yugo:~# apt-get install fnfx-client
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes extras:
+  fnfxd:i386
+Se instalarán los siguientes paquetes NUEVOS:
+  fnfx-client:i386 fnfxd:i386
+0 actualizados, 2 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 27,1 kB de archivos.
+Se utilizarán 90,1 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
+
+

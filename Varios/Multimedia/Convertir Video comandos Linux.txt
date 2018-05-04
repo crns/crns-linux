@@ -14,4 +14,4 @@ transcode -i archivo_input.avi -x mplayer -Z 720x405 -o archivo_salida.720x405.a
 
 ----------------------
 
-mencoder BSG.S01E02.Water.720p.Brrip.mkv -sid 2 -slang spa -ovc xvid -oac mp3lame -lameopts abr:br=128 -xvidencopts pass=2:bitrate=-700000 -o BSG.S01E02.Water.720p.Brrip.avi ; transcode -i BSG.S01E02.Water.720p.Brrip.avi -x mplayer -Z 720x404 -o BSG.S01E02.Water.720x404.avi -y xvid
+mencoder BSG.S01E02.Water.720p.Brrip.mkv -sid 2 -slang spa -ovc xvid -oac mp3lame -lameopts abr:br=128 -xvidencopts pass=2:bitrate=-700000 -o BSG.S01E02.Water.720p.Brrip.avi ; transcode -i BSG.S01E02.Water.720p.Brrip.avi -x mplayer -Z 720x404 -y xvid -o BSG.S01E02.Water.720x404.avi 

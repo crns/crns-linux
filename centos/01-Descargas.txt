@@ -1,0 +1,29 @@
+01 - Curso Instalación de Linux
+
+Enlaces de descarga de software
+
+HashCheck Shell Extension (2.1.11):
+http://code.kliu.org/hashcheck/
+
+MD5 & SHA Checksum Utility (2.1):
+https://raylin.wordpress.com/downloads/md5-sha-1-checksum-utility/
+
+VirtualBox for Windows (5.2.8):
+https://www.virtualbox.org/
+
+uTorrent (3.5.3 build 44358):
+http://www.utorrent.com/intl/es/downloads/win
+
+Debian Stretch netinstall (9.4.0):
+https://www.debian.org/
+
+CentOS(7-x86_64-NetInstall-1708):
+https://www.centos.org/download/
+
+Fedora 27 Workstation:
+https://getfedora.org/es/workstation/download/
+Descarga por torrent:
+https://torrent.fedoraproject.org/
+
+PuTTY (0.70)
+https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
