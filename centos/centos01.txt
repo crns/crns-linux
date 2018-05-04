@@ -206,6 +206,7 @@ bind-utils
 git
 unrar
 pciutils
+nano
 
 pci-utils:
 http://www.alcancelibre.org/staticpages/index.php/uso-lscpu-lsmod-lspci-lsusb
@@ -222,7 +223,7 @@ The following commands must be executed after switching to the root user.
 
 yum install epel-release
 
-sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar pciutils
+sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar pciutils nano
 
 sudo yum -y install kmod pciutils usbutils util-linux
 
@@ -232,6 +233,4 @@ If you have SELinux installed, then update the SELinux policies:
 yum update -y selinux-policy*
 
 
-Instalar editores:
 
-nano gedit
