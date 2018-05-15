@@ -1,3 +1,13 @@
+Operacion en Linux 6
+
+/etc/init.d/ipsec restart|status|stop|start
+
+ipsec auto --add mtt
+ipsec auto --up mtt
+
+
+
+------------------
 Habilitar forward:
 
 #Habilitar forwarding

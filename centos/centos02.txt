@@ -78,3 +78,5 @@ https://www.comoinstalarlinux.com/como-instalar-openbox-en-arch-linux-y-personal
 http://fraterneo.blogspot.cl/2013/08/como-instalar-openbox-en-fedora.html
 http://srobb.net/minimaldesktop.html
 
+
+

@@ -1,0 +1,178 @@
+sudo yum -y install bash-completion-extras
+
+https://wiki.centos.org/AdditionalResources/Repositories
+
+
+Repositorio adicionales (entra en conflicto con Repoforge/RPMforge, ATrpms y posiblemente otros repos).
+
+My GPG key: http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro 
+
+http://li.nux.ro/repos.html
+
+comprovar en repo ultima version de nux-dextop-release
+
+http://li.nux.ro/download/nux/dextop/el7/x86_64/
+
+
+http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+
+
+Requiere como dependencia el repositorio EPEL (ok).
+
+sudo yum install -y http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+
+Comprobar:
+
+[mcampos@localhost ~]$ sudo yum repolist
+Complementos cargados:fastestmirror
+nux-dextop                                                                                                                     | 2.9 kB  00:00:00     
+nux-dextop/x86_64/primary_db                                                                                                   | 1.7 MB  00:00:50     
+Loading mirror speeds from cached hostfile
+ * base: mirror.facom.ufms.br
+ * centosplus: mirror.globo.com
+ * epel: epel.gtdinternet.com
+ * extras: mirror.ci.ifes.edu.br
+ * nux-dextop: li.nux.ro
+ * rpmfusion-free-updates: muug.ca
+ * rpmfusion-nonfree-updates: muug.ca
+ * updates: mirror.ci.ifes.edu.br
+id del repositorio                                               nombre del repositorio                                                         estado
+base/7/x86_64                                                    CentOS-7 - Base                                                                 9.591
+centosplus/7/x86_64                                              CentOS-7 - Plus                                                                    92
+epel/x86_64                                                      Extra Packages for Enterprise Linux 7 - x86_64                                 12.529
+extras/7/x86_64                                                  CentOS-7 - Extras                                                                 448
+nux-dextop/x86_64                                                Nux.Ro RPMs for general desktop use                                             2.599
+rpmfusion-free-updates/x86_64                                    RPM Fusion for EL 7 - Free - Updates                                              237
+rpmfusion-nonfree-updates/x86_64                                 RPM Fusion for EL 7 - Nonfree - Updates                                            47
+updates/7/x86_64                                                 CentOS-7 - Updates                                                              2.416
+repolist: 27.959
+[mcampos@localhost ~]$
+
+
+Repositorio remi
+
+sudo yum install -y http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+[mcampos@localhost ~]$ yum repolist
+Complementos cargados:fastestmirror
+remi-safe                                                                                                                      | 2.9 kB  00:00:00     
+remi-safe/primary_db                                                                                                           | 1.2 MB  00:00:13     
+Loading mirror speeds from cached hostfile
+ * base: mirror.facom.ufms.br
+ * centosplus: mirror.globo.com
+ * epel: mirror.espoch.edu.ec
+ * extras: mirror.ci.ifes.edu.br
+ * nux-dextop: li.nux.ro
+ * remi-safe: mirror.netsite.dk
+ * rpmfusion-free-updates: muug.ca
+ * rpmfusion-nonfree-updates: muug.ca
+ * updates: mirror.ci.ifes.edu.br
+id del repositorio                                         nombre del repositorio                                                               estado
+base/7/x86_64                                              CentOS-7 - Base                                                                       9.591
+centosplus/7/x86_64                                        CentOS-7 - Plus                                                                          92
+epel/x86_64                                                Extra Packages for Enterprise Linux 7 - x86_64                                       12.529
+extras/7/x86_64                                            CentOS-7 - Extras                                                                       448
+nux-dextop/x86_64                                          Nux.Ro RPMs for general desktop use                                                   2.599
+remi-safe                                                  Safe Remi's RPM repository for Enterprise Linux 7 - x86_64                            2.662
+rpmfusion-free-updates/x86_64                              RPM Fusion for EL 7 - Free - Updates                                                    237
+rpmfusion-nonfree-updates/x86_64                           RPM Fusion for EL 7 - Nonfree - Updates                                                  47
+updates/7/x86_64                                           CentOS-7 - Updates                                                                    2.416
+repolist: 30.621
+[mcampos@localhost ~]$ 
+
+
+StotinkaOS
+https://www.stotinkaos.net/about
+
+DESCRIPCIÓN
+StotinkaOS es una distribución de escritorio de GNU / Linux basada en CentOS. El proyecto fue lanzado oficialmente el 07.02.2015. y hasta la fecha, hay seis versiones publicadas después de la distribución en la que se basa. Ofrecemos un sistema informático robusto y fácil de usar que incluye un paquete completo de software para sus necesidades. La distribución tiene sus propios repositorios de paquetes que contienen una amplia gama de aplicaciones útiles de escritorio y sistema. Además, se incluyen fuentes de software de terceros. StotinkaOS está listo para el uso diario y tiene soporte a largo plazo completamente en búlgaro. 
+Dirigido por el lema "StotinkaOS para todos", nuestro equipo se esfuerza por crear una distribución estable, accesible y fácil de usar para los usuarios novatos, a la vez que es completamente funcional para los expertos.
+
+Repositorio de StotinkaOS
+
+sudo wget https://www.stotinkaos.net/stotinkaOS/repo/7/stotinkaOS.repo
+
+sudo rpm --import https://www.stotinkaos.net/stotinkaOS/repo/7/RPM-GPG-KEY-StotinkaOS-7
+
+o
+
+sudo wget https://www.stotinkaos.net/stotinkaOS/repo/7/RPM-GPG-KEY-StotinkaOS-7
+sudo rpm --import RPM-GPG-KEY-StotinkaOS-7
+
+
+----
+
+sudo yum install lxappearance gtk2-engines gnome-themes-standard *icon-theme*
+
+sudo yum install nautilus-*
+
+sudo yum install -y gksu-polkit
+
+*** falta lxappearance-obconf
+
+#############
+Controlador de VirtualBox
+
+Insertar cd gues Addi...
+
+
+yum install bzip2
+
+...
+This system is currently not set up to build kernel modules.
+Please install the gcc make perl packages from your distribution.
+Please install the Linux kernel "header" files matching the current kernel
+for adding new hardware support to the system.
+The distribution packages containing the headers are probably:
+    kernel-devel kernel-devel-3.10.0-693.21.1.el7.x86_64
+...
+
+sudo yum install gcc make perl kernel-devel
+
+sudo ./VBoxLinuxAdditions.run
+
+
+
+############## guía emezeta
+
+sudo yum -y install git vim nano gedit
+
+sudo yum -y install openbox obconf obmenu
+
+
+[mcampos@localhost ~]$ openbox --version
+Openbox 3.5.2
+Copyright (c) 2004   Mikael Magnusson
+Copyright (c) 2002   Dana Jansens
+
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions. See the file COPYING for details.
+
+[mcampos@localhost ~]$ 
+
+4. Configuración de temas de Openbox
+
+sudo yum -y install clearlooks-phenix-openbox-theme
+
+
+9. Fondo de pantalla (wallpaper)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+224966900
+
+
