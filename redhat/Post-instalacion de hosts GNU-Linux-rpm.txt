@@ -124,6 +124,21 @@ Actualización manual, ejecute:
 # ntpdate -u 192.168.0.15
 10 May 11:19:17 ntpdate[1640]: adjust time server 192.168.0.15 offset -0.005190 sec
  
+Huso Horario:
+
+En Centos 5:
+
+[root@epulpo etc]# date
+mié may 16 10:01:05 ART 2018
+
+[root@epulpo etc]# rm /etc/localtime 
+rm: ¿borrar el enlace simbólico «/etc/localtime»? (s/n) s
+
+[root@epulpo etc]# ln -s /usr/share/zoneinfo/America/Santiago /etc/localtime
+
+[root@epulpo etc]# date
+mié may 16 09:02:03 CLT 2018
+
 
 
 2 Optimizaciones:

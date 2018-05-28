@@ -743,6 +743,9 @@ Se utilizarán 345 kB de espacio de disco adicional después de esta operación.
 ---------------
 OK Ahora configurar Openbox:
 
+#
+# Fase 2
+#
 --------------
 Instalar Google Chrome
 

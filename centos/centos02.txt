@@ -50,7 +50,9 @@ sudo yum install -y lightdm lightdm-gtk
 
 sudo systemctl enable lightdm.service
 
-sudo yum install -y tint2 terminator firefox terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
+sudo yum install -y tint2 gnome-terminal
+
+sudo yum install -y firefox terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
 
 
 su -
