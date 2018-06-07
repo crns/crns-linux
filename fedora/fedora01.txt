@@ -1,0 +1,407 @@
+
+
+dnf -y install nano
+
+cd /etc/sysconfig/network-scripts/
+
+ip l
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 08:00:27:60:a5:5d brd ff:ff:ff:ff:ff:ff
+3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 08:00:27:dc:d0:ae brd ff:ff:ff:ff:ff:ff
+[root@localhost network-scripts]# 
+
+
+cp ifcfg-enp0s3 ifcfg-enp0s8
+
+nano ifcfg-enp0s8
+
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=none
+IPADDR=192.168.40.57
+PREFIX=24
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=enp0s8
+#UUID=d0094c5b-0125-3799-9354-7707fcf98286
+ONBOOT=yes
+AUTOCONNECT_PRIORITY=-999
+DEVICE=enp0s8
+
+systemct restart network
+
+ip a
+
+# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:60:a5:5d brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic noprefixroute enp0s3
+       valid_lft 84317sec preferred_lft 84317sec
+    inet6 fe80::5752:18e7:d9a5:6be3/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:dc:d0:ae brd ff:ff:ff:ff:ff:ff
+    inet 192.168.40.57/24 brd 192.168.40.255 scope global noprefixroute enp0s8
+       valid_lft forever preferred_lft forever
+    inet6 fe80::1fa8:a2a3:7c12:f69a/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+[root@localhost network-scripts]# 
+
+
+
+# dnf install -y sudo
+Última comprobación de caducidad de metadatos hecha hace 0:41:49, el mié 06 jun 2018 11:20:05 -04.
+El paquete sudo-1.8.22-0.2.b1.fc28.x86_64 ya se encuentra instalado, omitiendo.
+Dependencias resueltas.
+Nada por hacer.
+¡Listo!
+[root@localhost ~]# 
+
+
+Truco:
+
+usermod -aG wheel mcampos
+
+
+
+[mcampos@localhost ~]$ sudo dnf update
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for mcampos: 
+Última comprobación de caducidad de metadatos hecha hace 0:44:39, el mié 06 jun 2018 11:20:05 -04.
+Dependencias resueltas.
+Nada por hacer.
+¡Listo!
+[mcampos@localhost ~]$ 
+
+
+
+-----------------------
+
+Repositorio RPMFusion:
+https://rpmfusion.org/Configuration/
+
+sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+
+
+$ sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+Última comprobación de caducidad de metadatos hecha hace 0:46:52, el mié 06 jun 2018 11:20:05 -04.
+rpmfusion-free-release-28.noarch.rpm                                                                                   13 kB/s |  20 kB     00:01    
+rpmfusion-nonfree-release-28.noarch.rpm                                                                                15 kB/s |  21 kB     00:01    
+Dependencias resueltas.
+======================================================================================================================================================
+ Paquete                                          Arquitectura                  Versión                     Repositorio                         Tamaño
+======================================================================================================================================================
+Instalando:
+ rpmfusion-free-release                           noarch                        28-1                        @commandline                         20 k
+ rpmfusion-nonfree-release                        noarch                        28-1                        @commandline                         21 k
+
+Resumen de la transacción
+======================================================================================================================================================
+Instalar  2 Paquetes
+
+Tamaño total: 41 k
+Tamaño instalado: 18 k
+¿Está de acuerdo [s/N]?:s
+Descargando paquetes:
+Ejecutando verificación de operación
+Verificación de operación exitosa.
+Ejecutando prueba de operaciones
+Prueba de operación exitosa.
+Ejecutando operación
+  Preparando          :                                                                                                                           1/1 
+  Instalando          : rpmfusion-nonfree-release-28-1.noarch                                                                                     1/2 
+  Instalando          : rpmfusion-free-release-28-1.noarch                                                                                        2/2 
+  Verificando         : rpmfusion-free-release-28-1.noarch                                                                                        1/2 
+  Verificando         : rpmfusion-nonfree-release-28-1.noarch                                                                                     2/2 
+
+Instalado:
+  rpmfusion-free-release.noarch 28-1                                       rpmfusion-nonfree-release.noarch 28-1                                      
+
+¡Listo!
+[mcampos@localhost ~]$ dnf -y update
+Error: Este comando debe ejecutarse como usuario root.
+[mcampos@localhost ~]$ sudo dnf -y update
+RPM Fusion for Fedora 28 - Free - Updates                                                                             209 kB/s | 341 kB     00:01    
+RPM Fusion for Fedora 28 - Free                                                                                       382 kB/s | 754 kB     00:01    
+RPM Fusion for Fedora 28 - Nonfree - Updates                                                                          5.7 kB/s |  17 kB     00:02    
+RPM Fusion for Fedora 28 - Nonfree                                                                                     84 kB/s | 208 kB     00:02    
+Última comprobación de caducidad de metadatos hecha hace 0:00:00, el mié 06 jun 2018 12:07:41 -04.
+Dependencias resueltas.
+Nada por hacer.
+¡Listo!
+[mcampos@localhost ~]$
+
+
+[mcampos@localhost ~]$ sudo dnf repolist
+Última comprobación de caducidad de metadatos hecha hace 0:00:14, el mié 06 jun 2018 12:07:41 -04.
+id del repositorio                                             nombre del repositorio                                                           estado
+*fedora                                                        Fedora 28 - x86_64                                                               57.327
+*rpmfusion-free                                                RPM Fusion for Fedora 28 - Free                                                     563
+*rpmfusion-free-updates                                        RPM Fusion for Fedora 28 - Free - Updates                                           183
+*rpmfusion-nonfree                                             RPM Fusion for Fedora 28 - Nonfree                                                  203
+*rpmfusion-nonfree-updates                                     RPM Fusion for Fedora 28 - Nonfree - Updates                                         29
+*updates                                                       Fedora 28 - x86_64 - Updates                                                     12.401
+[mcampos@localhost ~]$ 
+
+
+
+
+base-x
+
+sudo dnf group list --hidden
+
+sudo dnf -y groupinstall "base-x"
+
+
+
+
+[mcampos@localhost ~]$ sudo dnf -y groupinstall "base-x"
+Última comprobación de caducidad de metadatos hecha hace 0:17:43, el mié 06 jun 2018 12:07:41 -04.
+No hay coincidencia para el grupo "xorg-x11-drv-armsoc"
+No hay coincidencia para el grupo "xorg-x11-drv-omap"
+Dependencias resueltas.
+======================================================================================================================================================
+ Grupo                            Paquetes                                                                                                           
+======================================================================================================================================================
+Marcando paquetes como instalados por el grupo:
+ @base-x                          xorg-x11-drv-evdev                            xorg-x11-drv-intel                            xorg-x11-drv-vmware    
+                                  xorg-x11-drv-ati                              xorg-x11-drv-nouveau                          glx-utils              
+                                  xorg-x11-drv-libinput                         mesa-dri-drivers                              xorg-x11-xinit         
+                                  xorg-x11-xauth                                xorg-x11-utils                                xorg-x11-drv-qxl       
+                                  xorg-x11-drv-vesa                             xorg-x11-drv-wacom                            xorg-x11-server-Xorg   
+                                  xorg-x11-drv-fbdev                            plymouth-system-theme                         xorg-x11-drv-openchrome
+======================================================================================================================================================
+ Paquete                                         Arquitectura         Versión                                             Repositorio           Tamaño
+======================================================================================================================================================
+Instalando los grupos de paquetes:
+ glx-utils                                       x86_64               8.3.0-9.fc28                                        fedora                 40 k
+ mesa-dri-drivers                                x86_64               18.0.2-1.fc28                                       updates                12 M
+ plymouth-system-theme                           x86_64               0.9.3-6.fc28                                        updates                33 k
+ xorg-x11-drv-ati                                x86_64               18.0.1-1.fc28                                       fedora                170 k
+ xorg-x11-drv-evdev                              x86_64               2.10.6-1.fc28                                       updates                56 k
+ xorg-x11-drv-fbdev                              x86_64               0.4.3-29.fc28                                       fedora                 25 k
+ xorg-x11-drv-intel                              x86_64               2.99.917-32.20171025.fc28                           fedora                695 k
+ xorg-x11-drv-libinput                           x86_64               0.27.1-2.fc28                                       fedora                 48 k
+ xorg-x11-drv-nouveau                            x86_64               1:1.0.15-4.fc28                                     fedora                102 k
+ xorg-x11-drv-openchrome                         x86_64               0.6.0-4.fc28                                        fedora                183 k
+ xorg-x11-drv-qxl                                x86_64               0.1.5-6.fc28                                        fedora                100 k
+ xorg-x11-drv-vesa                               x86_64               2.4.0-2.fc28                                        fedora                 30 k
+ xorg-x11-drv-vmware                             x86_64               13.2.1-5.fc28                                       fedora                 89 k
+ xorg-x11-drv-wacom                              x86_64               0.36.1-2.fc28                                       fedora                318 k
+ xorg-x11-server-Xorg                            x86_64               1.19.6-8.fc28                                       updates               1.5 M
+ xorg-x11-utils                                  x86_64               7.5-28.fc28                                         fedora                134 k
+ xorg-x11-xauth                                  x86_64               1:1.0.9-11.fc28                                     fedora                 38 k
+ xorg-x11-xinit                                  x86_64               1.3.4-18.fc28                                       fedora                 57 k
+Instalando dependencias:
+ aajohan-comfortaa-fonts                         noarch               3.001-2.fc28                                        fedora                147 k
+ cairo                                           x86_64               1.15.12-2.fc28                                      updates               720 k
+ fedora-logos                                    x86_64               28.0.3-1.fc28                                       fedora                8.2 M
+ fontconfig                                      x86_64               2.13.0-4.fc28                                       updates               253 k
+ fontpackages-filesystem                         noarch               1.44-21.fc28                                        fedora                 15 k
+ fribidi                                         x86_64               1.0.2-1.fc28                                        updates                84 k
+ graphite2                                       x86_64               1.3.10-5.fc28                                       fedora                119 k
+ harfbuzz                                        x86_64               1.7.5-3.fc28                                        fedora                293 k
+ hwdata                                          noarch               0.312-1.fc28                                        updates               1.5 M
+ libICE                                          x86_64               1.0.9-12.fc28                                       fedora                 72 k
+ libSM                                           x86_64               1.2.2-8.fc28                                        fedora                 44 k
+ libX11                                          x86_64               1.6.5-7.fc28                                        fedora                622 k
+ libX11-common                                   noarch               1.6.5-7.fc28                                        fedora                167 k
+ libX11-xcb                                      x86_64               1.6.5-7.fc28                                        fedora                 23 k
+ libXau                                          x86_64               1.0.8-11.fc28                                       fedora                 34 k
+ libXcomposite                                   x86_64               0.4.4-12.fc28                                       fedora                 27 k
+ libXcursor                                      x86_64               1.1.15-1.fc28                                       fedora                 35 k
+ libXdamage                                      x86_64               1.1.4-12.fc28                                       fedora                 26 k
+ libXdmcp                                        x86_64               1.1.2-9.fc28                                        fedora                 39 k
+ libXext                                         x86_64               1.3.3-8.fc28                                        fedora                 44 k
+ libXfixes                                       x86_64               5.0.3-5.fc28                                        fedora                 24 k
+ libXfont2                                       x86_64               2.0.3-1.fc28                                        fedora                148 k
+ libXft                                          x86_64               2.3.2-8.fc28                                        fedora                 65 k
+ libXi                                           x86_64               1.7.9-6.fc28                                        fedora                 48 k
+ libXinerama                                     x86_64               1.1.3-10.fc28                                       fedora                 19 k
+ libXmu                                          x86_64               1.1.2-8.fc28                                        fedora                 77 k
+ libXrandr                                       x86_64               1.5.1-5.fc28                                        fedora                 32 k
+ libXrender                                      x86_64               0.9.10-5.fc28                                       fedora                 32 k
+ libXt                                           x86_64               1.1.5-7.fc28                                        fedora                184 k
+ libXtst                                         x86_64               1.2.3-5.fc28                                        fedora                 25 k
+ libXv                                           x86_64               1.0.11-5.fc28                                       fedora                 23 k
+ libXvMC                                         x86_64               1.0.10-5.fc28                                       fedora                 28 k
+ libXxf86dga                                     x86_64               1.1.4-10.fc28                                       fedora                 24 k
+ libXxf86misc                                    x86_64               1.0.3-15.fc28                                       fedora                 25 k
+ libXxf86vm                                      x86_64               1.1.4-7.fc28                                        fedora                 22 k
+ libdatrie                                       x86_64               0.2.9-7.fc28                                        fedora                 32 k
+ libdmx                                          x86_64               1.1.3-10.fc28                                       fedora                 21 k
+ libdrm                                          x86_64               2.4.92-1.fc28                                       updates               153 k
+ libepoxy                                        x86_64               1.5.2-1.fc28                                        updates               197 k
+ libevdev                                        x86_64               1.5.9-3.fc28                                        fedora                 41 k
+ libfontenc                                      x86_64               1.1.3-7.fc28                                        fedora                 36 k
+ libglvnd                                        x86_64               1:1.0.1-0.5.20180327git5baa1e5.fc28                 fedora                 94 k
+ libglvnd-glx                                    x86_64               1:1.0.1-0.5.20180327git5baa1e5.fc28                 fedora                130 k
+ libgudev                                        x86_64               232-3.fc28                                          fedora                 32 k
+ libinput                                        x86_64               1.10.902-2.fc28                                     updates               163 k
+ libmcpp                                         x86_64               2.7.2-20.fc28                                       fedora                 80 k
+ libpciaccess                                    x86_64               0.13.4-8.fc28                                       fedora                 31 k
+ libthai                                         x86_64               0.1.27-2.fc28                                       fedora                202 k
+ libunwind                                       x86_64               1.2.1-5.fc28                                        fedora                 68 k
+ libwacom                                        x86_64               0.30-1.fc28                                         updates                37 k
+ libwacom-data                                   noarch               0.30-1.fc28                                         updates                75 k
+ libwayland-server                               x86_64               1.15.0-1.fc28                                       fedora                 44 k
+ libxcb                                          x86_64               1.13-1.fc28                                         fedora                228 k
+ libxkbfile                                      x86_64               1.0.9-7.fc28                                        fedora                 90 k
+ libxshmfence                                    x86_64               1.3-1.fc28                                          fedora                 12 k
+ llvm-libs                                       x86_64               6.0.0-11.fc28                                       fedora                 15 M
+ mcpp                                            x86_64               2.7.2-20.fc28                                       fedora                 30 k
+ mesa-filesystem                                 x86_64               18.0.2-1.fc28                                       updates                30 k
+ mesa-libGL                                      x86_64               18.0.2-1.fc28                                       updates               158 k
+ mesa-libgbm                                     x86_64               18.0.2-1.fc28                                       updates                48 k
+ mesa-libglapi                                   x86_64               18.0.2-1.fc28                                       updates                48 k
+ mesa-libxatracker                               x86_64               18.0.2-1.fc28                                       updates               1.2 M
+ mtdev                                           x86_64               1.1.5-12.fc28                                       fedora                 23 k
+ pango                                           x86_64               1.42.1-2.fc28                                       updates               283 k
+ pixman                                          x86_64               0.34.0-8.fc28                                       updates               247 k
+ plymouth-graphics-libs                          x86_64               0.9.3-6.fc28                                        updates                61 k
+ plymouth-plugin-label                           x86_64               0.9.3-6.fc28                                        updates                40 k
+ plymouth-plugin-two-step                        x86_64               0.9.3-6.fc28                                        updates                48 k
+ plymouth-theme-charge                           x86_64               0.9.3-6.fc28                                        updates                38 k
+ xcb-util                                        x86_64               0.4.0-9.fc28                                        fedora                 21 k
+ xorg-x11-drv-wacom-serial-support               x86_64               0.36.1-2.fc28                                       fedora                 38 k
+ xorg-x11-server-common                          x86_64               1.19.6-8.fc28                                       updates                50 k
+ xorg-x11-server-utils                           x86_64               7.7-24.fc28                                         fedora                193 k
+ xorg-x11-xkb-utils                              x86_64               7.7-23.fc28                                         fedora                112 k
+
+Resumen de la transacción
+======================================================================================================================================================
+Instalar  92 Paquetes
+
+Tamaño total de la descarga: 48 M
+Tamaño instalado: 141 M
+Descargando paquetes:
+(1/92): xorg-x11-drv-ati-18.0.1-1.fc28.x86_64.rpm   
+...
+
+
+sudo dnf install mesa-libEGL
+
+[mcampos@localhost ~]$ sudo dnf install mesa-libEGL
+Última comprobación de caducidad de metadatos hecha hace 0:01:59, el jue 07 jun 2018 08:40:19 -04.
+Dependencias resueltas.
+======================================================================================================================================================
+ Paquete                             Arquitectura             Versión                                                 Repositorio               Tamaño
+======================================================================================================================================================
+Instalando:
+ mesa-libEGL                         x86_64                   18.0.2-1.fc28                                           updates                   112 k
+Instalando dependencias:
+ libglvnd-egl                        x86_64                   1:1.0.1-0.5.20180327git5baa1e5.fc28                     fedora                     48 k
+ libwayland-client                   x86_64                   1.15.0-1.fc28                                           fedora                     38 k
+
+Resumen de la transacción
+======================================================================================================================================================
+Instalar  3 Paquetes
+
+Tamaño total de la descarga: 198 k
+Tamaño instalado: 380 k
+¿Está de acuerdo [s/N]?:s
+Descargando paquetes:
+(1/3): mesa-libEGL-18.0.2-1.fc28.x86_64.rpm                                                                           106 kB/s | 112 kB     00:01    
+(2/3): libwayland-client-1.15.0-1.fc28.x86_64.rpm                                                                      30 kB/s |  38 kB     00:01    
+(3/3): libglvnd-egl-1.0.1-0.5.20180327git5baa1e5.fc28.x86_64.rpm                                                       25 kB/s |  48 kB     00:01    
+----
+
+
+[root@localhost /]# dnf install openbox
+Última comprobación de caducidad de metadatos hecha hace 1:27:30, el jue 07 jun 2018 08:40:19 -04.
+Dependencias resueltas.
+======================================================================================================================================================
+ Paquete                                     Arquitectura                  Versión                               Repositorio                    Tamaño
+======================================================================================================================================================
+Instalando:
+ openbox                                     x86_64                        3.6.1-9.fc28                          updates                        327 k
+Instalando dependencias:
+ giflib                                      x86_64                        5.1.4-1.fc28                          fedora                          50 k
+ imlib2                                      x86_64                        1.4.9-6.fc28                          fedora                         220 k
+ jbigkit-libs                                x86_64                        2.1-12.fc28                           fedora                          53 k
+ libjpeg-turbo                               x86_64                        1.5.3-3.fc28                          fedora                         154 k
+ libtiff                                     x86_64                        4.0.9-9.fc28                          updates                        186 k
+ openbox-libs                                x86_64                        3.6.1-9.fc28                          updates                         89 k
+ python3-pyxdg                               noarch                        0.25-15.fc28                          fedora                          93 k
+ redhat-menus                                noarch                        12.0.2-13.fc28                        fedora                         151 k
+ startup-notification                        x86_64                        0.12-15.fc28                          fedora                          44 k
+
+Resumen de la transacción
+======================================================================================================================================================
+Instalar  10 Paquetes
+
+Tamaño total de la descarga: 1.3 M
+Tamaño instalado: 4.1 M
+¿Está de acuerdo [s/N]?:
+
+
+sudo dnf install openbox xbacklight feh conky xorg-x11-drv-libinput tint2 volumeicon xorg-x11-server-utils network-manager-applet
+
+
+put exec openbox-session inside .xinitrc file in you home dir.
+Try to start openbox with startx. 
+
+
+
+Ref:
+https://www.reddit.com/r/Fedora/comments/89o211/optimal_way_for_a_minimal_openbox_install/
+https://fedoramagazine.org/openbox-fedora/
+
+--------------------
+
+[mcampos@localhost ~]$ sudo dnf install terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
+Última comprobación de caducidad de metadatos hecha hace 3:14:48, el jue 07 jun 2018 08:40:19 -04.
+El paquete network-manager-applet-1.8.10-2.fc28.2.x86_64 ya se encuentra instalado, omitiendo.
+El paquete dejavu-sans-fonts-2.35-6.fc28.noarch ya se encuentra instalado, omitiendo.
+El paquete dejavu-fonts-common-2.35-6.fc28.noarch ya se encuentra instalado, omitiendo.
+Dependencias resueltas.
+======================================================================================================================================================
+ Paquete                                          Arquitectura             Versión                                    Repositorio               Tamaño
+======================================================================================================================================================
+Instalando:
+ dejavu-sans-mono-fonts                           noarch                   2.35-6.fc28                                fedora                    446 k
+ dejavu-serif-fonts                               noarch                   2.35-6.fc28                                fedora                    803 k
+ gnome-keyring                                    x86_64                   3.28.2-1.fc28                              updates                   846 k
+ google-crosextra-caladea-fonts                   noarch                   1.002-0.10.20130214.fc28                   fedora                     96 k
+ google-crosextra-carlito-fonts                   noarch                   1.103-0.8.20130920.fc28                    fedora                    818 k
+ liberation-mono-fonts                            noarch                   1:1.07.4-11.fc28                           fedora                    233 k
+ liberation-serif-fonts                           noarch                   1:1.07.4-11.fc28                           fedora                    305 k
+ open-sans-fonts                                  noarch                   1.10-6.fc27                                fedora                    479 k
+ overpass-fonts                                   noarch                   3.0.2-3.fc28                               fedora                    1.1 M
+ terminus-fonts                                   noarch                   4.40-8.fc28                                fedora                    1.5 M
+ terminus-fonts-console                           noarch                   4.40-8.fc28                                fedora                    678 k
+Instalando dependencias:
+ liberation-fonts-common                          noarch                   1:1.07.4-11.fc28                           fedora                     33 k
+
+Resumen de la transacción
+======================================================================================================================================================
+Instalar  12 Paquetes
+
+Tamaño total de la descarga: 7.2 M
+Tamaño instalado: 18 M
+¿Está de acuerdo [s/N]?:
+
+

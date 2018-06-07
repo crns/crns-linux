@@ -1,0 +1,78 @@
+Meneldor 192.168.7.191
+
+processor	: 6
+vendor_id	: AuthenticAMD
+cpu family	: 21
+model		: 2
+model name	: AMD FX(tm)-8350 Eight-Core Processor
+stepping	: 0
+microcode	: 0x6000822
+cpu MHz		: 4013.320
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 8
+core id		: 6
+cpu cores	: 4
+apicid		: 22
+initial apicid	: 6
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+
+processor	: 7
+vendor_id	: AuthenticAMD
+cpu family	: 21
+model		: 2
+model name	: AMD FX(tm)-8350 Eight-Core Processor
+stepping	: 0
+microcode	: 0x6000822
+
+
+
+auto bond0
+iface bond0 inet static
+        address 192.168.7.191/24
+        gateway 192.168.7.1
+        up /sbin/ifenslave bond0 enp1s0f0 enp1s0f1 enp7s0f0 enp7s0f1 enp10s0
+        down /sbin/ifenslave -d bond0 enp1s0f0 enp1s0f1 enp7s0f0 enp7s0f1 enp10s0
+
+2: enp10s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+    link/ether 60:a4:4c:61:7c:87 brd ff:ff:ff:ff:ff:ff
+3: enp1s0f0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 90:e2:ba:47:d0:06 brd ff:ff:ff:ff:ff:ff
+4: enp1s0f1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 90:e2:ba:47:d0:07 brd ff:ff:ff:ff:ff:ff
+5: enp7s0f0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 90:e2:ba:47:d0:04 brd ff:ff:ff:ff:ff:ff
+6: enp7s0f1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 90:e2:ba:47:d0:05 brd ff:ff:ff:ff:ff:ff
+
+
+processor	: 7
+vendor_id	: AuthenticAMD
+cpu family	: 21
+model		: 2
+model name	: AMD FX(tm)-8350 Eight-Core Processor
+stepping	: 0
+microcode	: 0x600084f
+cpu MHz		: 4013.380
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 8
+core id		: 7
+cpu cores	: 4
+apicid		: 23
+initial apicid	: 7
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+
+
+
+
+
+
+
+
