@@ -91,7 +91,7 @@ saruman:/home/mcampos# umask
 Establecer umask a 002
 nano /etc/login.defs
 
-Agregar "session optional pam_umask.so usergroups"al final de:
+Agregar "session optional pam_umask.so usergroups" al final de:
 nano /etc/pam.d/common-session
 
 reiniciar sesion y probar umask

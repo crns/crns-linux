@@ -5,6 +5,15 @@ Para Netinstall ir a http://www.centos.com/download/mirrors/ y seleccionar un mi
 http://mirror.gtdinternet.com/7/os/x86_64/
 
 
+[mcampos@chani ~]$ nmcli connection
+NAME    UUID                                  TYPE      DEVICE 
+enp0s3  ff308ff1-9e93-4380-a941-a39474b3b87f  ethernet  enp0s3 
+enp0s8  79b16972-c146-4176-9821-2f8dd38a3afa  ethernet  enp0s8 
+enp0s9  93d13955-e9e2-a6bd-df73-12e3c747f122  ethernet  enp0s9 
+[mcampos@chani ~]$ 
+
+
+
 enp0s8 esta deshabilitado en el boot.
 
 su -
@@ -27,7 +36,35 @@ ONBOOT=yes
 
 Guardar con Ctrl + O y aceptar con ENTER, salir con Crtl + X
 
+
 ################
+
+Habilitar enp0s9 para red bridged:
+
+
+sudo nano /etc/sysconfig/network-scripts/ifcfg-enp0s9
+
+
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=none
+IPADDR=192.168.40.57
+PREFIX=24
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=enp0s9
+UUID=93d13955-e9e2-a6bd-df73-12e3c747f122
+DEVICE=enp0s9
+ONBOOT=yes
+
+
+
 
 Instalando Pqtes y configurando el sistema:
 
@@ -63,6 +100,8 @@ Use el comando usermod para agregar el usuario al grupo wheel.
 Predeterminadamente, en CentOS, los miembros del grupo wheel tienen privilegios sudo.
 
 tip: https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-centos-quickstart
+
+
 
 Optimizar disco:
 
@@ -123,8 +162,6 @@ updates/7/x86_64                                          CentOS-7 - Updates    
 repolist: 12.547
 
 
-
-
 Repositorio RPMFusion:
 https://rpmfusion.org/Configuration/
 
@@ -155,6 +192,30 @@ repolist: 25.343
 [mcampos@localhost ~]$
 
 Actualización masiva:
+
+Repositorio REMI:
+
+Remi:
+rpm -vi  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+Los canales que instala son:
+
+
+remi-glpi91.repo
+remi-glpi92.repo
+remi-glpi93.repo
+remi-php54.repo
+remi-php70.repo
+remi-php71.repo
+remi-php72.repo
+remi.repo
+remi-safe.repo
+
+
+queda habilitado el canal "remi-safe", para ver los pqts disponibles de este canal ejecutar:
+
+yum --disablerepo="*" --enablerepo="remi-safe" list available
+
 
 
 Repositorio ELRepo:
@@ -187,14 +248,13 @@ Otros Repos:
 RepoForge:
 rpm -vi http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
 
-nano /etc/yum.repos.d/rpmforge.repo
+nano /etc/yum.repos.d/rpmforge.repo y deshabilitar el canal "rpmforge"
 
-Remi:
-rpm -vi  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+Canales:
 
-nano /etc/yum.repos.d/remi.repo
-
-
+rpmforge
+rpmforge-extras
+rpmforge-testing
 
 
 Instalar utilidades:
@@ -227,6 +287,8 @@ sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar 
 
 sudo yum -y install kmod pciutils usbutils util-linux
 
+
+###########################
 
 If you have SELinux installed, then update the SELinux policies:
 

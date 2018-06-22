@@ -70,9 +70,201 @@ cpuid level	: 13
 wp		: yes
 
 
+Instalar BACULA STORE:
+
+root@meneldor:~# apt-get install bacula-sd
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  bacula-bscan bacula-common bacula-common-sqlite3 liblzo2-2 mt-st mtx
+Paquetes sugeridos:
+  gdb dds2tar scsitools sg3-utils
+Se instalarán los siguientes paquetes NUEVOS:
+  bacula-bscan bacula-common bacula-common-sqlite3 bacula-sd liblzo2-2 mt-st mtx
+0 actualizados, 7 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
+Se necesita descargar 1.337 kB de archivos.
+Se utilizarán 4.431 kB de espacio de disco adicional después de esta operación.
+¿Desea continuar? [S/n] 
 
 
 
 
+Config
 
+nano /etc/hosts
+
+192.168.7.211	tape-dir
+
+En STORAGE:
+
+
+nano /etc/bacula/bacula-sd.conf
+
+Storage {                             # definition of myself
+  Name = meneldor-sd
+  SDPort = 9103                  # Director's port
+  WorkingDirectory = "/var/lib/bacula"
+  Pid Directory = "/run/bacula"
+  Maximum Concurrent Jobs = 20
+  ###SDAddress = 127.0.0.1
+}
+
+Director {
+  Name = tape-dir
+  Password = "mE6t9neyjetkxW9Ib_wVIegtppR2WKQbh"
+}
+
+Device {
+  Name = Dir01
+  Media Type = File
+  Archive Device = /var/bacula-store/01
+  LabelMedia = yes;
+  Random Access = Yes;
+  AutomaticMount = yes;
+  RemovableMedia = no;
+  AlwaysOpen = no;
+}
+
+Device {
+  Name = Dir02
+  Media Type = File1
+  Archive Device = /var/bacula-store/02
+  LabelMedia = yes;
+  Random Access = Yes;
+  AutomaticMount = yes;
+  RemovableMedia = no;
+  AlwaysOpen = no;
+}
+
+
+
+Probar umask
+saruman:/home/mcampos# umask
+0022
+
+Establecer umask a 002
+nano /etc/login.defs
+
+Agregar "session optional pam_umask.so usergroups" al final de:
+
+en stretch es:  
+"session optional        pam_umask.so usergroups pam_systemd.so"
+
+
+nano /etc/pam.d/common-session
+
+reiniciar sesion y probar umask
+
+
+
+mkdir /var/bacula-store/01
+mkdir /var/bacula-store/02
+
+
+systemctl restart bacula-sd.service
+
+root@meneldor:~# systemctl status bacula-sd.service
+● bacula-sd.service - Bacula Storage Daemon service
+   Loaded: loaded (/lib/systemd/system/bacula-sd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Thu 2018-06-14 10:28:14 -04; 2s ago
+  Process: 28711 ExecStartPre=/usr/sbin/bacula-sd -t -c $CONFIG (code=exited, status=0/SUCCESS)
+ Main PID: 28714 (bacula-sd)
+    Tasks: 2 (limit: 4915)
+   CGroup: /system.slice/bacula-sd.service
+           └─28714 /usr/sbin/bacula-sd -f -c /etc/bacula/bacula-sd.conf
+
+jun 14 10:28:14 meneldor systemd[1]: Starting Bacula Storage Daemon service...
+jun 14 10:28:14 meneldor systemd[1]: Started Bacula Storage Daemon service.
+root@meneldor:~# systemctl restart bacula-sd.service
+
+
+
+En tape-dir:
+
+JobDefs {
+        Name = "CasChileFile01"
+        Type = Backup
+        Level = Incremental
+        Schedule = "CicloSemanal"
+        Storage = FileStor01
+        Messages = Standard
+        Pool = DataFile01
+        Write Bootstrap = "/var/lib/bacula/%n.bsr" #Change this
+}
+
+JobDefs {
+        Name = "CasChileFile02"
+        Type = Backup
+        Level = Incremental
+        Schedule = "CicloSemanal"
+        Storage = FileStor02
+        Messages = Standard
+        Pool = DataFile02
+        Write Bootstrap = "/var/lib/bacula/%n.bsr" #Change this
+}
+
+#
+# En cada Cliente
+#
+
+Job {
+  Name = "cas-storage-fd-File"
+  JobDefs = "CasChileFile01"
+  Client = cas-storage-fd	#
+  FileSet= "cas-storage-fd Set"	#
+}
+
+Job {
+        Name = "lotho-fd-File"
+        JobDefs = "CasChileFile02"
+        Client = lotho-fd
+        FileSet = "lotho-fd Set"
+}
+
+
+
+...
+
+#
+# STORAGE en MENELDOR
+#
+
+Storage {
+  Name = FileStor01
+  Address = meneldor
+  Password = "mE6t9neyjetkxW9Ib_wVIegtppR2WKQbh"
+  Device = Dir01
+  Media Type = File01
+}
+
+Storage {
+  Name = FileStor02
+  Address = meneldor
+  Password = "mE6t9neyjetkxW9Ib_wVIegtppR2WKQbh"
+  Device = Dir02
+  Media Type = File02
+}
+
+Pool {
+  Name = DataFile01
+  Use Volume Once = yes
+  Pool Type = Backup
+  LabelFormat = "Recycle01-"
+  AutoPrune = yes
+  VolumeRetention = 2h
+  Maximum Volumes = 12
+  Recycle = yes
+}
+
+Pool {
+  Name = DataFile02
+  Use Volume Once = yes
+  Pool Type = Backup
+  LabelFormat = "Recycle02-"
+  AutoPrune = yes
+  VolumeRetention = 2h
+  Maximum Volumes = 12
+  Recycle = yes
+}
 

@@ -1,0 +1,7 @@
+mount -t smbfs -o username=mcampos //192.168.40.171/var/samba/stecnico/mcampos /root/vale
+
+mount -t cifs //servidor/share /puntodemontaje -o user=mcampos
+
+mount -t cifs //192.168.40.171/stecnico /root/vale -o user=mcampos
+
+ref: https://blog.desdelinux.net/montar-unidades-smb-desde-consola/

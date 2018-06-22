@@ -1,5 +1,44 @@
 yum update -y
 
+
+hostnamectl set-hostname chani
+
+
+Consultar verificar grupos de pqts disponibles:
+
+[mcampos@localhost ~]$ sudo yum group
+Complementos cargados:fastestmirror
+No existe un archivo de grupos instalados.
+Maybe run: yum groups mark convert (see man yum)
+Loading mirror speeds from cached hostfile
+ * base: mirror.orbyta.com
+ * centosplus: mirror.orbyta.com
+ * elrepo: reflector.westga.edu
+ * epel: epel.gtdinternet.com
+ * extras: mirror.orbyta.com
+ * remi-safe: mirrors.mediatemple.net
+ * rpmfusion-free-tainted: mirror.us.leaseweb.net
+ * rpmfusion-free-updates: mirror.math.princeton.edu
+ * rpmfusion-nonfree-tainted: mirror.us.leaseweb.net
+ * rpmfusion-nonfree-updates: mirror.math.princeton.edu
+ * updates: mirror.orbyta.com
+Grupos de Entorno Disponibles: 12
+Grupos disponibles: 18
+Listo
+[mcampos@localhost ~]$
+
+
+Listar los grupos disponibles:
+
+sudo yum group list
+
+Listar todos los grupos incluyendo los ocultos
+
+sudo yum group list hidden
+
+
+
+
 [mcampos@localhost ~]$ sudo yum group info 'Sistema X Window'
 [sudo] password for mcampos: 
 Complementos cargados:fastestmirror
@@ -38,21 +77,27 @@ Grupo: Sistema X Window
 [mcampos@localhost ~]$ 
 
 
+Instalar Sistema X Window:
 
-yum groupinstall -y 'Sistema X Window'
-
-o
+###Nota desde fedora y Openbox
+sudo yum install mesa-libEGL
 
 sudo yum groupinstall -y 'Sistema X Window'
 
 
-sudo yum install -y lightdm lightdm-gtk 
+
+
+
+
+
+##################
+Con Login Grafico:
+
+sudo yum install -y lightdm lightdm-gtk openbox
 
 sudo systemctl enable lightdm.service
 
-sudo yum install -y tint2 gnome-terminal
-
-sudo yum install -y firefox terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
+sudo yum install -y tint2 gnome-terminal terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
 
 
 su -
@@ -60,6 +105,12 @@ su -
 echo 'tint2 &' >> /etc/xdg/openbox/autostart
 
 echo 'nm-applet &' >> /etc/xdg/openbox/autostart
+
+
+ls -l /etc/systemd/system/default.target
+lrwxrwxrwx. 1 root root 37 jun 18 12:59 /etc/systemd/system/default.target -> /lib/systemd/system/multi-user.target
+
+
 
 unlink /etc/systemd/system/default.target
 
@@ -70,6 +121,56 @@ reboot
 o
 
 systemctl reboot
+
+
+
+#############
+Controlador de VirtualBox
+
+Insertar cd gues Addi...
+
+[mcampos@localhost ~]$ cat /proc/partitions
+major minor  #blocks  name
+
+   8        0   52428800 sda
+   8        1    1048576 sda1
+   8        2   49281024 sda2
+   8        3    2098176 sda3
+  11        0      56618 sr0
+[mcampos@localhost ~]$ 
+
+
+[mcampos@localhost ~]$ sudo mount -tauto /dev/sr0 /mnt
+mount: /dev/sr0 is write-protected, mounting read-only
+[mcampos@localhost ~]$ 
+
+
+
+yum install -y bzip2 gcc make perl kernel-devel
+
+cd /mnt
+
+sudo ./VBoxLinuxAdditions.run
+
+
+[mcampos@localhost mnt]$ sudo ./VBoxLinuxAdditions.run
+Verifying archive integrity... All good.
+Uncompressing VirtualBox 5.2.12 Guest Additions for Linux........
+VirtualBox Guest Additions installer
+Copying additional installer modules ...
+Installing additional modules ...
+VirtualBox Guest Additions: Building the VirtualBox Guest Additions kernel modules.
+VirtualBox Guest Additions: Starting.
+[mcampos@localhost mnt]$ 
+
+
+##################
+
+Snapshot "Post Openbox"
+
+##################
+
+
 
 
 Ref:

@@ -1,0 +1,190 @@
+
+
+
+www.caschilevirtual.cl en Dain 192.168.7.121 -> rumil 190.98.197.123 (190.98.197.123)
+
+
+
+https://download.moodle.org/stable35/moodle-latest-35.tgz
+
+
+Moodle 3.2 or later requires at least PHP 5.6.5 (currently using version 5.3.3-7+squeeze19). Some servers may have multiple PHP versions installed, are you using the correct executable?
+
+
+
+
+mysql:
+
+mysql> update user set password=PASSWORD("sar200rgn") where User='root';
+
+mysql> flush privileges;
+
+mysql> create database moodlevirtualtest;
+mysql> GRANT ALL PRIVILEGES ON moodlevirtualtest.* TO 'hosting'@'localhost' IDENTIFIED BY 'h0st1ng2012.';
+
+mysql> GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY 'sg1652te';
+
+mysql> create database moodle;
+mysql> GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY 'sg1652te';
+
+Config moodle:
+
+$CFG->dbtype    = 'mysqli';
+$CFG->dblibrary = 'native';
+$CFG->dbhost    = 'localhost';
+$CFG->dbname    = 'moodle';
+$CFG->dbuser    = 'moodleuser';
+$CFG->dbpass    = 'sg1652te';
+$CFG->prefix    = 'mdl_';
+$CFG->dboptions = array (
+  'dbpersist' => 0,
+  'dbsocket' => 1,
+);
+
+
+Backup:
+
+mysqldump --opt -u root -psar200rgn moodle > moodle-2018061200.sql
+
+Restore:
+
+mysql -u moodleuser -psg1652te moodle < moodle-2018061200.sql
+
+
+
+
+Config Apache:
+
+root@dain:/etc/apache2/sites-enabled# cat www.caschilevirtual.cl 
+<VirtualHost *:80>
+        ServerName www.caschilevirtual.cl
+        ServerAdmin webmaster@caschile.cl
+	AddDefaultCharset utf-8
+        AddCharset utf-8 .php
+	AddCharset utf-8 .html
+	AddCharset utf-8 .htm
+	DocumentRoot /home/paginas/caschilevirtual/html_site/moodle
+	DirectoryIndex index.php index.html
+
+	<Directory "/home/paginas/caschilevirtual/html_site/moodle">
+                AllowOverride All
+                Options Includes +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        <IfModule mod_php5.c>
+                php_value memory_limit 256M
+                php_value upload_max_filesize 80M
+                php_value post_max_size 80M
+                php_value max_execution_time 1000
+                php_value max_input_time 1000
+                php_flag register_globals off
+        </IfModule>
+
+
+
+        ErrorLog ${APACHE_LOG_DIR}/www.caschilevirtual.cl-error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/www.caschilevirtual.cl-access.log combined
+
+</VirtualHost>
+
+######################################
+
+nano www.caschilevirtual.cl.conf 
+
+<VirtualHost *:80>
+
+        ServerName www.caschilevirtual.cl
+        ServerAdmin webmaster@caschile.cl
+	AddDefaultCharset utf-8
+        AddCharset utf-8 .php
+	AddCharset utf-8 .html
+	AddCharset utf-8 .htm
+	DocumentRoot /home/paginas/caschilevirtual/html_site/moodle/
+	DirectoryIndex index.php index.html
+
+        <Directory "/home/paginas/caschilevirtual/html_site/moodle">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        <FilesMatch "\.php$">
+            SetHandler "proxy:fcgi://127.0.0.1:9000/"
+        </FilesMatch>
+
+        ErrorLog ${APACHE_LOG_DIR}/www.caschilevirtual.cl-error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/www.caschilevirtual.cl-access.log combined
+
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+final:
+
+
+Reverse Proxy NGINX
+
+cat www.caschilevirtual.cl.conf 
+server {
+	listen 80;
+        server_name www.caschilevirtual.cl;
+
+	location / {
+		proxy_pass http://www.caschilevirtual.cl:80;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-Proto https;
+	}
+}
+
+
+Apache en PIPPIN:
+
+root@pippin:~# cat /etc/apache2/sites-enabled/www.caschilevirtual.cl.conf 
+<VirtualHost *:80>
+        ServerName www.caschilevirtual.cl
+        ServerAdmin webmaster@caschile.cl
+	AddDefaultCharset utf-8
+        AddCharset utf-8 .php
+	AddCharset utf-8 .html
+	AddCharset utf-8 .htm
+	DocumentRoot /home/paginas/caschilevirtual/html_site/moodle
+	DirectoryIndex index.php index.html
+
+        <Directory "/home/paginas/caschilevirtual/html_site/moodle">
+                ###AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                AllowOverride All
+                ###Options +Includes +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                #Order allow,deny
+		Require all granted
+                ###Allow from all
+        </Directory>
+
+        <FilesMatch "\.php$">
+            SetHandler "proxy:fcgi://127.0.0.1:9000/"
+        </FilesMatch>
+
+        ErrorLog ${APACHE_LOG_DIR}/www.caschilevirtual.cl-error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/www.caschilevirtual.cl-access.log combined
+
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+root@pippin:~# 
+
+
+
+
