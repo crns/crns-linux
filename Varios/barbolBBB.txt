@@ -1,0 +1,58 @@
+MORGUL - 192.168.7.157 - XEN							
+N°	SERVIDOR	ID	TIPO ACCESO	S.O.	IP PRIVADA	IP PÚBLICA	SERVICIO/APLICACIÓN
+1	GOLUM		5i	SSH		LINUX	192.168.7.167	190.153.214.147	WONZA STREAMING MOVIL
+2	DEAGOL		5i	SSH		LINUX	192.168.7.169	190.153.214.150	BIG BLUE BOTTON
+
+
+
+
+VLAN		102		
+Network		190.153.214.144
+Gateway		190.153.214.145
+		190.153.214.146
+Gollum (Wonza)	190.153.214.147 ->  barbol (bbb.caschile.cl)
+		190.153.214.148
+		190.153.214.149
+		190.153.214.150
+Broadcast	190.153.214.151	
+Netmask		255.255.255.248
+
+
+auto eth0.102
+iface eth0.102 inet static
+       address 190.153.214.147
+       gateway 190.153.214.145
+       network 190.153.214.144
+       broadcast 190.153.214.151
+       netmask 255.255.255.248
+
+Example:
+
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  ssl_certificate /etc/nginx/ssl/bigbluebutton.example.com.crt;
+  ssl_certificate_key /etc/nginx/ssl/bigbluebutton.example.com.key;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 10m;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!AES256";
+  ssl_prefer_server_ciphers on;
+  ssl_dhparam /etc/nginx/ssl/dhp-2048.pem;
+
+
+En bbb.caschile.cl:
+
+  # SSL configuration
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  ssl on;
+  ssl_certificate /etc/nginx/ssl/bundle.crt;
+  ssl_certificate_key /etc/nginx/ssl/private.key;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 10m;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!AES256";
+  ssl_prefer_server_ciphers on;
+
+
+

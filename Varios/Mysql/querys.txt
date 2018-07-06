@@ -1,0 +1,10 @@
+
+Comprobar tamaño de base de datos en Mysql:
+ref: http://www.vozidea.com/comprobar-el-tamano-de-una-base-de-datos-mysql
+
+SELECT table_schema "database", sum(data_length + index_length)/1024/1024 "size in MB" FROM information_schema.TABLES GROUP BY table_schema;
+
+
+Si sólo quisiésemos consultar el tamaño de una base de datos específica, la query sería:
+
+SELECT table_schema "database", sum(data_length + index_length)/1024/1024 "size in MB" FROM information_schema.TABLES WHERE table_schema='nombre_db' GROUP BY table_schema;

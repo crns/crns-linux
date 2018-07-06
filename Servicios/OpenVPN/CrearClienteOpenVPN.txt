@@ -1,6 +1,24 @@
 
+Logearse como root en Theoden:
 
+root@theoden:~# cd easy-rsa/
+root@theoden:~/easy-rsa# 
 
+root@theoden:~/easy-rsa# source ./vars
+NOTE: If you run ./clean-all, I will be doing a rm -rf on /root/easy-rsa/keys
+root@theoden:~/easy-rsa# 
+
+Verificar:
+
+root@theoden:~/easy-rsa# echo $KEY_NAME
+EasyRSA
+
+root@theoden:~/easy-rsa# echo $KEY_OU  
+InfraestructuraTi
+
+root@theoden:~/easy-rsa# 
+
+Crear certificados:
 
 root@theoden:~/easy-rsa# ./build-key mcampos
 Generating a 4096 bit RSA private key
@@ -57,6 +75,50 @@ Verificar certificado creado:
 /root/easy-rsa/keys/mcampos.crt: OK
 ~/easy-rsa#
 
+
+
+cd
+
+root@theoden:~# cp -rf base-certs-cliente/ slep-huasco
+
+root@theoden:~# cp -v ~/easy-rsa/keys/slep-huasco.{crt,key} slep-huasco/
+'/root/easy-rsa/keys/slep-huasco.crt' -> 'slep-huasco/slep-huasco.crt'
+'/root/easy-rsa/keys/slep-huasco.key' -> 'slep-huasco/slep-huasco.key'
+root@theoden:~#
+
+root@theoden:~# cd slep-huasco/
+root@theoden:~/slep-huasco# ls -l
+total 32
+-rw-r--r-- 1 root root 2512 Jun 26 09:48 ca.crt
+-rw-r--r-- 1 root root  285 Jun 26 09:48 client.ovpn
+-rw-r--r-- 1 root root 8378 Jun 26 09:50 slep-huasco.crt
+-rw------- 1 root root 3272 Jun 26 09:50 slep-huasco.key
+-rw------- 1 root root  636 Jun 26 09:48 ta.key
+drwxr-xr-x 2 root root 4096 Jun 26 09:48 win-client
+root@theoden:~/slep-huasco# 
+
+Editar client.ovpn y reemplazar slep-huasco.crt y slep-huasco.key:
+
+nano client.ovpn
+
+#
+cert certificado.crt
+key certificado.key
+#
+
+por:
+
+#
+cert slep-huasco.crt
+key slep-huasco.key
+#
+
+Guardar y salir.
+
+cd..
+
+
+root@theoden:~# zip -r slep-huasco.zip slep-huasco/
 
 
 
