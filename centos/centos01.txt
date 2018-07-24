@@ -5,6 +5,48 @@ Para Netinstall ir a http://www.centos.com/download/mirrors/ y seleccionar un mi
 http://mirror.gtdinternet.com/7/os/x86_64/
 
 
+UEFi BOOT:
+ref: https://www.centos.org/forums/viewtopic.php?t=66316
+
+Al terminanr de instalar y antes de finalizar ejecutar Crtl+Alt+F2 para ir a un terminal y ejecutar
+
+cp -p /mnt/sysimage/boot/efi/EFI/centos/grubx64.efi /mnt/sysimage/boot/efi/EFI/BOOT/
+
+Crtl+Alt+F6 y finalizar instalación
+
+
+Primer Boot:
+
+
+yum install deltarpm -y   (error)
+
+
+
+
+Truco:
+Predeterminadamente, en CentOS, los miembros del grupo wheel tienen privilegios sudo.
+Use el comando usermod para agregar el usuario al grupo wheel.
+
+    usermod -aG wheel username
+
+
+Ref: https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-centos-quickstart
+Más info de SUDO en http://www.alcancelibre.org/staticpages/index.php/como-sudo-linux
+
+
+
+Actualización masiva:
+
+sudo yum install deltarpm -y
+
+sudo yum update -y
+
+
+
+Configurar red y hostname:
+
+yum install -y nano
+
 [mcampos@chani ~]$ nmcli connection
 NAME    UUID                                  TYPE      DEVICE 
 enp0s3  ff308ff1-9e93-4380-a941-a39474b3b87f  ethernet  enp0s3 
@@ -14,7 +56,8 @@ enp0s9  93d13955-e9e2-a6bd-df73-12e3c747f122  ethernet  enp0s9
 
 
 
-enp0s8 esta deshabilitado en el boot.
+enp0s8 y enp0s9 están deshabilitados en el Boot.
+
 
 su -
 
@@ -22,11 +65,7 @@ ifup enp0s8
 
 para habilitar en el arranque editar
 
-yum install -y nano
-
-nano /etc/sysconfig/network-scripts/ifcfg-enp0s8
-
-nano /etc/sysconfig/network-scripts/ifcfg-enp0s8
+sudo nano /etc/sysconfig/network-scripts/ifcfg-enp0s8
 
 ONBOOT=no
 
@@ -66,57 +105,6 @@ ONBOOT=yes
 
 
 
-Instalando Pqtes y configurando el sistema:
-
-yum install -y sudo
-
-luego en /etc/sudores linea 93 agregar:
-
-mcampos    ALL=(ALL)       ALL
-
-login as: mcampos
-mcampos@192.168.56.101's password:
-Last login: Wed Apr 25 20:50:47 2018 from 192.168.56.1
-[mcampos@localhost ~]$ sudo yum update -y
-
-We trust you have received the usual lecture from the local System
-Administrator. It usually boils down to these three things:
-
-    #1) Respect the privacy of others.
-    #2) Think before you type.
-    #3) With great power comes great responsibility.
-
-[sudo] password for mcampos:
-
-Más info de SUDO en:
-http://www.alcancelibre.org/staticpages/index.php/como-sudo-linux
-
-Truco:
-
-Use el comando usermod para agregar el usuario al grupo wheel.
-
-    usermod -aG wheel username
-
-Predeterminadamente, en CentOS, los miembros del grupo wheel tienen privilegios sudo.
-
-tip: https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-centos-quickstart
-
-
-
-Optimizar disco:
-
-sudo nano /etc/fstab
-
-noatime,nodiratime
-
-
-sudo mount -o remount,noatime,nodiratime,errors=remount-ro /
-
-con lvs
-
-sudo mount -o remount,noatime,nodiratime,defaults /
-
-sudo mount -o remount,noatime,nodiratime,defaults /home
 
 
 Trabajando con repositorios:
@@ -124,9 +112,25 @@ Trabajando con repositorios:
 https://wiki.centos.org/es/AdditionalResources/Repositories
 https://wiki.centos.org/es/PackageManagement/Yum/Priorities
 
+[mcampos@chani ~]$ sudo yum repolist
+Complementos cargados:fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.gtdinternet.com
+ * extras: mirror.gtdinternet.com
+ * updates: mirror.gtdinternet.com
+id del repositorio                                                      nombre del repositorio                                                  estado
+base/7/x86_64                                                           CentOS-7 - Base                                                         9.911
+extras/7/x86_64                                                         CentOS-7 - Extras                                                         363
+updates/7/x86_64                                                        CentOS-7 - Updates                                                        970
+repolist: 11.244
+[mcampos@chani ~]$ 
+
+
 Habilitar CentOSPlus:
 
-nano /etc/yum.repos.d/CentOS-Base.repo
+sudo nano /etc/yum.repos.d/CentOS-Base.repo
+
+Buscar Centosplus y cambiar enabled=0 a 1
 
 [centosplus]
 name=CentOS-$releasever - Plus
@@ -142,61 +146,93 @@ cambiar enabled=0 a enabled=1 guardar y salir de nano.
 
 yum repolist
 
-[mcampos@localhost yum.repos.d]$ yum repolist
-Complementos cargados:fastestmirror
-base                                                                                              | 3.6 kB  00:00:00
-centosplus                                                                                        | 3.4 kB  00:00:00
-extras                                                                                            | 3.4 kB  00:00:00
-updates                                                                                           | 3.4 kB  00:00:00
-centosplus/7/x86_64/primary_db                                                                    | 3.1 MB  00:00:06
-Loading mirror speeds from cached hostfile
- * base: mirror.orbyta.com
- * centosplus: mirror.orbyta.com
- * extras: mirror.orbyta.com
- * updates: mirror.orbyta.com
-id del repositorio                                        nombre del repositorio                                   estado
-base/7/x86_64                                             CentOS-7 - Base                                          9.591
-centosplus/7/x86_64                                       CentOS-7 - Plus                                             92
-extras/7/x86_64                                           CentOS-7 - Extras                                          448
-updates/7/x86_64                                          CentOS-7 - Updates                                       2.416
-repolist: 12.547
+
+
+Operaciones de busqueda/consulta de pqtes en un repositorio:
+
+yum --disablerepo="*" --enablerepo="centosplus" list available
+
+yum --disablerepo="*" --enablerepo="centosplus" info kernel-plus
+
+
+
+Repo EPEL:
+
+sudo yum -y install epel-release
 
 
 Repositorio RPMFusion:
 https://rpmfusion.org/Configuration/
 
-yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+sudo yum -y localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
 
 
-Verificar Repositorios activos:
 
-[mcampos@localhost ~]$ yum repolist
+Repositorio ELRepo:
+http://elrepo.org/tiki/tiki-index.php
+
+
+"El Proyecto ELRepo se enfoca en paquetes relacionados con hardware para mejorar su experiencia con Enterprise Linux. Esto incluye controladores de sistema de archivos, controladores de gráficos, controladores de red, controladores de sonido, cámara web y controladores de video."
+
+sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+sudo rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+
+Canales de ELRepo
+
+Para organizar mejor el software que contiene el repositorio, el mismo se divide en 4 canales:
+
+elrepo: canal principal del repositorio y único habilitado por defecto, contiene paquetes que no se encuentran en la distribución.
+elrepo-extras: reemplazan otros presentes en la distribución.
+elrepo-testing: reemplazan otros presentes en la distribución y 
+elrepo-kernel: permiten actualizar el kernel actual a uno más reciente.
+
+Para ver la lista de paquetes disponibles en un canal específico:
+
+yum --disablerepo="*" --enablerepo="elrepo-testing" list available
+
+yum --disablerepo="*" --enablerepo="remi" search ocs
+
+[mcampos@chani ~]$ yum --disablerepo="*" --enablerepo="elrepo-kernel" info kernel-lt.x86_64
 Complementos cargados:fastestmirror
 Loading mirror speeds from cached hostfile
- * base: mirror.orbyta.com
- * centosplus: mirror.orbyta.com
- * epel: epel.gtdinternet.com
- * extras: mirror.orbyta.com
- * rpmfusion-free-updates: mirror.math.princeton.edu
- * rpmfusion-nonfree-updates: mirror.math.princeton.edu
- * updates: mirror.orbyta.com
-id del repositorio                                nombre del repositorio                                           estado
-base/7/x86_64                                     CentOS-7 - Base                                                   9.591
-centosplus/7/x86_64                               CentOS-7 - Plus                                                      92
-epel/x86_64                                       Extra Packages for Enterprise Linux 7 - x86_64                   12.512
-extras/7/x86_64                                   CentOS-7 - Extras                                                   448
-rpmfusion-free-updates/x86_64                     RPM Fusion for EL 7 - Free - Updates                                237
-rpmfusion-nonfree-updates/x86_64                  RPM Fusion for EL 7 - Nonfree - Updates                              47
-updates/7/x86_64                                  CentOS-7 - Updates                                                2.416
-repolist: 25.343
-[mcampos@localhost ~]$
+ * elrepo-kernel: repos.mia.lax-noc.com
+Paquetes disponibles
+Nombre        : kernel-lt
+Arquitectura        : x86_64
+Versión     : 4.4.143
+Lanzamiento     : 1.el7.elrepo
+Tamaño        : 39 M
+Repositorio        : elrepo-kernel
+Resumen     : The Linux kernel. (The core of any Linux-based operating system.)
+URL         : https://www.kernel.org/
+Licencia     : GPLv2
+Descripción :This package provides the Linux kernel (vmlinuz), the core of any
+           : Linux-based operating system. The kernel handles the basic functions
+           : of the OS: memory allocation, process allocation, device I/O, etc.
 
-Actualización masiva:
+
+
+
+
+###
+
+Otros repositorios:
+
 
 Repositorio REMI:
 
+Los objetivos de este os repositorios son: "Proporcionar las últimas versiones de la pila de PHP, funciones completas y algún otro software, a los usuarios de Fedora y Enterprise Linux (RHEL, CentOS, Oracle, Scientific Linux, ...). 
+Principalmente contiene:
+
+- Paquetes que también mantengo en Fedora
+- Backports de paquetes disponibles en la versión de desarrollo de Fedora
+- Algunos paquetes incompatibles con la política de Fedora
+- Algunos paquetes en progreso antes de ser enviados al repositorio de Fedora
+- (casi) versiones vainilla
+"
+
 Remi:
-rpm -vi  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+sudo rpm -vi  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 
 Los canales que instala son:
 
@@ -218,35 +254,16 @@ yum --disablerepo="*" --enablerepo="remi-safe" list available
 
 
 
-Repositorio ELRepo:
-http://elrepo.org/tiki/tiki-index.php
-
-rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
-rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
-
-Canales de ELRepo
-
-Para organizar mejor el software que contiene el repositorio, el mismo se divide en 4 canales:
-
-elrepo: canal principal del repositorio y único habilitado por defecto, contiene paquetes que no se encuentran en la distribución.
-elrepo-extras: reemplazan otros presentes en la distribución.
-elrepo-testing: reemplazan otros presentes en la distribución y 
-elrepo-kernel: permiten actualizar el kernel actual a uno más reciente.
-
-Para ver la lista de paquetes disponibles en un canal específico:
-
-yum --disablerepo="*" --enablerepo="elrepo-testing" list available
-
- yum --disablerepo="*" --enablerepo="remi" search ocs
-
- yum --enablerepo="elrepo-extras" --enablerepo="rpmforge" info unarj
-
-
-
-Otros Repos:
 
 RepoForge:
-rpm -vi http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+
+RepoForge podría estar desactualizado. No tenemos actualizaciones desde hace mucho tiempo.
+
+RepoForge solía ser uno de los repositorios importantes de CentOS / RHEL. Sé que RepoForge se considera clínicamente muerto hoy en día. Por otro lado RepoForge aún está físicamente vivo."
+
+
+
+sudo rpm -vi http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
 
 nano /etc/yum.repos.d/rpmforge.repo y deshabilitar el canal "rpmforge"
 
@@ -256,6 +273,21 @@ rpmforge
 rpmforge-extras
 rpmforge-testing
 
+[mcampos@chani ~]$
+
+yum --enablerepo="elrepo-extras" --enablerepo="rpmforge" info unarj
+
+
+
+
+Actualización masiva:
+
+sudo yum update -y
+
+
+
+
+####################
 
 Instalar utilidades:
 
@@ -266,26 +298,47 @@ bind-utils
 git
 unrar
 pciutils
-nano
 
-pci-utils:
+
+net-tools:
+Una colección de programas que forman el conjunto básico de herramientas de redes (NET-3) para el sistema operativo Linux.
+La mayoría de ellos están obsoletos. Para el reemplazo compruebe el paquete de iproute. El paquete incluye: arp, hostname, ifconfig, netstat, rarp, route, plipconfig, slattach, mii-tool and iptunnel and ipmaddr.
+URL         : http://sourceforge.net/projects/net-tools/
+
+pciutils:
+El paquete pciutils contiene varias utilidades para inspeccionar y configurar dispositivos conectados al bus PCI.
 http://www.alcancelibre.org/staticpages/index.php/uso-lscpu-lsmod-lspci-lsusb
+
+bind-utils:
+Bind-utils contiene una colección de utilidades para consultar servidores de nombres de DNS (Sistema de nombres de dominio) para buscar información sobre servidores de Internet. Estas herramientas le proporcionarán las direcciones IP para nombres de host dados, así como otra información sobre dominios registrados y direcciones de red.
+Debe instalar bind-utils si necesita obtener información de servidores de nombres DNS.
+
+
+
+sudo yum install net-tools pci-utils bind-utils -y
+
+
+
+
+
+
+git:
+Git es un sistema de control de revisiones distribuido rápido, escalable y con un conjunto de comandos inusualmente rico que proporciona tanto operaciones de alto nivel como acceso completo a elementos internos.
+
+
+unrar:
+La utilidad unrar es un programa gratuito para extraer, probar y ver los contenidos de los archivos creados con la versión 1.50 y posterior del archivador RAR.
+
+nano:
 
 bridg-utils:
 https://www.itzgeek.com/how-tos/mini-howtos/create-a-network-bridge-on-centos-7-rhel-7.html
 
-Installing Fail2Ban
-https://www.howtoforge.com/tutorial/how-to-install-fail2ban-on-centos/
 
-To install Fail2Ban on CentOS 7, we will have to install EPEL (Extra Packages for Enterprise Linux) repository first. EPEL contains additional packages for all CentOS versions, one of these additional packages is Fail2Ban.
 
-The following commands must be executed after switching to the root user.
+###sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar pciutils nano
 
-yum install epel-release
-
-sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar pciutils nano
-
-sudo yum -y install kmod pciutils usbutils util-linux
+###sudo yum -y install kmod pciutils usbutils util-linux
 
 
 ###########################
@@ -294,5 +347,66 @@ If you have SELinux installed, then update the SELinux policies:
 
 yum update -y selinux-policy*
 
+###########################
+
+Optimizar y securizar
 
 
+
+Optimizar disco:
+
+Verificar:
+cat /proc/mounts
+
+ejemplo de particion root:
+/dev/sda3 / ext4 rw,seclabel,relatime,data=ordered 0 0
+
+sudo nano /etc/fstab
+
+noatime,nodiratime
+
+
+sudo mount -o remount,noatime,nodiratime,errors=remount-ro /
+
+con lvs o ext4
+
+sudo mount -o remount,noatime,nodiratime,defaults /
+
+sudo mount -o remount,noatime,nodiratime,defaults /home
+
+Verificar nuevamente:
+cat /proc/mounts
+/dev/sda3 / ext4 rw,seclabel,noatime,nodiratime,data=ordered 0 0
+
+
+Securizar SSHD:
+
+sudo nano /etc/ssh/sshd_config
+
+
+# Authentication:
+
+#LoginGraceTime 2m
+PermitRootLogin no
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+
+systemctl restart sshd
+
+
+
+
+Installing Fail2Ban
+https://www.howtoforge.com/tutorial/how-to-install-fail2ban-on-centos/
+
+To install Fail2Ban on CentOS 7, we will have to install EPEL (Extra Packages for Enterprise Linux) repository first. EPEL contains additional packages for all CentOS versions, one of these additional packages is Fail2Ban.
+
+The following commands must be executed after switching to the root user.
+
+
+####yum install epel-release
+
+
+Finalizar con un snapshot (base-install)

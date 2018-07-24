@@ -77,10 +77,27 @@ Grupo: Sistema X Window
 [mcampos@localhost ~]$ 
 
 
+
+
 Instalar Sistema X Window:
+
 
 ###Nota desde fedora y Openbox
 sudo yum install mesa-libEGL
+
+#####
+  Instalando    : gtk2-2.24.31-1.el7.x86_64                                                                                                   208/279 
+gtk-query-immodules-2.0-64: error while loading shared libraries: libEGL.so.1: cannot open shared object file: No such file or directory
+warning: %post(gtk2-2.24.31-1.el7.x86_64) scriptlet failed, exit status 127
+Non-fatal POSTIN scriptlet failure in rpm package gtk2-2.24.31-1.el7.x86_64
+  Instalando    : xorg-x11-server-Xorg-1.19.5-5.el7.x86_64                                                                                    209/279 
+  Instalando    : kmod-nvidia-340xx-340.107-1.el7_5.elrepo.x86_64                                                                             210/279 
+Working. This may take some time ...
+Done.
+  Instalando    : nvidia-x11-drv-340xx-340.107-1.el7.elrepo.x86_64   
+#####
+
+
 
 sudo yum groupinstall -y 'Sistema X Window'
 
@@ -93,7 +110,7 @@ sudo yum groupinstall -y 'Sistema X Window'
 ##################
 Con Login Grafico:
 
-sudo yum install -y lightdm lightdm-gtk openbox
+sudo yum -y install lightdm lightdm-gtk
 
 sudo systemctl enable lightdm.service
 
@@ -127,6 +144,8 @@ systemctl reboot
 #############
 Controlador de VirtualBox
 
+sudo yum install -y bzip2 gcc make perl kernel-devel
+
 Insertar cd gues Addi...
 
 [mcampos@localhost ~]$ cat /proc/partitions
@@ -145,8 +164,7 @@ mount: /dev/sr0 is write-protected, mounting read-only
 [mcampos@localhost ~]$ 
 
 
-
-yum install -y bzip2 gcc make perl kernel-devel
+su -
 
 cd /mnt
 
@@ -163,6 +181,8 @@ VirtualBox Guest Additions: Building the VirtualBox Guest Additions kernel modul
 VirtualBox Guest Additions: Starting.
 [mcampos@localhost mnt]$ 
 
+
+reboot y enjoy
 
 ##################
 

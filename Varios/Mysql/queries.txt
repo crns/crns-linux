@@ -1,0 +1,54 @@
+
+Comprobar tamaño de base de datos en Mysql:
+ref: http://www.vozidea.com/comprobar-el-tamano-de-una-base-de-datos-mysql
+
+SELECT table_schema "database", sum(data_length + index_length)/1024/1024 "size in MB" FROM information_schema.TABLES GROUP BY table_schema;
+
+
+Si sólo quisiésemos consultar el tamaño de una base de datos específica, la query sería:
+
+SELECT table_schema "database", sum(data_length + index_length)/1024/1024 "size in MB" FROM information_schema.TABLES WHERE table_schema='nombre_db' GROUP BY table_schema;
+
+
+Verificar tipo de ENGINE de Based e datos y tablas;
+ref: https://www.linuxito.com/gnu-linux/nivel-medio/709-4-formas-de-determinar-que-motor-utiliza-una-tabla-en-mysql
+
+mysql> select engine from information_schema.tables where table_name='searchindex' and table_schema='mediawiki';
+
+
+
+select table_schema,table_name,engine from information_schema.tables where table_schema='bacula';
++--------------+----------------+--------+
+| table_schema | table_name     | engine |
++--------------+----------------+--------+
+| bacula       | BaseFiles      | InnoDB |
+| bacula       | CDImages       | InnoDB |
+| bacula       | Client         | InnoDB |
+| bacula       | Counters       | InnoDB |
+| bacula       | Device         | InnoDB |
+| bacula       | File           | InnoDB |
+| bacula       | FileSet        | InnoDB |
+| bacula       | Filename       | InnoDB |
+| bacula       | Job            | InnoDB |
+| bacula       | JobHisto       | InnoDB |
+| bacula       | JobMedia       | InnoDB |
+| bacula       | Location       | InnoDB |
+| bacula       | LocationLog    | InnoDB |
+| bacula       | Log            | InnoDB |
+| bacula       | Media          | InnoDB |
+| bacula       | MediaType      | InnoDB |
+| bacula       | Path           | InnoDB |
+| bacula       | PathHierarchy  | InnoDB |
+| bacula       | PathVisibility | InnoDB |
+| bacula       | Pool           | InnoDB |
+| bacula       | RestoreObject  | InnoDB |
+| bacula       | Snapshot       | InnoDB |
+| bacula       | Status         | InnoDB |
+| bacula       | Storage        | InnoDB |
+| bacula       | UnsavedFiles   | InnoDB |
+| bacula       | Version        | InnoDB |
++--------------+----------------+--------+
+26 rows in set (0.00 sec)
+
+MariaDB [(none)]> 
+

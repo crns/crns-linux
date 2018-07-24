@@ -1,0 +1,172 @@
+[mcampos@chani ~]$ cat /proc/partitions 
+major minor  #blocks  name
+
+   8        0    8388608 sda
+   8        1     204800 sda1
+   8        2    1048576 sda2
+   8        3    7133184 sda3
+  11        0    1048575 sr0
+ 253        0    6291456 dm-0
+ 253        1     839680 dm-1
+[mcampos@chani ~]$ 
+
+
+[mcampos@chani ~]$ blkid
+/dev/sda1: SEC_TYPE="msdos" UUID="E400-B12C" TYPE="vfat" PARTLABEL="EFI System Partition" PARTUUID="6a8ff79b-c8ee-4b6d-a075-df237be0c915" 
+/dev/sda2: UUID="b3046f03-8ecc-4cc7-9948-a84935e4ef65" TYPE="xfs" PARTUUID="b7969120-d766-4357-8273-b27620f35533" 
+/dev/sda3: UUID="oW652R-jQrQ-9Ydw-rtT1-eOnC-lTuD-QXZZan" TYPE="LVM2_member" PARTUUID="cbbf55cc-6627-4740-8733-68cceef44ea8" 
+/dev/mapper/centos-root: UUID="9a0d9e9e-f25d-492c-8948-ad91aaa570bb" TYPE="xfs" 
+/dev/mapper/centos-swap: UUID="5e6c954b-2c84-4067-97d1-b423924597ed" TYPE="swap" 
+[mcampos@chani ~]$ 
+
+
+[mcampos@chani ~]$ sudo pvs
+[sudo] password for mcampos: 
+  PV         VG     Fmt  Attr PSize PFree
+  /dev/sda3  centos lvm2 a--  6,80g    0 
+[mcampos@chani ~]$ 
+
+[mcampos@chani ~]$ sudo vgs
+  VG     #PV #LV #SN Attr   VSize VFree
+  centos   1   2   0 wz--n- 6,80g    0 
+[mcampos@chani ~]$
+
+[mcampos@chani ~]$ sudo vgdisplay
+  --- Volume group ---
+  VG Name               centos
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  3
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               6,80 GiB
+  PE Size               4,00 MiB
+  Total PE              1741
+  Alloc PE / Size       1741 / 6,80 GiB
+  Free  PE / Size       0 / 0   
+  VG UUID               l2KrF1-tFtT-IMWd-2Yz1-Chvg-AlQr-Q0vUaO
+   
+[mcampos@chani ~]$ 
+
+[mcampos@chani ~]$ sudo lvs
+  LV   VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root centos -wi-ao----   6,00g                                                    
+  swap centos -wi-ao---- 820,00m                                                    
+[mcampos@chani ~]$ 
+
+
+[mcampos@chani ~]$ sudo lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/centos/swap
+  LV Name                swap
+  VG Name                centos
+  LV UUID                Uq7UDx-cu1n-ZPgx-zatY-9Wlu-kkuC-y1SwzN
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2018-07-23 09:55:11 -0400
+  LV Status              available
+  # open                 2
+  LV Size                820,00 MiB
+  Current LE             205
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:1
+   
+  --- Logical volume ---
+  LV Path                /dev/centos/root
+  LV Name                root
+  VG Name                centos
+  LV UUID                ChxJGO-Yh7L-BCPD-MUZZ-fgpE-HSKT-KZSRZj
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2018-07-23 09:55:11 -0400
+  LV Status              available
+  # open                 1
+  LV Size                6,00 GiB
+  Current LE             1536
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:0
+   
+[mcampos@chani ~]$ 
+
+
+
+
+[mcampos@chani ~]$ cat /etc/fstab
+
+#
+# /etc/fstab
+# Created by anaconda on Mon Jul 23 09:55:12 2018
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/centos-root /                       xfs     defaults        0 0
+UUID=b3046f03-8ecc-4cc7-9948-a84935e4ef65 /boot                   xfs     defaults        0 0
+UUID=E400-B12C          /boot/efi               vfat    umask=0077,shortname=winnt 0 0
+/dev/mapper/centos-swap swap                    swap    defaults        0 0
+[mcampos@chani ~]$ 
+
+
+
+[mcampos@chani ~]$ df -h
+S.ficheros              Tamaño Usados  Disp Uso% Montado en
+/dev/mapper/centos-root   6,0G   1,1G  4,9G  19% /
+devtmpfs                  908M      0  908M   0% /dev
+tmpfs                     920M      0  920M   0% /dev/shm
+tmpfs                     920M   8,7M  911M   1% /run
+tmpfs                     920M      0  920M   0% /sys/fs/cgroup
+/dev/sda2                1014M   175M  840M  18% /boot
+/dev/sda1                 200M    11M  190M   6% /boot/efi
+tmpfs                     184M      0  184M   0% /run/user/1000
+tmpfs                     184M      0  184M   0% /run/user/0
+[mcampos@chani ~]$ 
+
+
+
+[mcampos@chani ~]$ cat /proc/mounts 
+rootfs / rootfs rw 0 0
+sysfs /sys sysfs rw,seclabel,nosuid,nodev,noexec,relatime 0 0
+proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+devtmpfs /dev devtmpfs rw,seclabel,nosuid,size=929208k,nr_inodes=232302,mode=755 0 0
+securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
+tmpfs /dev/shm tmpfs rw,seclabel,nosuid,nodev 0 0
+devpts /dev/pts devpts rw,seclabel,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0
+tmpfs /sys/fs/cgroup tmpfs ro,seclabel,nosuid,nodev,noexec,mode=755 0 0
+cgroup /sys/fs/cgroup/systemd cgroup rw,seclabel,nosuid,nodev,noexec,relatime,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd 0 0
+pstore /sys/fs/pstore pstore rw,nosuid,nodev,noexec,relatime 0 0
+efivarfs /sys/firmware/efi/efivars efivarfs rw,nosuid,nodev,noexec,relatime 0 0
+cgroup /sys/fs/cgroup/net_cls,net_prio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,net_prio,net_cls 0 0
+cgroup /sys/fs/cgroup/cpu,cpuacct cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuacct,cpu 0 0
+cgroup /sys/fs/cgroup/devices cgroup rw,seclabel,nosuid,nodev,noexec,relatime,devices 0 0
+cgroup /sys/fs/cgroup/freezer cgroup rw,seclabel,nosuid,nodev,noexec,relatime,freezer 0 0
+cgroup /sys/fs/cgroup/pids cgroup rw,seclabel,nosuid,nodev,noexec,relatime,pids 0 0
+cgroup /sys/fs/cgroup/blkio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,blkio 0 0
+cgroup /sys/fs/cgroup/memory cgroup rw,seclabel,nosuid,nodev,noexec,relatime,memory 0 0
+cgroup /sys/fs/cgroup/perf_event cgroup rw,seclabel,nosuid,nodev,noexec,relatime,perf_event 0 0
+cgroup /sys/fs/cgroup/hugetlb cgroup rw,seclabel,nosuid,nodev,noexec,relatime,hugetlb 0 0
+cgroup /sys/fs/cgroup/cpuset cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuset 0 0
+configfs /sys/kernel/config configfs rw,relatime 0 0
+/dev/mapper/centos-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+selinuxfs /sys/fs/selinux selinuxfs rw,relatime 0 0
+systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=33,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=12134 0 0
+debugfs /sys/kernel/debug debugfs rw,relatime 0 0
+mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0
+hugetlbfs /dev/hugepages hugetlbfs rw,seclabel,relatime 0 0
+/dev/sda2 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+/dev/sda1 /boot/efi vfat rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=ascii,shortname=winnt,errors=remount-ro 0 0
+tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=188216k,mode=700,uid=1000,gid=1000 0 0
+tmpfs /run/user/0 tmpfs rw,seclabel,nosuid,nodev,relatime,size=188216k,mode=700 0 0
+[mcampos@chani ~]$ 
+

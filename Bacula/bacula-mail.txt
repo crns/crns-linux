@@ -1,0 +1,92 @@
+/usr/sbin/bsmtp
+
+
+CONFIGURATION
+       These commands should each appear on a single line in the configuration file.
+
+       Messages {
+         Name = Standard
+         mailcommand = "/home/bacula/bin/bsmtp -h mail.domain.com -f \"\(Bacula\) \<%r\>\"
+                                  -s \"Bacula: %t %e of %c %l\" %r"
+         operatorcommand = "/home/bacula/bin/bsmtp -h mail.domain.com -f \"\(Bacula\) \<%r\>\"
+                                        -s \"Bacula: Intervention needed for %j\" %r"
+         mail = sysadmin@site.domain.com = all, !skipped
+         operator = sysop@site.domain.com = mount
+         console = all, !skipped, !saved
+        }
+
+       home/bacula/bin  is replaced with the path to the Bacula binary directory, and mail.domain.com is replaced with the fully qualified name of
+       an SMTP server, which usually listen on port 25.
+
+ENVIRONMENT
+       If the -h option is not specified, bsmtp will use environment variable SMTPSERVER, or 'localhost' if not set.
+
+NOTES
+       Since bsmtp always uses a TCP connection rather than writing to a spool file, you may find  that  your  From:  address  is  being  rejected
+       because  it does not contain a valid domain, or because your message has gotten caught in spam filtering rules. Generally, you should spec‐
+       ify a fully qualified domain name in the from field, and depending on whether your SMTP gateway is Exim or Sendmail, you may need to modify
+       the syntax of the from part of the message.
+
+       If bsmtp cannot connect to the specified mail host, it will retry to connect to localhost.
+
+BUGS
+       If  you are getting incorrect dates (e.g. 1970) and you are running with a non-English locale, you might try setting the LANG="en_US" envi‐
+       ronment variable.
+
+
+
+
+nano bacula-dir.conf
+
+# Reasonable message delivery -- send most everything to email address
+#  and to the console
+Messages {
+  Name = Standard
+#
+# NOTE! If you send to two email or more email addresses, you will need
+#  to replace the %r in the from field (-f part) with a single valid
+#  email address in both the mailcommand and the operatorcommand.
+#  What this does is, it sets the email address that emails would display
+#  in the FROM field, which is by default the same email as they're being
+#  sent to.  However, if you send email to more than one address, then
+#  you'll have to set the FROM address manually, to a single address.
+#  for example, a 'no-reply@mydomain.com', is better since that tends to
+#  tell (most) people that its coming from an automated source.
+
+#
+###  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: %t %e of %c %l\" %r"
+###  operatorcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: Intervention needed for %j\" %r"
+###  mail = root = all, !skipped
+###  operator = root = mount
+###  console = all, !skipped, !saved
+
+  mailcommand = "/usr/sbin/bsmtp -h correo.caschile.cl -f \"\(Bacula\) \<%r\>\" -s \"Bacula: %t %e of %c %l\" %r"
+  operatorcommand = "/usr/sbin/bsmtp -h correo.caschile.cl -f \"\(Bacula\) \<%r\>\" -s \"Bacula: Intervention needed for %j\" %r"
+  mail = ti@caschile.cl = all, !skipped
+  operator = ti@caschile.cl = mount
+  console = all, !skipped, !saved
+#
+# WARNING! the following will create a file that you must cycle from
+#          time to time as it will grow indefinitely. However, it will
+#          also keep all your messages if they scroll off the console.
+#
+  append = "/var/log/bacula/bacula.log" = all, !skipped
+  catalog = all
+}
+
+
+#
+# Message delivery for daemon messages (no job).
+Messages {
+  Name = Daemon
+###  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"JSSC - Bacula daemon message\" %r"
+###  mail = root = all, !skipped
+  mailcommand = "/usr/sbin/bsmtp -h correo.caschile.cl -f \"\(Bacula\) \<%r\>\" -s \"JSSC - Bacula daemon message\" %r"
+  mail = ti@caschile.cl = all, !skipped
+  console = all, !skipped, !saved
+  append = "/var/log/bacula/bacula.log" = all, !skipped
+}
+
+systemctl restart bacula-director
+
+
