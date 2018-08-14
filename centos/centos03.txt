@@ -1,6 +1,5 @@
-sudo yum -y install bash-completion-extras
+sudo yum -y install bash-completion-extras gedit
 
-https://wiki.centos.org/AdditionalResources/Repositories
 
 
 *Repositorio NUX
@@ -26,191 +25,23 @@ sudo yum install -y http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-r
 Comprobar:
 
 [mcampos@localhost ~]$ sudo yum repolist
-Complementos cargados:fastestmirror
-nux-dextop                                                                                                                     | 2.9 kB  00:00:00     
-nux-dextop/x86_64/primary_db                                                                                                   | 1.7 MB  00:00:50     
-Loading mirror speeds from cached hostfile
- * base: mirror.facom.ufms.br
- * centosplus: mirror.globo.com
- * epel: epel.gtdinternet.com
- * extras: mirror.ci.ifes.edu.br
- * nux-dextop: li.nux.ro
- * rpmfusion-free-updates: muug.ca
- * rpmfusion-nonfree-updates: muug.ca
- * updates: mirror.ci.ifes.edu.br
-id del repositorio                                               nombre del repositorio                                                         estado
-base/7/x86_64                                                    CentOS-7 - Base                                                                 9.591
-centosplus/7/x86_64                                              CentOS-7 - Plus                                                                    92
-epel/x86_64                                                      Extra Packages for Enterprise Linux 7 - x86_64                                 12.529
-extras/7/x86_64                                                  CentOS-7 - Extras                                                                 448
-nux-dextop/x86_64                                                Nux.Ro RPMs for general desktop use                                             2.599
-rpmfusion-free-updates/x86_64                                    RPM Fusion for EL 7 - Free - Updates                                              237
-rpmfusion-nonfree-updates/x86_64                                 RPM Fusion for EL 7 - Nonfree - Updates                                            47
-updates/7/x86_64                                                 CentOS-7 - Updates                                                              2.416
-repolist: 27.959
-[mcampos@localhost ~]$
-
-
-*Repositorio REMI
-
-sudo yum install -y http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-
-[mcampos@localhost ~]$ yum repolist
-Complementos cargados:fastestmirror
-remi-safe                                                                                                                      | 2.9 kB  00:00:00     
-remi-safe/primary_db                                                                                                           | 1.2 MB  00:00:13     
-Loading mirror speeds from cached hostfile
- * base: mirror.facom.ufms.br
- * centosplus: mirror.globo.com
- * epel: mirror.espoch.edu.ec
- * extras: mirror.ci.ifes.edu.br
- * nux-dextop: li.nux.ro
- * remi-safe: mirror.netsite.dk
- * rpmfusion-free-updates: muug.ca
- * rpmfusion-nonfree-updates: muug.ca
- * updates: mirror.ci.ifes.edu.br
-id del repositorio                                         nombre del repositorio                                                               estado
-base/7/x86_64                                              CentOS-7 - Base                                                                       9.591
-centosplus/7/x86_64                                        CentOS-7 - Plus                                                                          92
-epel/x86_64                                                Extra Packages for Enterprise Linux 7 - x86_64                                       12.529
-extras/7/x86_64                                            CentOS-7 - Extras                                                                       448
-nux-dextop/x86_64                                          Nux.Ro RPMs for general desktop use                                                   2.599
-remi-safe                                                  Safe Remi's RPM repository for Enterprise Linux 7 - x86_64                            2.662
-rpmfusion-free-updates/x86_64                              RPM Fusion for EL 7 - Free - Updates                                                    237
-rpmfusion-nonfree-updates/x86_64                           RPM Fusion for EL 7 - Nonfree - Updates                                                  47
-updates/7/x86_64                                           CentOS-7 - Updates                                                                    2.416
-repolist: 30.621
-[mcampos@localhost ~]$ 
-
-
-
 
 
 ----
 
 yum update -y
 
-[mcampos@localhost ~]$ sudo yum group info 'Sistema X Window'
-[sudo] password for mcampos: 
-Complementos cargados:fastestmirror
-No existe un archivo de grupos instalados.
-Maybe run: yum groups mark convert (see man yum)
-Loading mirror speeds from cached hostfile
- * base: mirror.globo.com
- * centosplus: mirror.ci.ifes.edu.br
- * epel: epel.gtdinternet.com
- * extras: mirror.gtdinternet.com
- * rpmfusion-free-updates: mirrors.lug.mtu.edu
- * rpmfusion-nonfree-updates: mirrors.lug.mtu.edu
- * updates: mirror.facom.ufms.br
-
-Grupo: Sistema X Window
- Group-Id: x11
- Descripción: Soporte para sistema X Window.
- Paquetes obligatorios:
-   +glx-utils
-   +initial-setup-gui
-   +mesa-dri-drivers
-   +plymouth-system-theme
-   +spice-vdagent
-   +xorg-x11-drivers
-   +xorg-x11-server-Xorg
-   +xorg-x11-utils
-   +xorg-x11-xauth
-   +xorg-x11-xinit
-   +xvattr
- Paquetes opcionales:
-   tigervnc-server
-   xorg-x11-drv-keyboard
-   xorg-x11-drv-libinput
-   xorg-x11-drv-mouse
-   xorg-x11-drv-openchrome
-[mcampos@localhost ~]$ 
-
-
-
-yum groupinstall -y 'Sistema X Window'
-
-o
-
-sudo yum groupinstall -y 'Sistema X Window'
-
-
-#############
-Controlador de VirtualBox
-
-[root@localhost ~]# cat /proc/partitions 
-major minor  #blocks  name
-
-   8        0  159578496 sda
-   8        1    1048576 sda1
-   8        2  158528512 sda2
-  11        0      56618 sr0
- 253        0   52428800 dm-0
- 253        1    2097152 dm-1
- 253        2  103997440 dm-2
-[root@localhost ~]#
-
-[root@localhost ~]# mount -tauto /dev/sr0 /mnt
-mount: /dev/sr0 is write-protected, mounting read-only
-[root@localhost ~]#
-
-
-Insertar cd gues Addi...
-
-
-yum install -y bzip2 gcc make perl kernel-devel
-
-cd /mnt
-
-sudo ./VBoxLinuxAdditions.run
-
-##################
-
-sudo yum install -y lightdm lightdm-gtk 
-
-sudo systemctl enable lightdm.service
-
-sudo yum install -y tint2 gnome-terminal
-
-
-su -
-
-echo 'tint2 &' >> /etc/xdg/openbox/autostart
-
-echo 'nm-applet &' >> /etc/xdg/openbox/autostart
-
-unlink /etc/systemd/system/default.target
-
-ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
-
-reboot
-
-o
-
-systemctl reboot
-
-
-sudo yum install -y firefox terminus-fonts-console terminus-fonts network-manager-applet gnome-keyring dejavu-sans-fonts dejavu-fonts-common dejavu-serif-fonts dejavu-sans-mono-fonts open-sans-fonts overpass-fonts liberation-mono-fonts liberation-serif-fonts google-crosextra-caladea-fonts google-crosextra-carlito-fonts 
-
-
-
-
 
 Ref:
-https://arrfab.net/posts/2018/Jan/02/lightweigth-centos-7-i686-desktop-on-older-machine/
-https://www.centos.org/forums/viewtopic.php?f=47&t=47088&start=10
------
-https://www.comoinstalarlinux.com/como-instalar-openbox-en-arch-linux-y-personalizarlo/2/
-http://fraterneo.blogspot.cl/2013/08/como-instalar-openbox-en-fedora.html
-http://srobb.net/minimaldesktop.html
+https://wiki.centos.org/AdditionalResources/Repositories
+
 
 ############## guía emezeta
 
 
 
 
-sudo yum -y install git vim nano gedit
+####????sudo yum -y install git vim gedit
 
 
 
@@ -236,9 +67,17 @@ Dirigido por el lema "StotinkaOS para todos", nuestro equipo se esfuerza por cre
 
 Repositorio de StotinkaOS
 
-yum install wget
+sudo yum install wget -y
 
-sudo wget https://www.stotinkaos.net/stotinkaOS/repo/7/stotinkaOS.repo
+su -
+
+cd /etc/yum.repos.d
+
+wget https://www.stotinkaos.net/stotinkaOS/repo/7/stotinkaOS.repo
+
+nano etc/yum.repos.s/stotinkaOS.repo
+
+enablerepo="StotinkaOS-Base"
 
 
 Instalar KEY
@@ -264,51 +103,111 @@ Canales:
 ***
 Instalar obconf y obmenu
 
-yum search obmenu
-yum search --enablerepo="StotinkaOS-Base" obmenu
-yum install --enablerepo="StotinkaOS-Base" obmenu
+sudo yum search obmenu obconf
 
-yum search obconf
-yum search --enablerepo="StotinkaOS-Base" obconf
-yum install -y --enablerepo="StotinkaOS-Base" obconf
-
+sudo yum install --enablerepo="StotinkaOS-Base" obmenu obconf
 
 ++++
 
+
+4.- Instalación y configuración temas de Openbox:
+
+###yum install -y *openbox-theme*
+
+sudo yum install clearlooks-phenix-openbox-theme numix-gtk-theme
+
+La configuración queda en:
+
+/home/usuario/.config/openbox/rc.xml.
+
+
+5.- Tipografías 
+
+****Investigar
+
+
+7. Configuración de temas GTK++
+
 ###sudo yum install lxappearance gtk2-engines gnome-themes-standard *icon-theme*
 
-yum install -y --enablerepo="StotinkaOS-Base" lxappearance
-
-yum install -y gtk2-engines gnome-themes-standard *icon-theme*
-
-sudo yum install nautilus-*
-
-sudo yum install -y gksu-polkit
-
-yum install -y gnome-terminal-nautilus
-
+sudo yum install -y --enablerepo="StotinkaOS-Base" lxappearance
 
 *** falta lxappearance-obconf
 
+sudo yum install --enablerepo="StotinkaOS-Base" gtk2-engines gnome-themes-standard *icon-theme* *gtk-theme*
 
 
-4. Configuración de temas de Openbox
-
-yum install -y *openbox-theme*
 
 
+6. Configuración de menús de Openbox:
+
+sudo yum install -y nautilus-* gnome-terminal-nautilus
+
+
+8. Seleccionar un tema de iconos
 
 
 9. Fondo de pantalla (wallpaper)
 
+
+
+
+
 Instalar Nitrogen:
 
+#
+#URL:https://rpmfind.net/linux/rpm2html/search.php?query=nitrogen
+#yum install https://rpmfind.net/linux/Mandriva/devel/cooker/x86_64/media/contrib/release/nitrogen-1.5.2-2-mdv2012.0.x86_64.rpm
+#
 
-URL:https://rpmfind.net/linux/rpm2html/search.php?query=nitrogen
 
-yum install https://rpmfind.net/linux/Mandriva/devel/cooker/x86_64/media/contrib/release/nitrogen-1.5.2-2-mdv2012.0.x86_64.rpm
+yum install https://copr-be.cloud.fedoraproject.org/results/maxamillion/epel7-i3wm/epel-7-x86_64/nitrogen-1.5.2-13.fc20/nitrogen-1.5.2-13.el7.centos.x86_64.rpm
 
 
+
+Instalar Feh:
+
+Install Howto
+Download the latest gf-release rpm from
+http://mirror.ghettoforge.org/distributions/gf/el/7/gf/x86_64/
+Install gf-release rpm:
+# rpm -Uvh gf-release*rpm
+
+sudo yum install http://mirror.ghettoforge.org/distributions/gf/el/7/gf/x86_64/gf-release-7-10.gf.el7.noarch.rpm
+
+Install feh rpm package:
+# yum --enablerepo=gf install feh
+##
+
+# Set desktop wallpaper:
+#feh --bg-scale ~/path/to/wallpaper.png &
+#feh --bg-scale /usr/share/backgrounds/morning.jpg &
+
+su -
+
+echo 'feh --bg-scale /usr/share/backgrounds/night.jpg &' >> /etc/xdg/openbox/autostart
+
+
+Conky:
+
+sudo yum install conky
+
+git clone git://github.com/zenzire/conkyrc.git ~/.conky
+
+ln -s ~/.conky/conkyrc ~/.conkyrc
+
+ok
+
+
+
+Varios-Aplicaciones:
+
+
+sudo yum install -y gksu-polkit
+
+
+
+##
 
 
 
@@ -347,7 +246,5 @@ alien -rkv adeskbar.0.4.3-all.deb
 
 
 
-
-224966900
 
 

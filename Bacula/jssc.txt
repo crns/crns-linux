@@ -334,3 +334,34 @@ Configurar modulo Bacula en Webmin:
 ref: https://wdmbr.wordpress.com/2017/03/08/installing-webmin-bacula-7-and-bacula-web-on-centos-7/
 
 
+
+
+
+Instalar iSCSI Client:
+
+https://www.server-world.info/en/note?os=Debian_9&p=iscsi&f=3
+
+Montar iSCSI disco:
+
+https://doxfer.webmin.com/Webmin/ISCSI_Client
+https://www.howtoforge.com/using-iscsi-on-debian-squeeze-initiator-and-target
+
+
+
+mkdir -p /bacula/backups
+
+root@jessica:~# blkid /dev/sda1
+/dev/sda1: UUID="be817bb0-3097-4a88-af74-bca08518b9ba" TYPE="ext4" PARTLABEL="baculastore" PARTUUID="65322960-ec3a-4832-9e2d-6f1ad577982f"
+root@jessica:~#
+
+# iSCSI
+UUID=be817bb0-3097-4a88-af74-bca08518b9ba  /bacula  ext4  noatime,nodiratime,defaults,auto,_netdev  0  0
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,18 @@
+
+FileDaemon {                            # this is me
+  Name = ares-fd
+  FDport = 9102                # where we listen for the director
+  WorkingDirectory = "C:\\Program Files\\Bacula\\working"
+  Pid Directory = "C:\\Program Files\\Bacula\\working"
+# Plugin Directory = "C:\\Program Files\\Bacula\\plugins"
+  Maximum Concurrent Jobs = 10
+   PKI Signatures = Yes            # Enable Data Signing
+   PKI Encryption = Yes            # Enable Data Encryption
+   PKI Keypair = "C:\\Program Files\\Bacula\\keys\\ares-fd.pem"
+   PKI Master Key = "C:\\Program Files\\Bacula\\keys\\master.cert"
+}
+
+#
+# List Directors who are permitted to contact this File daemon
+#
+

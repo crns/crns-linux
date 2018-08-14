@@ -232,7 +232,11 @@ Principalmente contiene:
 "
 
 Remi:
-sudo rpm -vi  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+sudo rpm -Uvh  http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+o
+
+sudo yum install -y http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 
 Los canales que instala son:
 
@@ -263,7 +267,7 @@ RepoForge solía ser uno de los repositorios importantes de CentOS / RHEL. Sé que
 
 
 
-sudo rpm -vi http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+sudo rpm -Uvh http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
 
 nano /etc/yum.repos.d/rpmforge.repo y deshabilitar el canal "rpmforge"
 
@@ -315,7 +319,7 @@ Debe instalar bind-utils si necesita obtener información de servidores de nombre
 
 
 
-sudo yum install net-tools pci-utils bind-utils -y
+sudo yum install net-tools pciutils bind-utils -y
 
 
 
@@ -336,7 +340,7 @@ https://www.itzgeek.com/how-tos/mini-howtos/create-a-network-bridge-on-centos-7-
 
 
 
-###sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar pciutils nano
+###sudo yum install -y fail2ban fail2ban-systemd bridge-utils bind-utils git unrar nano
 
 ###sudo yum -y install kmod pciutils usbutils util-linux
 
