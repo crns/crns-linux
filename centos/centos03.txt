@@ -144,26 +144,18 @@ sudo yum install --enablerepo="StotinkaOS-Base" gtk2-engines gnome-themes-standa
 sudo yum install -y nautilus-* gnome-terminal-nautilus
 
 
+sudo yum install gvfs-*
+
+nautilus -p
+
+
+
+
+
 8. Seleccionar un tema de iconos
 
 
 9. Fondo de pantalla (wallpaper)
-
-
-
-
-
-Instalar Nitrogen:
-
-#
-#URL:https://rpmfind.net/linux/rpm2html/search.php?query=nitrogen
-#yum install https://rpmfind.net/linux/Mandriva/devel/cooker/x86_64/media/contrib/release/nitrogen-1.5.2-2-mdv2012.0.x86_64.rpm
-#
-
-
-yum install https://copr-be.cloud.fedoraproject.org/results/maxamillion/epel7-i3wm/epel-7-x86_64/nitrogen-1.5.2-13.fc20/nitrogen-1.5.2-13.el7.centos.x86_64.rpm
-
-
 
 Instalar Feh:
 
@@ -186,6 +178,31 @@ Install feh rpm package:
 su -
 
 echo 'feh --bg-scale /usr/share/backgrounds/night.jpg &' >> /etc/xdg/openbox/autostart
+
+
+
+
+Instalar Nitrogen:
+
+#
+#URL:https://rpmfind.net/linux/rpm2html/search.php?query=nitrogen
+#yum install https://rpmfind.net/linux/Mandriva/devel/cooker/x86_64/media/contrib/release/nitrogen-1.5.2-2-mdv2012.0.x86_64.rpm
+#
+
+
+yum install https://copr-be.cloud.fedoraproject.org/results/maxamillion/epel7-i3wm/epel-7-x86_64/nitrogen-1.5.2-13.fc20/nitrogen-1.5.2-13.el7.centos.x86_64.rpm
+
+
+
+12. Composición de escritorio
+
+sudo yum install --enablerepo="StotinkaOS-Base" compton
+
+
+http://duncanlock.net/blog/2013/06/07/how-to-switch-to-compton-for-beautiful-tear-free-compositing-in-xfce/
+
+
+
 
 
 Conky:
