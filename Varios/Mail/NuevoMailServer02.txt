@@ -1070,6 +1070,12 @@ Master daemon messages
 root@frodo:/etc# 
 
 -------------------------------------------------------------
+Estadisticad y gráficas con Mailgraph
+
+https://websetnet.net/es/postfix-monitoring-mailgraph-ubuntu-1404-lts/
+
+-------------------------------
+
 
 Blocking script kiddies with fail2ban
 

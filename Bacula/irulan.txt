@@ -1,0 +1,415 @@
+Instalar Webmin:
+
+wget https://razaoinfo.dl.sourceforge.net/project/webadmin/webmin/1.881/webmin_1.881_all.deb
+
+
+dpkg -i webmin_1.881_all.deb
+
+apt-get -y -f install
+
+
+Truco install: https://blog.jorgeivanmeza.com/2012/03/instalando-un-paquete-deb-local-junto-con-sus-dependencias-en-ubuntu/ 
+
+
+
+
+
+
+Instalar iSCSI Client:
+
+https://www.server-world.info/en/note?os=Debian_9&p=iscsi&f=3
+
+apt-get -y install open-iscsi parted
+
+
+
+
+
+Montar por WEBMIN
+
+#/dev/sda - /dev/sda1 en /bacula (unidad de red en /etc/fstab)
+
+cat /etc/fstab
+
+root@irulan:~# cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/xvda1 during installation
+UUID=942d9588-90b3-4160-8d43-2566b572831a /               ext4    noatime,nodiratime,errors=remount-ro 0       1
+# swap was on /dev/xvda5 during installation
+UUID=ea726e23-5609-40e8-8f1c-8787c562dfdb none            swap    sw              0       0
+/dev/sr0        /media/cdrom0   udf,iso9660 user,noauto     0       0
+/dev/sda1	/bacula	ext4	_netdev	0	0
+
+#
+
+
+
+
+
+
+Instalar bacula storage y bacula console
+
+
+apt-get install bacula-sd bacula-console
+
+
+Configurar por modulo Bacula de webmin, cambiar SDAddress = 127.0.0.1 por SDAddress = 192.168.7.184 y agregar director jessica-dir:
+
+root@irulan:~# cat /etc/bacula/bacula-sd.conf
+#
+# Default Bacula Storage Daemon Configuration file
+#
+#  For Bacula release 7.4.4 (20 September 2016) -- debian 9.0
+#
+# You may need to change the name of your tape drive
+#   on the "Archive Device" directive in the Device
+#   resource.  If you change the Name and/or the
+#   "Media Type" in the Device resource, please ensure
+#   that dird.conf has corresponding changes.
+#
+#
+# Copyright (C) 2000-2015 Kern Sibbald
+# License: BSD 2-Clause; see file LICENSE-FOSS
+#
+
+Storage {                             # definition of myself
+  Name = irulan-sd
+  SDport = 9103
+  WorkingDirectory = /bacula/bacula
+  Pid Directory = "/run/bacula"
+  Maximum Concurrent Jobs = 20
+  SDAddress = 192.168.7.184
+}
+
+#
+# List Directors who are permitted to contact Storage daemon
+#
+Director {
+  Name = jessica-dir
+  Password = "6tG3bMc5wUHoN7XL_Dmweoi2U8cvfk5Tw"
+}
+
+#
+# Restricted Director, used by tray-monitor to get the
+#   status of the storage daemon
+#
+Director {
+  Name = jessica-mon
+  Password = "_yRy-1bLf1o8fFDuHGAVqet-ThRC7RJB5"
+  Monitor = yes
+}
+
+Director {
+  Name = irulan-dir
+  Password = "AeNo7OVrib2wxh6jviFuKA3hXzIHYpcQI"
+}
+
+#
+# Restricted Director, used by tray-monitor to get the
+#   status of the storage daemon
+#
+Director {
+  Name = irulan-mon
+  Password = "buBQZfQf7188aV5IBbPm3DGLKEv2TqeBg"
+  Monitor = yes
+}
+
+#
+# Note, for a list of additional Device templates please
+#  see the directory <bacula-source>/examples/devices
+# Or follow the following link:
+#  http://bacula.svn.sourceforge.net/viewvc/bacula/trunk/bacula/examples/devices/
+#
+
+#
+# Devices supported by this Storage daemon
+# To connect, the Director's bacula-dir.conf must have the
+#  same Name and MediaType.
+#
+
+#
+# Define a Virtual autochanger
+#
+Autochanger {
+  Name = FileChgr1
+  Device = FileChgr1-Dev1, FileChgr1-Dev2
+  Changer Command = ""
+  Changer Device = /dev/null
+}
+
+Device {
+  Name = FileChgr1-Dev1
+  Media Type = File1
+  Archive Device = /bacula/dir01
+  LabelMedia = yes
+  Random Access = yes
+  AutomaticMount = yes
+  RemovableMedia = no
+  AlwaysOpen = no
+  Maximum Concurrent Jobs = 5
+}
+
+Device {
+  Name = FileChgr1-Dev2
+  Media Type = File1
+  Archive Device = /bacula/dir02
+  LabelMedia = yes
+  Random Access = yes
+  AutomaticMount = yes
+  RemovableMedia = no
+  AlwaysOpen = no
+  Maximum Concurrent Jobs = 5
+}
+
+#
+# Define a second Virtual autochanger
+#
+Autochanger {
+  Name = FileChgr2
+  Device = FileChgr2-Dev1, FileChgr2-Dev2
+  Changer Command = ""
+  Changer Device = /dev/null
+}
+
+Device {
+  Name = FileChgr2-Dev1
+  Media Type = File2
+  Archive Device = /bacula/dir03
+  LabelMedia = yes
+  Random Access = yes
+  AutomaticMount = yes
+  RemovableMedia = no
+  AlwaysOpen = no
+  Maximum Concurrent Jobs = 5
+}
+
+Device {
+  Name = FileChgr2-Dev2
+  Media Type = File2
+  Archive Device = /bacula/dir04
+  LabelMedia = yes
+  Random Access = yes
+  AutomaticMount = yes
+  RemovableMedia = no
+  AlwaysOpen = no
+  Maximum Concurrent Jobs = 5
+}
+
+
+
+#
+# An autochanger device with two drives
+#
+#Autochanger {
+#  Name = Autochanger
+#  Device = Drive-1
+#  Device = Drive-2
+#  Changer Command = "/etc/bacula/scripts/mtx-changer %c %o %S %a %d"
+#  Changer Device = /dev/sg0
+#}
+
+#Device {
+#  Name = Drive-1                      #
+#  Drive Index = 0
+#  Media Type = DLT-8000
+#  Archive Device = /dev/nst0
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes;
+#  RemovableMedia = yes;
+#  RandomAccess = no;
+#  AutoChanger = yes
+#  #
+#  # Enable the Alert command only if you have the mtx package loaded
+#  # Note, apparently on some systems, tapeinfo resets the SCSI controller
+#  #  thus if you turn this on, make sure it does not reset your SCSI
+#  #  controller.  I have never had any problems, and smartctl does
+#  #  not seem to cause such problems.
+#  #
+#  Alert Command = "sh -c 'tapeinfo -f %c |grep TapeAlert|cat'"
+#  If you have smartctl, enable this, it has more info than tapeinfo
+#  Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#Device {
+#  Name = Drive-2                      #
+#  Drive Index = 1
+#  Media Type = DLT-8000
+#  Archive Device = /dev/nst1
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes;
+#  RemovableMedia = yes;
+#  RandomAccess = no;
+#  AutoChanger = yes
+#  # Enable the Alert command only if you have the mtx package loaded
+#  Alert Command = "sh -c 'tapeinfo -f %c |grep TapeAlert|cat'"
+#  If you have smartctl, enable this, it has more info than tapeinfo
+#  Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#
+# A Linux or Solaris LTO-2 tape drive
+#
+#Device {
+#  Name = LTO-2
+#  Media Type = LTO-2
+#  Archive Device = /dev/nst0
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes;
+#  RemovableMedia = yes;
+#  RandomAccess = no;
+#  Maximum File Size = 3GB
+## Changer Command = "/etc/bacula/scripts/mtx-changer %c %o %S %a %d"
+## Changer Device = /dev/sg0
+## AutoChanger = yes
+#  # Enable the Alert command only if you have the mtx package loaded
+## Alert Command = "sh -c 'tapeinfo -f %c |grep TapeAlert|cat'"
+## If you have smartctl, enable this, it has more info than tapeinfo
+## Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#
+# A Linux or Solaris LTO-3 tape drive
+#
+#Device {
+#  Name = LTO-3
+#  Media Type = LTO-3
+#  Archive Device = /dev/nst0
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes;
+#  RemovableMedia = yes;
+#  RandomAccess = no;
+#  Maximum File Size = 4GB
+## Changer Command = "/etc/bacula/scripts/mtx-changer %c %o %S %a %d"
+## Changer Device = /dev/sg0
+## AutoChanger = yes
+#  # Enable the Alert command only if you have the mtx package loaded
+## Alert Command = "sh -c 'tapeinfo -f %c |grep TapeAlert|cat'"
+## If you have smartctl, enable this, it has more info than tapeinfo
+## Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#
+# A Linux or Solaris LTO-4 tape drive
+#
+#Device {
+#  Name = LTO-4
+#  Media Type = LTO-4
+#  Archive Device = /dev/nst0
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes;
+#  RemovableMedia = yes;
+#  RandomAccess = no;
+#  Maximum File Size = 5GB
+## Changer Command = "/etc/bacula/scripts/mtx-changer %c %o %S %a %d"
+## Changer Device = /dev/sg0
+## AutoChanger = yes
+#  # Enable the Alert command only if you have the mtx package loaded
+## Alert Command = "sh -c 'tapeinfo -f %c |grep TapeAlert|cat'"
+## If you have smartctl, enable this, it has more info than tapeinfo
+## Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#
+# An HP-UX tape drive
+#
+#Device {
+#  Name = Drive-1                      #
+#  Drive Index = 0
+#  Media Type = DLT-8000
+#  Archive Device = /dev/rmt/1mnb
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes;
+#  RemovableMedia = yes;
+#  RandomAccess = no;
+#  AutoChanger = no
+#  Two EOF = yes
+#  Hardware End of Medium = no
+#  Fast Forward Space File = no
+#  #
+#  # Enable the Alert command only if you have the mtx package loaded
+#  Alert Command = "sh -c 'tapeinfo -f %c |grep TapeAlert|cat'"
+#  If you have smartctl, enable this, it has more info than tapeinfo
+#  Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#
+# A FreeBSD tape drive
+#
+#Device {
+#  Name = DDS-4
+#  Description = "DDS-4 for FreeBSD"
+#  Media Type = DDS-4
+#  Archive Device = /dev/nsa1
+#  AutomaticMount = yes;               # when device opened, read it
+#  AlwaysOpen = yes
+#  Offline On Unmount = no
+#  Hardware End of Medium = no
+#  BSF at EOM = yes
+#  Backward Space Record = no
+#  Fast Forward Space File = no
+#  TWO EOF = yes
+#  If you have smartctl, enable this, it has more info than tapeinfo
+#  Alert Command = "sh -c 'smartctl -H -l error %c'"
+#}
+
+#
+# Send all messages to the Director,
+# mount messages also are sent to the email address
+#
+Messages {
+  Name = Standard
+  director = irulan-dir = all
+}
+
+
+
+
+
+
+
+
+
+Crear punto de montage /bacula
+
+cd /bacula
+
+Crear directorios de trabajo:
+
+mkdir -p dir01 dir02 dir03 dir04 bacula
+
+
+
+##################
+
+
+
+Montar iSCSI disco:
+
+https://doxfer.webmin.com/Webmin/ISCSI_Client
+https://www.howtoforge.com/using-iscsi-on-debian-squeeze-initiator-and-target
+
+
+
+mkdir -p /bacula/backups
+
+root@jessica:~# blkid /dev/sda1
+/dev/sda1: UUID="be817bb0-3097-4a88-af74-bca08518b9ba" TYPE="ext4" PARTLABEL="baculastore" PARTUUID="65322960-ec3a-4832-9e2d-6f1ad577982f"
+root@jessica:~#
+
+# iSCSI
+UUID=be817bb0-3097-4a88-af74-bca08518b9ba  /bacula  ext4  noatime,nodiratime,defaults,auto,_netdev  0  0
+
+
+
+
+Configurar modulo Bacula en Webmin:
+
+ref: https://wdmbr.wordpress.com/2017/03/08/installing-webmin-bacula-7-and-bacula-web-on-centos-7/
+
+

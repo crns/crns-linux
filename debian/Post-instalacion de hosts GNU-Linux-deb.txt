@@ -298,13 +298,22 @@ ene 11 12:55:24 reverse systemd[1]: Started /etc/rc.local Compatibility.
 6.2.1 Discos y Filesystems
 
 Para el caso de los servidores con mucha carga de proceso y acceso a disco, en especial cuando son servidores virtualizados, se aconseja montar las particiones con las opciones noatime y nodiratime para aumentar el rendimiento en escritura, estas opciones evitan que el sistema actualice (escriba en disco) la hora del acceso en la meta información de los archivos, reduciendo la escritura y mejorando el performance.
+
+~# cat /proc/mounts | grep ext4
+/dev/xvda1 / ext4 rw,relatime,errors=remount-ro,data=ordered 0 0
+~# 
+
 Editar el archivo /etc/fstab y modificar las opciones de montaje de las particiones con filesystems ext2, ext3 y ext4, no funciona en particiones swap, ejemplo:
 
-/dev/xvda2  /  ext3  errors=remount-ro  0 1
+# / was on /dev/xvda1 during installation
+UUID=942d9588-90b3-4160-8d43-2566b572831a /   ext4    errors=remount-ro 0       1
+
 
 Debe quedar así:
 
-/dev/xvda2  /  ext3 noatime,nodiratime,errors=remount-ro 0 1
+# / was on /dev/xvda1 during installation
+UUID=942d9588-90b3-4160-8d43-2566b572831a /   ext4    noatime,nodiratime,errors=remount-ro 0       1
+
 
 Luego es posible aplicar el cambio sin reiniciar el host:
 
@@ -315,14 +324,8 @@ Nota: En el caso de hosts paravirtualizados este ajuste se hace automáticamente
 Verificar con cat /proc/mounts, ejemplo:
 
 ~# cat /proc/mounts | grep ext4
-/dev/xvda1 / ext4 rw,relatime,errors=remount-ro,data=ordered 0 0
-
-~# mount -o remount,noatime,nodiratime,errors=remount-ro /
-
-~# cat /proc/mounts | grep ext4
 /dev/xvda1 / ext4 rw,noatime,nodiratime,errors=remount-ro,data=ordered 0 0
- 
-
+~# 
 
 
 6.2.2 RNG
@@ -626,13 +629,32 @@ net.ipv6.conf.vlan103.disable_ipv6 = 1
 
 6.3 Securizar servicios:
 
+nmap -T4 -A -v <ip>
+
+Not shown: 997 closed ports
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 7.4p1 Debian 10+deb9u4 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 dc:c9:51:37:e6:1a:09:ce:a2:ab:a3:f7:ce:66:f8:62 (RSA)
+|   256 fa:75:11:f6:35:4d:92:9d:d8:16:93:4b:00:c5:23:04 (ECDSA)
+|_  256 79:8a:7c:9d:82:78:75:1b:e1:fb:c4:b6:cd:d8:ec:f5 (EdDSA)
+2000/tcp open  tcpwrapped
+5060/tcp open  tcpwrapped
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+
 6.3.1 Servicio SSH
 
+En sistemas anteriores a STRETCH se hacía lo sgte:
 -----------------------
-No permitir acceso a la cuenta “root”, solo acceso a cuentas no privilegiadas. Editar el archivo "/etc/ssh/sshd_config" y cambiar la opción “PermitRoolLogin yes” a “no”:
+No permitir acceso a la maquina a la cuenta “root”, solo acceso a cuentas no privilegiadas. Editar el archivo "/etc/ssh/sshd_config" y cambiar la opción “PermitRoolLogin yes” a “no”:
 
 PermitRootLogin no
 -------------------------
+
+Actualmente la opción por "default" no permite login a la cuenta root.
+
 
 Ocultar Debian Banner (Versión de SO GNU/Debian):
 
@@ -646,6 +668,19 @@ DebianBanner no
 Reiniciar servicio:
 
 systemctl restart ssh.service
+
+Verificar:
+
+Not shown: 997 closed ports
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 7.4p1 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 dc:c9:51:37:e6:1a:09:ce:a2:ab:a3:f7:ce:66:f8:62 (RSA)
+|   256 fa:75:11:f6:35:4d:92:9d:d8:16:93:4b:00:c5:23:04 (ECDSA)
+|_  256 79:8a:7c:9d:82:78:75:1b:e1:fb:c4:b6:cd:d8:ec:f5 (EdDSA)
+2000/tcp open  tcpwrapped
+5060/tcp open  tcpwrapped
+
 
 
 6.3.2 Tcp Wrappers
