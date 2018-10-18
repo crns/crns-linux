@@ -1,6 +1,6 @@
 Encriptando trabajos de backup en bacula:
 
-Crear par de Master keys Publico/Privada:
+Crear par de Master keys Publico/Privada: (Solo una vez - en el servidor)
 
 - login en taper-dir
 - cambiar directorio keys:
@@ -20,6 +20,21 @@ root@tape:/etc/bacula/keys#
 
 OK.
 
+--------------------------
+
+slep_bardb	192.168.7.56	F:\Backup_Sync.rar	diario	datacenter
+
+slep_cordb	192.168.7.54	F:\Backup_Sync.rar	diario	datacenter
+
+prometeo	192.168.7.223	C:\respaldohistoria.rar	diario	datacenter
+
+pandora		192.168.7.178	c:\xampp.rar		diario	datacenter
+
+SRV_GTI		192.168.7.154	C:\Respaldos.sql	diario	sala servidores
+
+
+--------------------------
+
 Crear claves de cliente (file-daemond /fd):
 
 - login en taper-dir
@@ -34,6 +49,11 @@ En general los comandos son:
   cat fd-example.key fd-example.cert >fd-example.pem
 
 Crear key Publico/privado para host SARUMAN:
+
+  openssl genrsa -out fd-*.key 2048
+  openssl req -new -key fd-*.key -x509 -out fd-*.cert
+  cat fd-*.key fd-*.cert >fd-*.pem
+
 
 
 

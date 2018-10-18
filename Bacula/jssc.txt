@@ -413,46 +413,40 @@ root@jessica:/bacula/dir04#
 
 ----
 
-mcampos@jessica:/bacula/dir01$ ls -l
-total 7389230848
--rw-r----- 1 bacula bacula 1717986892650 ago  4 04:27 Vol-0032
--rw-r----- 1 bacula bacula 1717986913438 ago 10 19:39 Vol-0038
+root@jessica:/bacula/dir01# ls -l
+total 5006138844
+-rw-r----- 1 bacula bacula  136351032194 sep 11 08:39 Vol-0038
 -rw-r----- 1 bacula bacula 1717986877419 ago 18 12:50 Vol-0042
 -rw-r----- 1 bacula bacula 1399158796407 ago 28 19:14 Vol-0045
 -rw-r----- 1 bacula bacula   16463782025 ago 31 19:00 Vol-0052
--rw-r----- 1 bacula bacula  996985788201 sep  4 19:20 Vol-0059
-mcampos@jessica:/bacula/dir01$ cd ../dir02/
-mcampos@jessica:/bacula/dir02$ ls -l
-total 3976491144
--rw-r----- 1 bacula bacula     101181001 sep  4 19:11 Vol-0032
+-rw-r----- 1 bacula bacula 1717986916688 sep  8 23:00 Vol-0059
+-rw-r----- 1 bacula bacula  138335404032 sep  9 03:44 Vol-0061
+root@jessica:/bacula/dir01# cd ../dir02
+root@jessica:/bacula/dir02# ls -l
+total 4907082840
+-rw-r----- 1 bacula bacula  941843279872 sep  9 03:44 Vol-0032
 -rw-r----- 1 bacula bacula           584 ago  3 19:00 Vol-0036
 -rw-r----- 1 bacula bacula    4514557930 ago 10 19:08 Vol-0039
+-rw-r----- 1 bacula bacula   11182963155 sep 11 04:43 Vol-0042
 -rw-r----- 1 bacula bacula  974028028314 ago 12 06:47 Vol-0043
 -rw-r----- 1 bacula bacula  983622162224 ago 19 05:21 Vol-0044
 -rw-r----- 1 bacula bacula 1166348830864 ago 26 05:24 Vol-0048
 -rw-r----- 1 bacula bacula    1223066949 ago 28 19:07 Vol-0049
 -rw-r----- 1 bacula bacula     492552549 ago 30 19:05 Vol-0057
 -rw-r----- 1 bacula bacula  941594209647 sep  3 19:31 Vol-0060
-mcampos@jessica:/bacula/dir02$ cd ../dir03
-mcampos@jessica:/bacula/dir03$ ls -l
-total 5924283544
--rw-r----- 1 bacula bacula 1717986865330 ago  6 22:37 Vol-0033
+root@jessica:/bacula/dir02# cd ../dir03
+root@jessica:/bacula/dir03# ls -l
+total 5240175748
+-rw-r----- 1 bacula bacula  478353431252 sep 11 01:03 Vol-0033
 -rw-r----- 1 bacula bacula 1717986866202 ago 18 13:36 Vol-0040
 -rw-r----- 1 bacula bacula 1451610284745 ago 28 23:16 Vol-0046
--rw-r----- 1 bacula bacula 1178879735045 sep  4 23:05 Vol-0055
-mcampos@jessica:/bacula/dir03$ cd ../dir04
-mcampos@jessica:/bacula/dir04$ ls -l
-total 10861008
+-rw-r----- 1 bacula bacula 1717986870215 sep  8 07:48 Vol-0055
+root@jessica:/bacula/dir03# cd ../dir04
+root@jessica:/bacula/dir04# ls -l
+total 12285916
 -rw-r----- 1 bacula bacula 1034849858 ago  6 19:04 Vol-0037
 -rw-r----- 1 bacula bacula 2860404222 ago 18 06:16 Vol-0041
 -rw-r----- 1 bacula bacula 1446930484 ago 28 19:03 Vol-0047
--rw-r----- 1 bacula bacula 5779458723 sep  4 19:04 Vol-0056
-
-
-
-
-
-
-
-
+-rw-r----- 1 bacula bacula 7238557715 sep  8 06:16 Vol-0056
+root@jessica:/bacula/dir04# 
 
