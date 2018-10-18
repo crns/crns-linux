@@ -1,0 +1,82 @@
+Temas por default de Openbox:
+
+en directorio 
+/home/user/.themes/
+/usr/share/themes/
+
+----
+Temas no visualizados???:
+
+ Adwaita
+ Adwaita-dark
+ Anaconda
+ Default
+ Emacs
+ HighContrast
+
+ MurrinaAquaIsh
+ MurrinaCandy
+ MurrinaCappuccino
+ MurrinaEalm
+ MurrinaFancyCandy
+ MurrinaGilouche
+ MurrinaLoveGray
+ MurrinaNeoGraphite
+ MurrinaVerdeOlivo
+
+ Raleigh
+
+
+----
+Default Openbox:
+
+Artwiz-boxed
+Bear2
+Clearlooks
+Clearlooks-3.4
+Clearlooks-Olive
+Mikachu
+Natura
+Onyx
+Onyx-Citrus
+Orang
+Syscrash
+
+----
+Instalados:
+
+Clearlooks-Phenix
+Numix
+
+------
+
+Tipografía:
+
+
+---
+Temas LXAppearance:
+
+ Adwaita
+ Adwaita-dark
+Clearlooks-Phenix
+ HighContrast
+
+ MurrinaAquaIsh
+ MurrinaCandy
+ MurrinaCappuccino
+ MurrinaEalm
+ MurrinaFancyCandy
+ MurrinaGilouche
+ MurrinaLoveGray
+ MurrinaNeoGraphite
+ MurrinaVerdeOlivo
+Numix
+ Raleigh
+
+
+Ahora instalar gtk-themes:
+
+
+
+
+

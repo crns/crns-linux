@@ -1,0 +1,29 @@
+https://blog.desdelinux.net/instalacion-y-personalizacion-de-openbox/
+https://gnulibre.com/posts/entornosdeescritorio/526/Una-peque-a-gu-a-de-configuraci-n-de-Tint2.html
+https://bbs.archlinux.org/viewtopic.php?pid=732569#p732569
+
+Configure openbox to lock screen via xscreensaver
+
+sudo nano /etc/xdg/openbox/autostart
+
+
+
+https://hev.cc/2164.html
+
+        <keybind key="W-l">
+            <action name="Execute">
+                <command>xscreensaver-command -lock</command>
+            </action>
+        </keybind>
+
+o
+
+	<keybind key="W-l">
+            <action name="Execute">
+                <command>gnome-screensaver-command --lock</command>
+            </action>
+        </keybind>
+
+
+https://help.ubuntu.com/community/Openbox
+https://askubuntu.com/questions/7776/how-do-i-lock-the-desktop-screen-via-command-line

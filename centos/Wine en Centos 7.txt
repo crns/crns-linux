@@ -1,0 +1,36 @@
+
+
+sudo yum remove wine\*
+sudo yum install wine\*.i686
+echo "export WINEARCH=win32" >> ~/.bashrc (Si usas terminal Bash)***
+echo "export WINEARCH=win32" >> ~/.zshrc (Si usas terminal ZSH)
+export WINEARCH=win32
+sudo rm -rf ~/.wine
+winecfg
+
+sudo yum install winetricks
+winetricks dotnet20
+
+ejecutar SupRip
+
+wine SupRip.exe &
+
+
+
+------------------------
+Refs:
+
+Extraer subs
+http://zer0-ubuntu-desktop.blogspot.com/2012/09/extraer-subtitulos-de-un-archivo-de_3885.html
+
+Truco SupRip
+https://www.makemkv.com/forum/viewtopic.php?t=1340
+
+Download SupRip
+http://exar.ch/suprip/
+
+Instalar wine para ejecutar aplicaciones 32 bit en Centos7-64
+https://xenodesystems.blogspot.com/2011/07/instalar-wine-de-32-bits-en-fedora-de.html
+
+Instalar Winetricks
+https://xenodesystems.blogspot.com/2011/09/instalar-winetricks-en-cualquier-distro.html
